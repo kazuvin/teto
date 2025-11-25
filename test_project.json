@@ -68,6 +68,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
+        "variant": "rounded_bg",
         "items": [
           {
             "text": "Welcome to Teto!",
@@ -75,20 +76,29 @@
             "end_time": 1.7
           },
           {
-            "text": "これは解説系動画生成システムです",
+            "text": "これは解説系動画生成システムです。テストで２行になるように長めのテキストを表示します。",
             "start_time": 2.2,
             "end_time": 4.8
-          },
-          {
-            "text": "Thank you for watching!",
-            "start_time": 5.3,
-            "end_time": 6.7
           }
         ],
         "font_size": 64,
         "font_color": "white",
         "bg_color": "black@0.6",
         "position": "bottom"
+      },
+      {
+        "type": "subtitle",
+        "variant": "plain",
+        "items": [
+          {
+            "text": "Thank you for watching!",
+            "start_time": 5.3,
+            "end_time": 6.7
+          }
+        ],
+        "font_size": 72,
+        "font_color": "yellow",
+        "position": "center"
       }
     ]
   }
