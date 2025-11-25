@@ -7,6 +7,7 @@ from .layers import (
     SubtitleItem,
 )
 from .output import OutputConfig
+from .effects import AnimationEffect
 
 __all__ = [
     "Project",
@@ -16,4 +17,5 @@ __all__ = [
     "SubtitleLayer",
     "SubtitleItem",
     "OutputConfig",
+    "AnimationEffect",
 ]

@@ -8,6 +8,7 @@ from moviepy import (
     CompositeVideoClip,
 )
 from ..models.layers import VideoLayer, ImageLayer
+from .animation import AnimationProcessor
 from typing import Union
 
 
@@ -15,7 +16,7 @@ class VideoProcessor:
     """動画・画像処理を担当するプロセッサー"""
 
     @staticmethod
-    def load_video_layer(layer: VideoLayer) -> VideoFileClip:
+    def load_video_layer(layer: VideoLayer, output_size: tuple[int, int] = None) -> VideoFileClip:
         """動画レイヤーを読み込む"""
         clip = VideoFileClip(layer.path)
 
@@ -26,6 +27,10 @@ class VideoProcessor:
         # 継続時間の調整
         if layer.duration is not None:
             clip = clip.subclipped(0, min(layer.duration, clip.duration))
+
+        # アニメーション効果を適用
+        if layer.effects and output_size:
+            clip = AnimationProcessor.apply_effects(clip, layer.effects, output_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
@@ -42,6 +47,10 @@ class VideoProcessor:
         if clip.w > target_size[0]:
             clip = clip.resized(width=target_size[0])
 
+        # アニメーション効果を適用
+        if layer.effects:
+            clip = AnimationProcessor.apply_effects(clip, layer.effects, target_size)
+
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
 
@@ -57,7 +66,7 @@ class VideoProcessor:
 
         for layer in layers:
             if isinstance(layer, VideoLayer):
-                clip = VideoProcessor.load_video_layer(layer)
+                clip = VideoProcessor.load_video_layer(layer, output_size)
             elif isinstance(layer, ImageLayer):
                 clip = VideoProcessor.load_image_layer(layer, output_size)
             else:

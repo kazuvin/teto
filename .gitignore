@@ -93,3 +93,6 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Output files
+output/

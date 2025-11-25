@@ -1,5 +1,8 @@
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .effects import AnimationEffect
 
 
 class BaseLayer(BaseModel):
@@ -15,6 +18,7 @@ class VideoLayer(BaseLayer):
     type: Literal["video"] = "video"
     path: str = Field(..., description="動画ファイルパス")
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
+    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
 
 
 class ImageLayer(BaseLayer):
@@ -23,6 +27,7 @@ class ImageLayer(BaseLayer):
     type: Literal["image"] = "image"
     path: str = Field(..., description="画像ファイルパス")
     duration: float = Field(..., description="表示時間（秒）", gt=0)
+    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
 
 
 class AudioLayer(BaseLayer):
@@ -50,3 +55,8 @@ class SubtitleLayer(BaseModel):
     font_color: str = Field("white", description="フォントカラー")
     bg_color: str | None = Field("black@0.5", description="背景色（透明度付き）")
     position: Literal["bottom", "top", "center"] = Field("bottom", description="字幕位置")
+
+# Forward reference の解決
+from .effects import AnimationEffect
+VideoLayer.model_rebuild()
+ImageLayer.model_rebuild()

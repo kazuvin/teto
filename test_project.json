@@ -15,19 +15,53 @@
         "type": "image",
         "path": "test_assets/intro.png",
         "start_time": 0.0,
-        "duration": 2.0
+        "duration": 2.0,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 0.5
+          },
+          {
+            "type": "zoom",
+            "duration": 1.5,
+            "start_scale": 0.8,
+            "end_scale": 1.0
+          }
+        ]
       },
       {
         "type": "image",
         "path": "test_assets/main.png",
         "start_time": 2.0,
-        "duration": 3.0
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "slideIn",
+            "duration": 0.6,
+            "direction": "left"
+          },
+          {
+            "type": "fadeout",
+            "duration": 0.5
+          }
+        ]
       },
       {
         "type": "image",
         "path": "test_assets/outro.png",
         "start_time": 5.0,
-        "duration": 2.0
+        "duration": 2.0,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 0.4
+          },
+          {
+            "type": "slideOut",
+            "duration": 0.6,
+            "direction": "right"
+          }
+        ]
       }
     ],
     "audio_layers": [],
