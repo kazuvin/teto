@@ -1,0 +1,24 @@
+[project]
+name = "teto-core"
+version = "0.1.0"
+description = "Core library for video generation system"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pillow>=10.0.0",
+    "numpy>=1.24.0",
+    "moviepy>=1.0.3",
+    "pydantic>=2.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]

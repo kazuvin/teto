@@ -1,0 +1,9 @@
+[tool.uv.workspace]
+members = [
+    "packages/core",
+    "packages/api",
+    "packages/cli",
+]
+
+[tool.uv.sources]
+teto-core = { workspace = true }

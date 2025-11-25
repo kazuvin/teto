@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/test_video.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "test_assets/intro.png",
+        "start_time": 0.0,
+        "duration": 2.0
+      },
+      {
+        "type": "image",
+        "path": "test_assets/main.png",
+        "start_time": 2.0,
+        "duration": 3.0
+      },
+      {
+        "type": "image",
+        "path": "test_assets/outro.png",
+        "start_time": 5.0,
+        "duration": 2.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "items": [
+          {
+            "text": "Welcome to Teto!",
+            "start_time": 0.3,
+            "end_time": 1.7
+          },
+          {
+            "text": "これは解説系動画生成システムです",
+            "start_time": 2.2,
+            "end_time": 4.8
+          },
+          {
+            "text": "Thank you for watching!",
+            "start_time": 5.3,
+            "end_time": 6.7
+          }
+        ],
+        "font_size": 64,
+        "font_color": "white",
+        "bg_color": "black@0.6",
+        "position": "bottom"
+      }
+    ]
+  }
+}
