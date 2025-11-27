@@ -148,6 +148,9 @@ def create_text_image_with_pil(
     font_size: int,
     color: str,
     max_width: int,
+    font_weight: str = "normal",
+    border_width: int = 0,
+    border_color: str = "black",
     load_font_func=None,
 ) -> tuple[np.ndarray, tuple[int, int]]:
     """PILを使ってテキスト画像を作成し、正確なサイズを取得
@@ -158,6 +161,9 @@ def create_text_image_with_pil(
         font_size: フォントサイズ
         color: 色名
         max_width: 最大幅
+        font_weight: フォントの太さ
+        border_width: ボーダーの幅
+        border_color: ボーダーの色
         load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
 
     Returns:
@@ -165,22 +171,24 @@ def create_text_image_with_pil(
     """
     # フォントを読み込み
     if load_font_func:
-        font = load_font_func(font_path, font_size)
+        font = load_font_func(font_path, font_size, font_weight)
     else:
         from .font_utils import load_font
-        font = load_font(font_path, font_size)
+        font = load_font(font_path, font_size, font_weight)
 
     # 色をRGBに変換
     text_color = COLOR_MAP.get(color.lower(), (255, 255, 255))
+    stroke_color = COLOR_MAP.get(border_color.lower(), (0, 0, 0))
 
     # 日本語対応の折り返し処理
     wrapped_text = wrap_text_japanese_aware(text, font, max_width)
 
     # テキストのbounding boxを取得（正確なサイズ計算）
+    # ボーダーがある場合は追加のスペースを確保
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
     bbox = dummy_draw.multiline_textbbox(
-        (0, 0), wrapped_text, font=font, spacing=LINE_SPACING
+        (0, 0), wrapped_text, font=font, spacing=LINE_SPACING, stroke_width=border_width
     )
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
@@ -192,6 +200,7 @@ def create_text_image_with_pil(
     draw = ImageDraw.Draw(img)
 
     # テキストを描画（bbox[0], bbox[1]のオフセットを考慮）
+    # ボーダーとテキストを一度に描画
     draw.multiline_text(
         (TEXT_PADDING - bbox[0], TEXT_PADDING - bbox[1]),
         wrapped_text,
@@ -199,6 +208,8 @@ def create_text_image_with_pil(
         fill=(*text_color, 255),
         align="center",
         spacing=LINE_SPACING,
+        stroke_width=border_width,
+        stroke_fill=(*stroke_color, 255),
     )
 
     return np.array(img), (img_width, img_height)

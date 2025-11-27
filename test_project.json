@@ -68,7 +68,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "rounded_bg",
+        "variant": "plain",
         "items": [
           {
             "text": "Welcome to Teto!",
@@ -83,6 +83,10 @@
         ],
         "font_size": 32,
         "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "border_width": 3,
+        "border_color": "black",
         "bg_color": "black@0.6",
         "position": "bottom"
       },
@@ -98,6 +102,10 @@
         ],
         "font_size": 72,
         "font_color": "yellow",
+        "font_family": null,
+        "font_weight": "bold",
+        "border_width": 4,
+        "border_color": "black",
         "position": "center"
       }
     ]

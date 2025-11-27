@@ -28,7 +28,7 @@
       {
         "type": "image",
         "path": "assets/outro.png",
-        "start_time": null,
+        "start_time": 6.0,
         "duration": 3.0
       }
     ],
@@ -51,6 +51,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
+        "variant": "rounded_bg",
         "items": [
           {
             "text": "Welcome to Teto",
@@ -70,6 +71,10 @@
         ],
         "font_size": 48,
         "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "border_width": 2,
+        "border_color": "black",
         "bg_color": "black@0.5",
         "position": "bottom"
       }

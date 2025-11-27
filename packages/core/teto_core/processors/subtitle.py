@@ -1,9 +1,7 @@
 """字幕処理プロセッサー"""
 
 from pathlib import Path
-from moviepy import VideoClip, TextClip, CompositeVideoClip, ImageClip
-from PIL import Image, ImageDraw, ImageFont
-import numpy as np
+from moviepy import VideoClip, CompositeVideoClip, ImageClip
 from ..models.layers import SubtitleLayer, SubtitleItem
 from ..utils.constants import (
     BG_PADDING_X,
@@ -46,26 +44,25 @@ class SubtitleProcessor:
         item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int], font: str | None, duration: float
     ) -> VideoClip:
         """通常テキスト（背景なし）の字幕クリップを作成"""
-        try:
-            txt_clip = TextClip(
-                text=item.text,
-                font=font,
-                font_size=layer.font_size,
-                color=layer.font_color,
-                size=(video_size[0] - MAX_TEXT_WIDTH_OFFSET, None),
-                method="caption",
-            )
-        except Exception as e:
-            print(f"Warning: Font error, using default font: {e}")
-            txt_clip = TextClip(
-                text=item.text,
-                font_size=layer.font_size,
-                color=layer.font_color,
-                size=(video_size[0] - MAX_TEXT_WIDTH_OFFSET, None),
-                method="caption",
-            )
+        max_width = video_size[0] - MAX_TEXT_WIDTH_OFFSET
 
-        position = SubtitleProcessor._calculate_position(layer, txt_clip.h, video_size)
+        # PILを使ってテキスト画像を作成
+        text_img, (text_width, text_height) = create_text_image_with_pil(
+            text=item.text,
+            font_path=font,
+            font_size=layer.font_size,
+            color=layer.font_color,
+            max_width=max_width,
+            font_weight=layer.font_weight,
+            border_width=layer.border_width,
+            border_color=layer.border_color
+        )
+
+        # テキスト画像をImageClipに変換
+        txt_clip = ImageClip(text_img).with_duration(duration)
+
+        # 位置の計算
+        position = SubtitleProcessor._calculate_position(layer, text_height, video_size)
         return txt_clip.with_position(position).with_start(item.start_time).with_duration(duration)
 
     @staticmethod
@@ -81,7 +78,10 @@ class SubtitleProcessor:
             font_path=font,
             font_size=layer.font_size,
             color=layer.font_color,
-            max_width=max_width
+            max_width=max_width,
+            font_weight=layer.font_weight,
+            border_width=layer.border_width,
+            border_color=layer.border_color
         )
 
         # 背景色と透明度を取得
@@ -120,8 +120,8 @@ class SubtitleProcessor:
         """字幕アイテムからテキストクリップを作成"""
         duration = item.end_time - item.start_time
 
-        # 日本語対応フォントを指定
-        font = find_system_font()
+        # フォントを決定（font_familyが指定されていればそれを使用、なければシステムフォント）
+        font = layer.font_family if layer.font_family else find_system_font(layer.font_weight)
 
         # variantに基づいて処理を分岐
         if layer.variant == "plain":

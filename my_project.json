@@ -13,6 +13,26 @@
   "timeline": {
     "video_layers": [],
     "audio_layers": [],
-    "subtitle_layers": []
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "variant": "rounded_bg",
+        "items": [
+          {
+            "text": "サンプル字幕",
+            "start_time": 0.0,
+            "end_time": 3.0
+          }
+        ],
+        "font_size": 48,
+        "font_color": "white",
+        "font_family": null,
+        "font_weight": "normal",
+        "border_width": 0,
+        "border_color": "black",
+        "bg_color": "black@0.5",
+        "position": "bottom"
+      }
+    ]
   }
 }
