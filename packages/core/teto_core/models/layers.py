@@ -1,8 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Literal, TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from .effects import AnimationEffect
+
+# レスポンシブサイズ型
+ResponsiveSize = Literal["xs", "sm", "base", "lg", "xl", "2xl"]
 
 
 class BaseLayer(BaseModel):
@@ -51,11 +54,11 @@ class SubtitleLayer(BaseModel):
 
     type: Literal["subtitle"] = "subtitle"
     items: list[SubtitleItem] = Field(default_factory=list, description="字幕アイテムのリスト")
-    font_size: int = Field(48, description="フォントサイズ", gt=0)
+    font_size: Union[int, ResponsiveSize] = Field("base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）")
     font_color: str = Field("white", description="フォントカラー")
     font_family: str | None = Field(None, description="フォントファミリー（フォントファイルパス）")
     font_weight: Literal["normal", "bold"] = Field("normal", description="フォントの太さ")
-    border_width: int = Field(0, description="ボーダーの幅（ピクセル）", ge=0)
+    border_width: Union[int, ResponsiveSize] = Field(0, description="ボーダーの幅（数値またはxs/sm/base/lg/xl/2xl）")
     border_color: str = Field("black", description="ボーダーの色")
     bg_color: str | None = Field("black@0.5", description="背景色（透明度付き）")
     position: Literal["bottom", "top", "center"] = Field("bottom", description="字幕位置")

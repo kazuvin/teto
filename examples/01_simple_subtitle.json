@@ -1,36 +1,42 @@
 {
   "version": "1.0",
   "output": {
-    "path": "output.mp4",
+    "path": "output/01_simple_subtitle.mp4",
     "width": 1920,
     "height": 1080,
     "fps": 30,
     "codec": "libx264",
     "audio_codec": "aac",
-    "bitrate": null,
+    "bitrate": "5000k",
     "subtitle_mode": "burn"
   },
   "timeline": {
-    "video_layers": [],
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 5.0
+      }
+    ],
     "audio_layers": [],
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "rounded_bg",
+        "variant": "plain",
         "items": [
           {
-            "text": "サンプル字幕",
-            "start_time": 0.0,
-            "end_time": 3.0
+            "text": "シンプルな字幕の例",
+            "start_time": 1.0,
+            "end_time": 4.0
           }
         ],
         "font_size": "base",
         "font_color": "white",
         "font_family": null,
-        "font_weight": "normal",
-        "border_width": 0,
+        "font_weight": "bold",
+        "border_width": "sm",
         "border_color": "black",
-        "bg_color": "black@0.5",
         "position": "bottom"
       }
     ]

@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/02_image_slideshow.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 0.5
+          },
+          {
+            "type": "zoom",
+            "duration": 2.5,
+            "start_scale": 1.0,
+            "end_scale": 1.2
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/main.png",
+        "start_time": 3.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "slideIn",
+            "duration": 0.5,
+            "direction": "left"
+          },
+          {
+            "type": "slideOut",
+            "duration": 0.5,
+            "direction": "right"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/outro.png",
+        "start_time": 6.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 0.5
+          },
+          {
+            "type": "fadeout",
+            "duration": 0.5
+          }
+        ]
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "variant": "rounded_bg",
+        "items": [
+          {
+            "text": "イントロ画面",
+            "start_time": 0.5,
+            "end_time": 2.5
+          },
+          {
+            "text": "メイン画面",
+            "start_time": 3.5,
+            "end_time": 5.5
+          },
+          {
+            "text": "アウトロ画面",
+            "start_time": 6.5,
+            "end_time": 8.5
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "border_width": 0,
+        "border_color": "black",
+        "bg_color": "black@0.6",
+        "position": "bottom"
+      }
+    ]
+  }
+}

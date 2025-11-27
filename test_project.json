@@ -1,12 +1,13 @@
 {
   "version": "1.0",
   "output": {
-    "path": "output/test_video.mp4",
-    "width": 1920,
-    "height": 1080,
+    "path": "output/test_video_4k.mp4",
+    "width": 3840,
+    "height": 2160,
     "fps": 30,
     "codec": "libx264",
     "audio_codec": "aac",
+    "bitrate": "20000k",
     "subtitle_mode": "burn"
   },
   "timeline": {
@@ -81,11 +82,11 @@
             "end_time": 4.8
           }
         ],
-        "font_size": 32,
+        "font_size": "sm",
         "font_color": "white",
         "font_family": null,
         "font_weight": "bold",
-        "border_width": 3,
+        "border_width": "sm",
         "border_color": "black",
         "bg_color": "black@0.6",
         "position": "bottom"
@@ -100,11 +101,11 @@
             "end_time": 6.7
           }
         ],
-        "font_size": 72,
+        "font_size": "xl",
         "font_color": "yellow",
         "font_family": null,
         "font_weight": "bold",
-        "border_width": 4,
+        "border_width": "base",
         "border_color": "black",
         "position": "center"
       }

@@ -3,18 +3,12 @@
 from pathlib import Path
 from moviepy import VideoClip, CompositeVideoClip, ImageClip
 from ..models.layers import SubtitleLayer, SubtitleItem
-from ..utils.constants import (
-    BG_PADDING_X,
-    BG_PADDING_Y,
-    BG_RADIUS,
-    MARGIN_BOTTOM,
-    MARGIN_TOP,
-    MAX_TEXT_WIDTH_OFFSET,
-)
+from ..utils.constants import get_responsive_constants
 from ..utils.color_utils import parse_background_color
 from ..utils.font_utils import find_system_font
 from ..utils.image_utils import create_rounded_rectangle, create_text_image_with_pil
 from ..utils.time_utils import format_srt_time, format_vtt_time
+from ..utils.size_utils import calculate_font_size, calculate_border_width
 
 
 class SubtitleProcessor:
@@ -32,10 +26,13 @@ class SubtitleProcessor:
         Returns:
             位置のタプル
         """
+        # レスポンシブな定数を取得
+        constants = get_responsive_constants(video_size[1])
+
         if layer.position == "bottom":
-            return ("center", video_size[1] - clip_height - MARGIN_BOTTOM)
+            return ("center", video_size[1] - clip_height - constants["MARGIN_BOTTOM"])
         elif layer.position == "top":
-            return ("center", MARGIN_TOP)
+            return ("center", constants["MARGIN_TOP"])
         else:  # center
             return ("center", "center")
 
@@ -44,18 +41,25 @@ class SubtitleProcessor:
         item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int], font: str | None, duration: float
     ) -> VideoClip:
         """通常テキスト（背景なし）の字幕クリップを作成"""
-        max_width = video_size[0] - MAX_TEXT_WIDTH_OFFSET
+        # レスポンシブな定数を取得
+        constants = get_responsive_constants(video_size[1])
+        max_width = video_size[0] - constants["MAX_TEXT_WIDTH_OFFSET"]
+
+        # レスポンシブサイズを計算
+        font_size = calculate_font_size(layer.font_size, video_size[1])
+        border_width = calculate_border_width(layer.border_width, video_size[1])
 
         # PILを使ってテキスト画像を作成
         text_img, (text_width, text_height) = create_text_image_with_pil(
             text=item.text,
             font_path=font,
-            font_size=layer.font_size,
+            font_size=font_size,
             color=layer.font_color,
             max_width=max_width,
             font_weight=layer.font_weight,
-            border_width=layer.border_width,
-            border_color=layer.border_color
+            border_width=border_width,
+            border_color=layer.border_color,
+            video_height=video_size[1]
         )
 
         # テキスト画像をImageClipに変換
@@ -70,31 +74,38 @@ class SubtitleProcessor:
         item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int], font: str | None, duration: float
     ) -> VideoClip:
         """角丸背景付きテキストの字幕クリップを作成"""
-        max_width = video_size[0] - MAX_TEXT_WIDTH_OFFSET
+        # レスポンシブな定数を取得
+        constants = get_responsive_constants(video_size[1])
+        max_width = video_size[0] - constants["MAX_TEXT_WIDTH_OFFSET"]
+
+        # レスポンシブサイズを計算
+        font_size = calculate_font_size(layer.font_size, video_size[1])
+        border_width = calculate_border_width(layer.border_width, video_size[1])
 
         # PILを使ってテキスト画像を作成
         text_img, (text_width, text_height) = create_text_image_with_pil(
             text=item.text,
             font_path=font,
-            font_size=layer.font_size,
+            font_size=font_size,
             color=layer.font_color,
             max_width=max_width,
             font_weight=layer.font_weight,
-            border_width=layer.border_width,
-            border_color=layer.border_color
+            border_width=border_width,
+            border_color=layer.border_color,
+            video_height=video_size[1]
         )
 
         # 背景色と透明度を取得
         color_rgb, opacity = parse_background_color(layer.bg_color)
 
-        # パディングを追加した背景サイズ
-        bg_width = text_width + BG_PADDING_X * 2
-        bg_height = text_height + BG_PADDING_Y * 2
+        # パディングを追加した背景サイズ（レスポンシブ）
+        bg_width = text_width + constants["BG_PADDING_X"] * 2
+        bg_height = text_height + constants["BG_PADDING_Y"] * 2
 
-        # 角丸背景を作成
+        # 角丸背景を作成（レスポンシブ）
         bg_array = create_rounded_rectangle(
             size=(bg_width, bg_height),
-            radius=BG_RADIUS,
+            radius=constants["BG_RADIUS"],
             color=color_rgb,
             opacity=opacity
         )
@@ -103,8 +114,8 @@ class SubtitleProcessor:
         # テキスト画像をImageClipに変換
         txt_clip = ImageClip(text_img).with_duration(duration)
 
-        # テキストを背景内に配置（中央に配置）
-        txt_clip = txt_clip.with_position((BG_PADDING_X, BG_PADDING_Y))
+        # テキストを背景内に配置（中央に配置、レスポンシブ）
+        txt_clip = txt_clip.with_position((constants["BG_PADDING_X"], constants["BG_PADDING_Y"]))
 
         # 背景とテキストを合成
         composite = CompositeVideoClip([bg_clip, txt_clip], size=(bg_width, bg_height))

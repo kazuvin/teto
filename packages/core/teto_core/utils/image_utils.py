@@ -151,6 +151,7 @@ def create_text_image_with_pil(
     font_weight: str = "normal",
     border_width: int = 0,
     border_color: str = "black",
+    video_height: int = 1080,
     load_font_func=None,
 ) -> tuple[np.ndarray, tuple[int, int]]:
     """PILを使ってテキスト画像を作成し、正確なサイズを取得
@@ -158,17 +159,22 @@ def create_text_image_with_pil(
     Args:
         text: テキスト
         font_path: フォントファイルパス
-        font_size: フォントサイズ
+        font_size: フォントサイズ（ピクセル値）
         color: 色名
         max_width: 最大幅
         font_weight: フォントの太さ
-        border_width: ボーダーの幅
+        border_width: ボーダーの幅（ピクセル値）
         border_color: ボーダーの色
+        video_height: 動画の高さ（レスポンシブ定数計算用）
         load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
 
     Returns:
         (画像のnumpy配列, (幅, 高さ))のタプル
     """
+    # レスポンシブな定数を取得
+    from .constants import get_responsive_constants
+    constants = get_responsive_constants(video_height)
+
     # フォントを読み込み
     if load_font_func:
         font = load_font_func(font_path, font_size, font_weight)
@@ -188,26 +194,26 @@ def create_text_image_with_pil(
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
     bbox = dummy_draw.multiline_textbbox(
-        (0, 0), wrapped_text, font=font, spacing=LINE_SPACING, stroke_width=border_width
+        (0, 0), wrapped_text, font=font, spacing=constants["LINE_SPACING"], stroke_width=border_width
     )
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
 
-    # 実際の描画用の画像を作成（余白を含む）
-    img_width = text_width + TEXT_PADDING * 2
-    img_height = text_height + TEXT_PADDING * 2
+    # 実際の描画用の画像を作成（余白を含む、レスポンシブ）
+    img_width = text_width + constants["TEXT_PADDING"] * 2
+    img_height = text_height + constants["TEXT_PADDING"] * 2
     img = Image.new("RGBA", (img_width, img_height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
     # テキストを描画（bbox[0], bbox[1]のオフセットを考慮）
     # ボーダーとテキストを一度に描画
     draw.multiline_text(
-        (TEXT_PADDING - bbox[0], TEXT_PADDING - bbox[1]),
+        (constants["TEXT_PADDING"] - bbox[0], constants["TEXT_PADDING"] - bbox[1]),
         wrapped_text,
         font=font,
         fill=(*text_color, 255),
         align="center",
-        spacing=LINE_SPACING,
+        spacing=constants["LINE_SPACING"],
         stroke_width=border_width,
         stroke_fill=(*stroke_color, 255),
     )
