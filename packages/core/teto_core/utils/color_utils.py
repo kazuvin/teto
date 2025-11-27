@@ -42,7 +42,7 @@ def parse_background_color(bg_color: str | None) -> tuple[tuple[int, int, int], 
         ((0, 0, 0), 0.5)
     """
     if not bg_color:
-        bg_color = "black@0.5"
+        return (0, 0, 0), 0.5
 
     opacity = 0.5
     color_part = bg_color

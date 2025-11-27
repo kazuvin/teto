@@ -1,15 +1,58 @@
 """動画生成エンジン"""
 
 from pathlib import Path
+from typing import Callable, Any
 from .models import Project
 from .processors import VideoProcessor, AudioProcessor, SubtitleProcessor
 
 
 class VideoGenerator:
-    """動画生成のメインエンジン"""
+    """動画生成のメインエンジン
+
+    プラグインシステムにより、カスタム処理を追加可能
+    """
 
     def __init__(self, project: Project):
         self.project = project
+        self._pre_hooks: list[Callable[[Project], Any]] = []
+        self._post_hooks: list[Callable[[str, Project], Any]] = []
+        self._custom_processors: dict[str, Any] = {}
+
+    def register_pre_hook(self, hook: Callable[[Project], Any]) -> None:
+        """生成前に実行されるフックを登録
+
+        Args:
+            hook: プロジェクトを引数に取る関数
+        """
+        self._pre_hooks.append(hook)
+
+    def register_post_hook(self, hook: Callable[[str, Project], Any]) -> None:
+        """生成後に実行されるフックを登録
+
+        Args:
+            hook: 出力パスとプロジェクトを引数に取る関数
+        """
+        self._post_hooks.append(hook)
+
+    def register_processor(self, name: str, processor: Any) -> None:
+        """カスタムプロセッサーを登録
+
+        Args:
+            name: プロセッサー名
+            processor: プロセッサーインスタンス
+        """
+        self._custom_processors[name] = processor
+
+    def get_processor(self, name: str) -> Any:
+        """登録されたプロセッサーを取得
+
+        Args:
+            name: プロセッサー名
+
+        Returns:
+            プロセッサーインスタンス（存在しない場合はNone）
+        """
+        return self._custom_processors.get(name)
 
     def generate(self, progress_callback=None) -> str:
         """
@@ -21,6 +64,10 @@ class VideoGenerator:
         Returns:
             出力ファイルパス
         """
+        # 前処理フックを実行
+        for hook in self._pre_hooks:
+            hook(self.project)
+
         output_config = self.project.output
         timeline = self.project.timeline
 
@@ -96,6 +143,10 @@ class VideoGenerator:
 
         if progress_callback:
             progress_callback("完了！")
+
+        # 後処理フックを実行
+        for hook in self._post_hooks:
+            hook(output_path, self.project)
 
         return output_path
 
