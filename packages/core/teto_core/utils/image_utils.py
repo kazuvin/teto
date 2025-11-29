@@ -175,7 +175,7 @@ def create_text_image_with_pil(
         (画像のnumpy配列, (幅, 高さ))のタプル
     """
     # レスポンシブな定数を取得
-    from ..constants import get_responsive_constants
+    from .size_utils import get_responsive_constants
     constants = get_responsive_constants(video_height)
 
     # フォントを読み込み
