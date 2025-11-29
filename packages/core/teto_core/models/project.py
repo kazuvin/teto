@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Union
-from .layers import VideoLayer, ImageLayer, AudioLayer, SubtitleLayer
+from .layers import VideoLayer, ImageLayer, AudioLayer, SubtitleLayer, StampLayer
 from .output import OutputConfig
 
 
@@ -13,6 +13,9 @@ class Timeline(BaseModel):
     audio_layers: list[AudioLayer] = Field(default_factory=list, description="音声レイヤー")
     subtitle_layers: list[SubtitleLayer] = Field(
         default_factory=list, description="字幕レイヤー"
+    )
+    stamp_layers: list[StampLayer] = Field(
+        default_factory=list, description="スタンプレイヤー"
     )
 
 

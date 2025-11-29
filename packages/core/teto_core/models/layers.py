@@ -39,6 +39,18 @@ class AudioLayer(BaseLayer):
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
 
 
+class StampLayer(BaseLayer):
+    """スタンプレイヤー（装飾的な画像オーバーレイ）"""
+
+    type: Literal["stamp"] = "stamp"
+    path: str = Field(..., description="画像ファイルパス")
+    duration: float = Field(..., description="表示時間（秒）", gt=0)
+    position_x: Union[int, float] = Field(0, description="X座標（ピクセルまたは0-1の割合）")
+    position_y: Union[int, float] = Field(0, description="Y座標（ピクセルまたは0-1の割合）")
+    scale: float = Field(1.0, description="スケール", gt=0)
+    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
+
+
 class SubtitleItem(BaseModel):
     """字幕アイテム"""
 
@@ -68,3 +80,4 @@ class SubtitleLayer(BaseModel):
 from .effects import AnimationEffect
 VideoLayer.model_rebuild()
 ImageLayer.model_rebuild()
+StampLayer.model_rebuild()

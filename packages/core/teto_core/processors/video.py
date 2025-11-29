@@ -7,7 +7,7 @@ from moviepy import (
     concatenate_videoclips,
     CompositeVideoClip,
 )
-from ..models.layers import VideoLayer, ImageLayer
+from ..models.layers import VideoLayer, ImageLayer, StampLayer
 from .animation import AnimationProcessor
 from typing import Union
 
@@ -50,6 +50,29 @@ class VideoProcessor:
         # アニメーション効果を適用
         if layer.effects:
             clip = AnimationProcessor.apply_effects(clip, layer.effects, target_size)
+
+        # 開始時間の設定
+        clip = clip.with_start(layer.start_time)
+
+        return clip
+
+    @staticmethod
+    def load_stamp_layer(layer: StampLayer) -> ImageClip:
+        """スタンプレイヤーを読み込む"""
+        clip = ImageClip(layer.path, duration=layer.duration)
+
+        # スケールを適用
+        if layer.scale != 1.0:
+            clip = clip.resized(layer.scale)
+
+        # 位置を設定
+        clip = clip.with_position((layer.position_x, layer.position_y))
+
+        # アニメーション効果を適用
+        if layer.effects:
+            # スタンプのサイズを取得（スケール適用後）
+            stamp_size = (int(clip.w), int(clip.h))
+            clip = AnimationProcessor.apply_effects(clip, layer.effects, stamp_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)

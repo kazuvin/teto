@@ -101,6 +101,21 @@ class VideoGenerator:
                 video_clip = video_clip.with_audio(audio_clip)
 
         if progress_callback:
+            progress_callback("スタンプを処理中...")
+
+        # 3.5. スタンプレイヤーを処理
+        if timeline.stamp_layers:
+            from moviepy import CompositeVideoClip
+
+            stamp_clips = []
+            for stamp_layer in timeline.stamp_layers:
+                stamp_clip = VideoProcessor.load_stamp_layer(stamp_layer)
+                stamp_clips.append(stamp_clip)
+
+            # ベース動画とスタンプを合成
+            video_clip = CompositeVideoClip([video_clip] + stamp_clips, size=output_size)
+
+        if progress_callback:
             progress_callback("字幕を処理中...")
 
         # 4. 字幕処理

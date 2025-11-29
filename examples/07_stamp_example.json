@@ -1,0 +1,75 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/07_stamp_example.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 10.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "スタンプ機能のデモ",
+            "start_time": 0.5,
+            "end_time": 9.5
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "white",
+        "font_weight": "bold",
+        "stroke_width": 0,
+        "stroke_color": "black",
+        "position": "bottom"
+      }
+    ],
+    "stamp_layers": [
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_star.png",
+        "start_time": 1.0,
+        "duration": 2.5,
+        "position_x": 200,
+        "position_y": 150,
+        "scale": 1.0,
+        "effects": []
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_heart.png",
+        "start_time": 2.0,
+        "duration": 3.0,
+        "position_x": 1500,
+        "position_y": 200,
+        "scale": 1.2,
+        "effects": []
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_check.png",
+        "start_time": 4.0,
+        "duration": 4.0,
+        "position_x": 850,
+        "position_y": 400,
+        "scale": 1.5,
+        "effects": []
+      }
+    ]
+  }
+}

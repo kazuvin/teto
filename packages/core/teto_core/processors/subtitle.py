@@ -98,7 +98,7 @@ class SubtitleProcessor:
                     continue
 
         if subtitle_clips:
-            return CompositeVideoClip([video] + subtitle_clips)
+            return CompositeVideoClip([video] + subtitle_clips, size=(video.w, video.h))
         else:
             return video
 

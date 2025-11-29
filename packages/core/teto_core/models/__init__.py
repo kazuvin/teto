@@ -5,6 +5,7 @@ from .layers import (
     AudioLayer,
     SubtitleLayer,
     SubtitleItem,
+    StampLayer,
 )
 from .output import OutputConfig
 from .effects import AnimationEffect
@@ -17,6 +18,7 @@ __all__ = [
     "AudioLayer",
     "SubtitleLayer",
     "SubtitleItem",
+    "StampLayer",
     "OutputConfig",
     "AnimationEffect",
 ]
