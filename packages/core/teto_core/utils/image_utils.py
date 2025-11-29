@@ -186,9 +186,10 @@ def create_text_image_with_pil(
         font = load_font(font_path, font_size, font_weight)
 
     # 色をRGBに変換
-    text_color = COLOR_MAP.get(color.lower(), (255, 255, 255))
-    stroke_color_rgb = COLOR_MAP.get(stroke_color.lower(), (0, 0, 0))
-    outer_stroke_color_rgb = COLOR_MAP.get(outer_stroke_color.lower(), (255, 255, 255))
+    from .color_utils import parse_color
+    text_color = parse_color(color)
+    stroke_color_rgb = parse_color(stroke_color)
+    outer_stroke_color_rgb = parse_color(outer_stroke_color)
 
     # 日本語対応の折り返し処理
     wrapped_text = wrap_text_japanese_aware(text, font, max_width)
