@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "output": {
-    "path": "output/06_shadow_subtitle.mp4",
+    "path": "output/06_appearance_styles.mp4",
     "width": 1920,
     "height": 1080,
     "fps": 30,
@@ -16,17 +16,17 @@
         "type": "image",
         "path": "examples/assets/images/intro.png",
         "start_time": 0.0,
-        "duration": 12.0
+        "duration": 16.0
       }
     ],
     "audio_layers": [],
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "appearance": "shadow",
+        "appearance": "plain",
         "items": [
           {
-            "text": "シャドウ付き字幕の例",
+            "text": "Plain: 通常テキスト（背景なし）",
             "start_time": 1.0,
             "end_time": 4.0
           }
@@ -41,39 +41,58 @@
       },
       {
         "type": "subtitle",
-        "appearance": "shadow",
+        "appearance": "background",
         "items": [
           {
-            "text": "影が付くことで立体感が出ます",
+            "text": "Background: 角丸半透明背景付き",
             "start_time": 4.5,
             "end_time": 7.5
           }
         ],
-        "font_size": "lg",
-        "font_color": "yellow",
+        "font_size": "xl",
+        "font_color": "white",
         "font_family": null,
         "font_weight": "bold",
-        "stroke_width": "sm",
+        "stroke_width": 0,
         "stroke_color": "black",
-        "position": "center"
+        "bg_color": "black@0.7",
+        "position": "bottom"
       },
       {
         "type": "subtitle",
         "appearance": "shadow",
         "items": [
           {
-            "text": "背景が明るい場合でも見やすい！",
+            "text": "Shadow: ハードシャドウ付き",
             "start_time": 8.0,
             "end_time": 11.0
           }
         ],
-        "font_size": "lg",
+        "font_size": "xl",
+        "font_color": "yellow",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "position": "bottom"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "drop-shadow",
+        "items": [
+          {
+            "text": "Drop-Shadow: ぼかしシャドウ付き",
+            "start_time": 11.5,
+            "end_time": 14.5
+          }
+        ],
+        "font_size": "xl",
         "font_color": "cyan",
         "font_family": null,
         "font_weight": "bold",
-        "stroke_width": "base",
+        "stroke_width": "sm",
         "stroke_color": "navy",
-        "position": "top"
+        "position": "bottom"
       }
     ]
   }

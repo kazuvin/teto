@@ -62,7 +62,7 @@ class SubtitleLayer(BaseModel):
     outer_stroke_color: str = Field("white", description="外側縁取りの色")
     bg_color: str | None = Field("black@0.5", description="背景色（透明度付き）")
     position: Literal["bottom", "top", "center"] = Field("bottom", description="字幕位置")
-    appearance: Literal["plain", "background", "shadow"] = Field("background", description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き）")
+    appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field("background", description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き、drop-shadow: ぼかしシャドウ付き）")
 
 # Forward reference の解決
 from .effects import AnimationEffect

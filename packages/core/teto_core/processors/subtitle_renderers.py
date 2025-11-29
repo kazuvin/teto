@@ -232,6 +232,81 @@ class ShadowStyleRenderer(SubtitleStyleRenderer):
         return composite, composite_height
 
 
+class DropShadowStyleRenderer(SubtitleStyleRenderer):
+    """ドロップシャドウ付きテキストのレンダラー（filter: drop-shadow風のぼかし効果）"""
+
+    def render(
+        self,
+        item: SubtitleItem,
+        layer: SubtitleLayer,
+        video_size: tuple[int, int],
+        font_path: str | None,
+        duration: float,
+    ) -> tuple[VideoClip, int]:
+        """ドロップシャドウ付きテキストの字幕クリップを作成"""
+        # レンダリングパラメータを準備
+        params = self._prepare_rendering_params(layer, video_size)
+        constants = params["constants"]
+
+        # PILを使ってテキスト画像を作成
+        text_img, (text_width, text_height) = self._create_text_image(
+            item, layer, font_path, params, video_size
+        )
+
+        # シャドウのオフセット（デフォルトは0、0でぼかしのみ）
+        shadow_offset_x = constants.get("SHADOW_OFFSET_X", 0)
+        shadow_offset_y = constants.get("SHADOW_OFFSET_Y", 0)
+
+        # ぼかし半径（0.75remに相当する値を計算、1rem ≈ 16pxとして）
+        blur_radius = int(video_size[1] * 0.75 / 100)  # 動画高さの0.75%程度
+        blur_radius = max(blur_radius, 3)  # 最小値を3pxに設定
+
+        # シャドウ用のテキスト画像を作成（黒で半透明）
+        shadow_img, _ = self._create_text_image(
+            item, layer, font_path, params, video_size
+        )
+
+        # ぼかしを適用するためのパディング
+        blur_padding = blur_radius * 2
+
+        # 合成サイズを計算（テキスト + シャドウのオフセット + ぼかし分）
+        composite_width = text_width + abs(shadow_offset_x) + blur_padding * 2
+        composite_height = text_height + abs(shadow_offset_y) + blur_padding * 2
+
+        # シャドウクリップを作成（黒で半透明に）
+        import numpy as np
+        from PIL import Image, ImageFilter
+
+        shadow_array = np.array(shadow_img)
+        # 透明度を調整（アルファチャンネルを50%に）
+        if shadow_array.shape[2] == 4:  # RGBA
+            shadow_array[:, :, 3] = (shadow_array[:, :, 3] * 0.5).astype(np.uint8)
+            # RGBを黒に変更（アルファ値が0でない部分のみ）
+            mask = shadow_array[:, :, 3] > 0
+            shadow_array[mask, 0:3] = [0, 0, 0]
+
+        # PIL Imageに変換してGaussianブラーを適用
+        shadow_pil = Image.fromarray(shadow_array, 'RGBA')
+        shadow_pil = shadow_pil.filter(ImageFilter.GaussianBlur(radius=blur_radius))
+
+        # NumPy配列に戻す
+        shadow_blurred = np.array(shadow_pil)
+
+        shadow_clip = ImageClip(shadow_blurred).with_duration(duration)
+        shadow_clip = shadow_clip.with_position((shadow_offset_x + blur_padding, shadow_offset_y + blur_padding))
+
+        # テキスト画像をImageClipに変換
+        txt_clip = ImageClip(text_img).with_duration(duration)
+        txt_clip = txt_clip.with_position((blur_padding, blur_padding))
+
+        # シャドウとテキストを合成
+        composite = CompositeVideoClip(
+            [shadow_clip, txt_clip], size=(composite_width, composite_height)
+        )
+
+        return composite, composite_height
+
+
 # 将来の拡張用のサンプル
 # class ThreeDStyleRenderer(SubtitleStyleRenderer):
 #     """3Dエフェクト付きテキストのレンダラー"""

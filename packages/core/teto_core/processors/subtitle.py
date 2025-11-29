@@ -11,6 +11,7 @@ from .subtitle_renderers import (
     PlainStyleRenderer,
     BackgroundStyleRenderer,
     ShadowStyleRenderer,
+    DropShadowStyleRenderer,
 )
 
 
@@ -22,6 +23,7 @@ class SubtitleProcessor:
         "plain": PlainStyleRenderer(),
         "background": BackgroundStyleRenderer(),
         "shadow": ShadowStyleRenderer(),
+        "drop-shadow": DropShadowStyleRenderer(),
         # 将来の拡張用:
         # "3d": ThreeDStyleRenderer(),
     }
