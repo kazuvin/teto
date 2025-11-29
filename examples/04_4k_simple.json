@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/04_4k_simple.mp4",
+    "width": 3840,
+    "height": 2160,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "20000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 5.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "plain",
+        "items": [
+          {
+            "text": "4K解像度のテスト",
+            "start_time": 1.0,
+            "end_time": 4.0
+          }
+        ],
+        "font_size": "base",
+        "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "position": "bottom"
+      }
+    ]
+  }
+}
