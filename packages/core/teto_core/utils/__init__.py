@@ -1,6 +1,6 @@
 """Utility functions for teto_core"""
 
-from .color_utils import COLOR_MAP, parse_color, parse_background_color
+from .color_utils import parse_color, parse_background_color
 from .font_utils import load_font, find_system_font
 from .image_utils import (
     create_rounded_rectangle,
@@ -8,7 +8,8 @@ from .image_utils import (
     wrap_text_japanese_aware,
 )
 from .time_utils import format_srt_time, format_vtt_time
-from .constants import (
+from ..constants import (
+    COLOR_MAP,
     LINE_SPACING,
     TEXT_PADDING,
     BG_PADDING_X,

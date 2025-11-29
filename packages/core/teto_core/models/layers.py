@@ -1,11 +1,9 @@
 from pydantic import BaseModel, Field
-from typing import Literal, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, Literal
+from ..constants import ResponsiveSize
 
 if TYPE_CHECKING:
     from .effects import AnimationEffect
-
-# レスポンシブサイズ型
-ResponsiveSize = Literal["xs", "sm", "base", "lg", "xl", "2xl"]
 
 
 class BaseLayer(BaseModel):

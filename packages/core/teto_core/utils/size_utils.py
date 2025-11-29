@@ -1,51 +1,16 @@
 """レスポンシブサイズ計算ユーティリティ"""
 
-from typing import Literal, Union
-
-# サイズのEnum型定義
-ResponsiveSize = Literal["xs", "sm", "base", "lg", "xl", "2xl"]
-
-# 基準解像度（1080p）
-BASE_HEIGHT = 1080
-
-# 各サイズのスケール係数
-SIZE_SCALE_MAP = {
-    "xs": 0.5,
-    "sm": 0.75,
-    "base": 1.0,
-    "lg": 1.5,
-    "xl": 2.0,
-    "2xl": 3.0,
-}
-
-# 基準値（1080pでの値）
-BASE_FONT_SIZE = 48
-BASE_BORDER_WIDTH = 3
-BASE_PADDING = 20
-BASE_RADIUS = 15
-BASE_MARGIN = 60
-BASE_LINE_SPACING = 28
-BASE_TEXT_PADDING = 10
-
-
-def get_scale_factor(video_height: int) -> float:
-    """解像度に基づくスケール係数を計算
-
-    Args:
-        video_height: 動画の高さ（ピクセル）
-
-    Returns:
-        スケール係数
-
-    Examples:
-        >>> get_scale_factor(1080)
-        1.0
-        >>> get_scale_factor(2160)  # 4K
-        2.0
-        >>> get_scale_factor(720)
-        0.6666666666666666
-    """
-    return video_height / BASE_HEIGHT
+from typing import Union
+from ..constants import (
+    ResponsiveSize,
+    BASE_HEIGHT,
+    SIZE_SCALE_MAP,
+    BASE_FONT_SIZE,
+    BASE_BORDER_WIDTH,
+    BASE_PADDING,
+    BASE_MARGIN,
+    get_scale_factor,
+)
 
 
 def calculate_size(

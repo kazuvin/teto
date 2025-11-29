@@ -1,15 +1,6 @@
 """カラー関連のユーティリティ関数"""
 
-# カラーマッピングの定数
-COLOR_MAP = {
-    "white": (255, 255, 255),
-    "black": (0, 0, 0),
-    "red": (255, 0, 0),
-    "green": (0, 255, 0),
-    "blue": (0, 0, 255),
-    "yellow": (255, 255, 0),
-    "gray": (128, 128, 128),
-}
+from ..constants import COLOR_MAP
 
 
 def parse_color(color: str) -> tuple[int, int, int]:

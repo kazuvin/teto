@@ -3,7 +3,7 @@
 from pathlib import Path
 from moviepy import VideoClip, CompositeVideoClip, ImageClip
 from ..models.layers import SubtitleLayer, SubtitleItem
-from ..utils.constants import get_responsive_constants
+from ..constants import get_responsive_constants
 from ..utils.color_utils import parse_background_color
 from ..utils.font_utils import find_system_font
 from ..utils.image_utils import create_rounded_rectangle, create_text_image_with_pil

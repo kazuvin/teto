@@ -2,8 +2,7 @@
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from .constants import LINE_SPACING, TEXT_PADDING, PUNCTUATION_CHARS
-from .color_utils import COLOR_MAP
+from ..constants import LINE_SPACING, TEXT_PADDING, PUNCTUATION_CHARS, COLOR_MAP
 
 
 def create_rounded_rectangle(
@@ -176,7 +175,7 @@ def create_text_image_with_pil(
         (画像のnumpy配列, (幅, 高さ))のタプル
     """
     # レスポンシブな定数を取得
-    from .constants import get_responsive_constants
+    from ..constants import get_responsive_constants
     constants = get_responsive_constants(video_height)
 
     # フォントを読み込み
