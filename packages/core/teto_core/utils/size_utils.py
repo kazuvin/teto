@@ -100,18 +100,18 @@ def calculate_font_size(
     return calculate_size(size, video_height, BASE_FONT_SIZE)
 
 
-def calculate_border_width(
+def calculate_stroke_width(
     size: Union[int, ResponsiveSize],
     video_height: int
 ) -> int:
-    """ボーダー幅を計算
+    """縁取り幅を計算
 
     Args:
-        size: ボーダー幅（数値またはEnum）
+        size: 縁取り幅（数値またはEnum）
         video_height: 動画の高さ
 
     Returns:
-        計算されたボーダー幅（ピクセル）
+        計算された縁取り幅（ピクセル）
     """
     return calculate_size(size, video_height, BASE_BORDER_WIDTH)
 

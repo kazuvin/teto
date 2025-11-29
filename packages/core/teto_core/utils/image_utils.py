@@ -149,8 +149,10 @@ def create_text_image_with_pil(
     color: str,
     max_width: int,
     font_weight: str = "normal",
-    border_width: int = 0,
-    border_color: str = "black",
+    stroke_width: int = 0,
+    stroke_color: str = "black",
+    outer_stroke_width: int = 0,
+    outer_stroke_color: str = "white",
     video_height: int = 1080,
     load_font_func=None,
 ) -> tuple[np.ndarray, tuple[int, int]]:
@@ -163,8 +165,10 @@ def create_text_image_with_pil(
         color: 色名
         max_width: 最大幅
         font_weight: フォントの太さ
-        border_width: ボーダーの幅（ピクセル値）
-        border_color: ボーダーの色
+        stroke_width: 縁取りの幅（ピクセル値）
+        stroke_color: 縁取りの色
+        outer_stroke_width: 外側縁取りの幅（ピクセル値）
+        outer_stroke_color: 外側縁取りの色
         video_height: 動画の高さ（レスポンシブ定数計算用）
         load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
 
@@ -184,17 +188,19 @@ def create_text_image_with_pil(
 
     # 色をRGBに変換
     text_color = COLOR_MAP.get(color.lower(), (255, 255, 255))
-    stroke_color = COLOR_MAP.get(border_color.lower(), (0, 0, 0))
+    stroke_color_rgb = COLOR_MAP.get(stroke_color.lower(), (0, 0, 0))
+    outer_stroke_color_rgb = COLOR_MAP.get(outer_stroke_color.lower(), (255, 255, 255))
 
     # 日本語対応の折り返し処理
     wrapped_text = wrap_text_japanese_aware(text, font, max_width)
 
     # テキストのbounding boxを取得（正確なサイズ計算）
-    # ボーダーがある場合は追加のスペースを確保
+    # 縁取りがある場合は追加のスペースを確保（最大の縁取り幅を使用）
+    max_stroke = max(stroke_width, outer_stroke_width)
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
     bbox = dummy_draw.multiline_textbbox(
-        (0, 0), wrapped_text, font=font, spacing=constants["LINE_SPACING"], stroke_width=border_width
+        (0, 0), wrapped_text, font=font, spacing=constants["LINE_SPACING"], stroke_width=max_stroke
     )
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
@@ -205,17 +211,56 @@ def create_text_image_with_pil(
     img = Image.new("RGBA", (img_width, img_height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # テキストを描画（bbox[0], bbox[1]のオフセットを考慮）
-    # ボーダーとテキストを一度に描画
-    draw.multiline_text(
-        (constants["TEXT_PADDING"] - bbox[0], constants["TEXT_PADDING"] - bbox[1]),
-        wrapped_text,
-        font=font,
-        fill=(*text_color, 255),
-        align="center",
-        spacing=constants["LINE_SPACING"],
-        stroke_width=border_width,
-        stroke_fill=(*stroke_color, 255),
-    )
+    # テキスト描画位置
+    text_position = (constants["TEXT_PADDING"] - bbox[0], constants["TEXT_PADDING"] - bbox[1])
+
+    # 二重縁取りの場合は3層で描画
+    if outer_stroke_width > 0:
+        # 第1層: 外側縁取り（最も太い）
+        draw.multiline_text(
+            text_position,
+            wrapped_text,
+            font=font,
+            fill=(*outer_stroke_color_rgb, 255),
+            align="center",
+            spacing=constants["LINE_SPACING"],
+            stroke_width=outer_stroke_width,
+            stroke_fill=(*outer_stroke_color_rgb, 255),
+        )
+        # 第2層: 内側縁取り
+        if stroke_width > 0:
+            draw.multiline_text(
+                text_position,
+                wrapped_text,
+                font=font,
+                fill=(*stroke_color_rgb, 255),
+                align="center",
+                spacing=constants["LINE_SPACING"],
+                stroke_width=stroke_width,
+                stroke_fill=(*stroke_color_rgb, 255),
+            )
+        # 第3層: テキスト本体
+        draw.multiline_text(
+            text_position,
+            wrapped_text,
+            font=font,
+            fill=(*text_color, 255),
+            align="center",
+            spacing=constants["LINE_SPACING"],
+            stroke_width=0,
+            stroke_fill=None,
+        )
+    else:
+        # 従来の単一縁取りまたは縁取りなし
+        draw.multiline_text(
+            text_position,
+            wrapped_text,
+            font=font,
+            fill=(*text_color, 255),
+            align="center",
+            spacing=constants["LINE_SPACING"],
+            stroke_width=stroke_width,
+            stroke_fill=(*stroke_color_rgb, 255),
+        )
 
     return np.array(img), (img_width, img_height)

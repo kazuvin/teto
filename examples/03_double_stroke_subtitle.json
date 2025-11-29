@@ -1,0 +1,77 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/03_double_stroke_subtitle.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 10.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "plain",
+        "items": [
+          {
+            "text": "二重縁取りの例",
+            "start_time": 1.0,
+            "end_time": 3.0
+          },
+          {
+            "text": "白い外側縁取り + 黒い内側縁取り",
+            "start_time": 3.5,
+            "end_time": 6.0
+          },
+          {
+            "text": "視認性が大幅に向上します！",
+            "start_time": 6.5,
+            "end_time": 9.0
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "red",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "outer_stroke_width": "lg",
+        "outer_stroke_color": "white",
+        "position": "bottom"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "背景付き + 二重縁取り",
+            "start_time": 1.5,
+            "end_time": 4.0
+          }
+        ],
+        "font_size": "base",
+        "font_color": "yellow",
+        "font_family": null,
+        "font_weight": "normal",
+        "stroke_width": 2,
+        "stroke_color": "black",
+        "outer_stroke_width": 5,
+        "outer_stroke_color": "white",
+        "bg_color": "black@0.7",
+        "position": "top"
+      }
+    ]
+  }
+}

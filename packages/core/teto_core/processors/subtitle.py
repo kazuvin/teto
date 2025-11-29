@@ -8,7 +8,7 @@ from ..utils.color_utils import parse_background_color
 from ..utils.font_utils import find_system_font
 from ..utils.image_utils import create_rounded_rectangle, create_text_image_with_pil
 from ..utils.time_utils import format_srt_time, format_vtt_time
-from ..utils.size_utils import calculate_font_size, calculate_border_width
+from ..utils.size_utils import calculate_font_size, calculate_stroke_width
 
 
 class SubtitleProcessor:
@@ -47,7 +47,8 @@ class SubtitleProcessor:
 
         # レスポンシブサイズを計算
         font_size = calculate_font_size(layer.font_size, video_size[1])
-        border_width = calculate_border_width(layer.border_width, video_size[1])
+        stroke_width = calculate_stroke_width(layer.stroke_width, video_size[1])
+        outer_stroke_width = calculate_stroke_width(layer.outer_stroke_width, video_size[1])
 
         # PILを使ってテキスト画像を作成
         text_img, (text_width, text_height) = create_text_image_with_pil(
@@ -57,8 +58,10 @@ class SubtitleProcessor:
             color=layer.font_color,
             max_width=max_width,
             font_weight=layer.font_weight,
-            border_width=border_width,
-            border_color=layer.border_color,
+            stroke_width=stroke_width,
+            stroke_color=layer.stroke_color,
+            outer_stroke_width=outer_stroke_width,
+            outer_stroke_color=layer.outer_stroke_color,
             video_height=video_size[1]
         )
 
@@ -80,7 +83,8 @@ class SubtitleProcessor:
 
         # レスポンシブサイズを計算
         font_size = calculate_font_size(layer.font_size, video_size[1])
-        border_width = calculate_border_width(layer.border_width, video_size[1])
+        stroke_width = calculate_stroke_width(layer.stroke_width, video_size[1])
+        outer_stroke_width = calculate_stroke_width(layer.outer_stroke_width, video_size[1])
 
         # PILを使ってテキスト画像を作成
         text_img, (text_width, text_height) = create_text_image_with_pil(
@@ -90,8 +94,10 @@ class SubtitleProcessor:
             color=layer.font_color,
             max_width=max_width,
             font_weight=layer.font_weight,
-            border_width=border_width,
-            border_color=layer.border_color,
+            stroke_width=stroke_width,
+            stroke_color=layer.stroke_color,
+            outer_stroke_width=outer_stroke_width,
+            outer_stroke_color=layer.outer_stroke_color,
             video_height=video_size[1]
         )
 

@@ -35,8 +35,8 @@
         "font_color": "white",
         "font_family": null,
         "font_weight": "bold",
-        "border_width": "sm",
-        "border_color": "black",
+        "stroke_width": "sm",
+        "stroke_color": "black",
         "position": "bottom"
       }
     ]

@@ -28,8 +28,8 @@
         "font_color": "white",
         "font_family": null,
         "font_weight": "normal",
-        "border_width": 0,
-        "border_color": "black",
+        "stroke_width": 0,
+        "stroke_color": "black",
         "bg_color": "black@0.5",
         "position": "bottom"
       }
