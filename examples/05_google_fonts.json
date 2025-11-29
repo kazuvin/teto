@@ -44,7 +44,7 @@
         "appearance": "background",
         "items": [
           {
-            "text": "Roboto (Bold)",
+            "text": "This is Roboto font example",
             "start_time": 5.0,
             "end_time": 8.0
           }
@@ -67,13 +67,13 @@
             "end_time": 13.0
           }
         ],
-        "google_font": "Noto Sans JP",
+        "google_font": "Mochiy Pop One",
         "font_size": "xl",
         "font_color": "white",
-        "font_weight": "bold",
+        "font_weight": "normal",
         "stroke_width": "sm",
         "stroke_color": "black",
-        "outer_stroke_width": "xs",
+        "outer_stroke_width": "lg",
         "outer_stroke_color": "#FFD700",
         "position": "bottom"
       }

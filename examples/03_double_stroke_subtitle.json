@@ -65,9 +65,9 @@
         "font_color": "yellow",
         "font_family": null,
         "font_weight": "normal",
-        "stroke_width": 2,
+        "stroke_width": "sm",
         "stroke_color": "black",
-        "outer_stroke_width": 5,
+        "outer_stroke_width": "lg",
         "outer_stroke_color": "white",
         "bg_color": "black@0.7",
         "position": "top"
