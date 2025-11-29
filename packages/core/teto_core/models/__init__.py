@@ -1,4 +1,4 @@
-from .project import Project
+from .project import Project, Timeline
 from .layers import (
     VideoLayer,
     ImageLayer,
@@ -11,6 +11,7 @@ from .effects import AnimationEffect
 
 __all__ = [
     "Project",
+    "Timeline",
     "VideoLayer",
     "ImageLayer",
     "AudioLayer",
