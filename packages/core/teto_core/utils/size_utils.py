@@ -2,7 +2,6 @@
 
 from typing import Union
 from ..constants import (
-    ResponsiveSize,
     BASE_HEIGHT,
     SIZE_SCALE_MAP,
     BASE_FONT_SIZE,
@@ -11,6 +10,7 @@ from ..constants import (
     BASE_MARGIN,
     get_scale_factor,
 )
+from ..types import ResponsiveSize
 
 
 def calculate_size(

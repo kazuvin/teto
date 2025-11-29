@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import TYPE_CHECKING, Union, Literal
-from ..constants import ResponsiveSize
+from ..types import ResponsiveSize
 
 if TYPE_CHECKING:
     from .effects import AnimationEffect
