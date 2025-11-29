@@ -10,14 +10,6 @@ from .image_utils import (
 from .time_utils import format_srt_time, format_vtt_time
 from ..constants import (
     COLOR_MAP,
-    LINE_SPACING,
-    TEXT_PADDING,
-    BG_PADDING_X,
-    BG_PADDING_Y,
-    BG_RADIUS,
-    MARGIN_BOTTOM,
-    MARGIN_TOP,
-    MAX_TEXT_WIDTH_OFFSET,
     PUNCTUATION_CHARS,
 )
 
@@ -37,13 +29,5 @@ __all__ = [
     "format_srt_time",
     "format_vtt_time",
     # Constants
-    "LINE_SPACING",
-    "TEXT_PADDING",
-    "BG_PADDING_X",
-    "BG_PADDING_Y",
-    "BG_RADIUS",
-    "MARGIN_BOTTOM",
-    "MARGIN_TOP",
-    "MAX_TEXT_WIDTH_OFFSET",
     "PUNCTUATION_CHARS",
 ]

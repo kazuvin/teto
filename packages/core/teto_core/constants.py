@@ -79,17 +79,3 @@ COLOR_MAP = {
 
 # 句読点文字（スケールしない）
 PUNCTUATION_CHARS = "。！？、，"
-
-
-# ============================================================================
-# 下位互換性のための定数エクスポート（1080pの値をデフォルトとして公開）
-# ============================================================================
-
-LINE_SPACING = BASE_LINE_SPACING
-TEXT_PADDING = BASE_TEXT_PADDING
-BG_PADDING_X = BASE_BG_PADDING_X
-BG_PADDING_Y = BASE_BG_PADDING_Y
-BG_RADIUS = BASE_BG_RADIUS
-MARGIN_BOTTOM = BASE_MARGIN_BOTTOM
-MARGIN_TOP = BASE_MARGIN_TOP
-MAX_TEXT_WIDTH_OFFSET = BASE_MAX_TEXT_WIDTH_OFFSET
