@@ -4,7 +4,7 @@ from pathlib import Path
 from moviepy import VideoClip, CompositeVideoClip, ImageClip
 from ..models.layers import SubtitleLayer, SubtitleItem
 from ..utils.color_utils import parse_background_color
-from ..utils.font_utils import find_system_font
+from ..utils.font_utils import find_system_font, download_google_font
 from ..utils.image_utils import create_rounded_rectangle, create_text_image_with_pil
 from ..utils.time_utils import format_srt_time, format_vtt_time
 from ..utils.size_utils import get_responsive_constants, calculate_font_size, calculate_stroke_width
@@ -136,17 +136,21 @@ class SubtitleProcessor:
         """字幕アイテムからテキストクリップを作成"""
         duration = item.end_time - item.start_time
 
-        # フォントを決定（font_familyが指定されていればそれを使用、なければシステムフォント）
-        font = layer.font_family if layer.font_family else find_system_font(layer.font_weight)
+        # フォントを決定（優先順位: google_font > システムフォント）
+        font_path = None
+        if layer.google_font:
+            font_path = download_google_font(layer.google_font, layer.font_weight)
+        if not font_path:
+            font_path = find_system_font(layer.font_weight)
 
         # appearanceに基づいて処理を分岐
         if layer.appearance == "plain":
-            return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font, duration)
+            return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font_path, duration)
         elif layer.appearance == "background":
-            return SubtitleProcessor._create_background_subtitle_clip(item, layer, video_size, font, duration)
+            return SubtitleProcessor._create_background_subtitle_clip(item, layer, video_size, font_path, duration)
         else:
             # デフォルトはplainとして扱う
-            return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font, duration)
+            return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font_path, duration)
 
     @staticmethod
     def burn_subtitles(

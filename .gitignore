@@ -96,3 +96,6 @@ temp/
 
 # Output files
 output/
+
+# Font cache
+.teto/

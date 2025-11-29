@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/05_google_fonts.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 15.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "Noto Sans JP を使用した例です",
+            "start_time": 1.0,
+            "end_time": 4.0
+          }
+        ],
+        "google_font": "Noto Sans JP",
+        "font_size": "lg",
+        "font_color": "white",
+        "font_weight": "normal",
+        "stroke_width": 0,
+        "bg_color": "black@0.7",
+        "position": "top"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "Roboto (Bold)",
+            "start_time": 5.0,
+            "end_time": 8.0
+          }
+        ],
+        "google_font": "Roboto",
+        "font_size": "lg",
+        "font_color": "#00FF00",
+        "font_weight": "bold",
+        "stroke_width": 0,
+        "bg_color": "#000000@0.8",
+        "position": "center"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "plain",
+        "items": [
+          {
+            "text": "日本語フォント with縁取り",
+            "start_time": 9.0,
+            "end_time": 13.0
+          }
+        ],
+        "google_font": "Noto Sans JP",
+        "font_size": "xl",
+        "font_color": "white",
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "outer_stroke_width": "xs",
+        "outer_stroke_color": "#FFD700",
+        "position": "bottom"
+      }
+    ]
+  }
+}

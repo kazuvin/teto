@@ -54,7 +54,7 @@ class SubtitleLayer(BaseModel):
     items: list[SubtitleItem] = Field(default_factory=list, description="字幕アイテムのリスト")
     font_size: Union[int, ResponsiveSize] = Field("base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）")
     font_color: str = Field("white", description="フォントカラー")
-    font_family: str | None = Field(None, description="フォントファミリー（フォントファイルパス）")
+    google_font: str | None = Field(None, description="Google Fontsのフォント名（例: 'Noto Sans JP', 'Roboto'）")
     font_weight: Literal["normal", "bold"] = Field("normal", description="フォントの太さ")
     stroke_width: Union[int, ResponsiveSize] = Field(0, description="縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）")
     stroke_color: str = Field("black", description="縁取りの色")
