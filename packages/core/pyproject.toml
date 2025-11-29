@@ -12,6 +12,7 @@ dependencies = [
     "requests>=2.31.0",
     "fonttools>=4.0.0",
     "brotli>=1.0.0",
+    "scipy>=1.11.0",
 ]
 
 [build-system]

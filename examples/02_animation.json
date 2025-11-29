@@ -1,0 +1,281 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/02_animation.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 1.0,
+            "easing": "easeInOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/main.png",
+        "start_time": 3.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "fadeout",
+            "duration": 1.0,
+            "easing": "easeInOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/outro.png",
+        "start_time": 6.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "slideIn",
+            "duration": 1.0,
+            "direction": "left",
+            "easing": "easeOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 9.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "slideOut",
+            "duration": 1.0,
+            "direction": "right",
+            "easing": "easeIn"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/main.png",
+        "start_time": 12.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "zoom",
+            "duration": 3.0,
+            "start_scale": 1.0,
+            "end_scale": 1.3,
+            "easing": "easeInOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/outro.png",
+        "start_time": 15.0,
+        "duration": 4.0,
+        "effects": [
+          {
+            "type": "kenBurns",
+            "duration": 4.0,
+            "start_scale": 1.0,
+            "end_scale": 1.4,
+            "pan_start": [0.0, 0.0],
+            "pan_end": [0.2, 0.1],
+            "easing": "easeInOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 19.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "blur",
+            "duration": 3.0,
+            "blur_amount": 5.0
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/main.png",
+        "start_time": 22.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "colorGrade",
+            "duration": 3.0,
+            "color_temp": 0.3,
+            "saturation": 1.2,
+            "contrast": 1.1,
+            "brightness": 1.0
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/outro.png",
+        "start_time": 25.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "vignette",
+            "duration": 3.0,
+            "vignette_amount": 0.7
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 28.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "glitch",
+            "duration": 3.0,
+            "glitch_intensity": 0.4
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/main.png",
+        "start_time": 31.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "parallax",
+            "duration": 3.0,
+            "direction": "right",
+            "easing": "easeOut"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/outro.png",
+        "start_time": 34.0,
+        "duration": 2.0,
+        "effects": [
+          {
+            "type": "bounce",
+            "duration": 2.0,
+            "direction": "bottom"
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 36.0,
+        "duration": 3.0,
+        "effects": [
+          {
+            "type": "rotate",
+            "duration": 3.0,
+            "rotation_angle": 360,
+            "easing": "easeInOut"
+          }
+        ]
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "1. フェードイン (fadein)",
+            "start_time": 0.5,
+            "end_time": 2.5
+          },
+          {
+            "text": "2. フェードアウト (fadeout)",
+            "start_time": 3.5,
+            "end_time": 5.5
+          },
+          {
+            "text": "3. スライドイン (slideIn - left)",
+            "start_time": 6.5,
+            "end_time": 8.5
+          },
+          {
+            "text": "4. スライドアウト (slideOut - right)",
+            "start_time": 9.5,
+            "end_time": 11.5
+          },
+          {
+            "text": "5. ズーム (zoom)",
+            "start_time": 12.5,
+            "end_time": 14.5
+          },
+          {
+            "text": "6. ケンバーンズ効果 (kenBurns)",
+            "start_time": 15.5,
+            "end_time": 18.5
+          },
+          {
+            "text": "7. ブラー (blur)",
+            "start_time": 19.5,
+            "end_time": 21.5
+          },
+          {
+            "text": "8. カラーグレーディング (colorGrade)",
+            "start_time": 22.5,
+            "end_time": 24.5
+          },
+          {
+            "text": "9. ビネット (vignette)",
+            "start_time": 25.5,
+            "end_time": 27.5
+          },
+          {
+            "text": "10. グリッチ (glitch)",
+            "start_time": 28.5,
+            "end_time": 30.5
+          },
+          {
+            "text": "11. パララックス (parallax)",
+            "start_time": 31.5,
+            "end_time": 33.5
+          },
+          {
+            "text": "12. バウンス (bounce)",
+            "start_time": 34.5,
+            "end_time": 35.5
+          },
+          {
+            "text": "13. 回転 (rotate)",
+            "start_time": 36.5,
+            "end_time": 38.5
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": 2,
+        "stroke_color": "black",
+        "bg_color": "black@0.7",
+        "position": "bottom"
+      }
+    ]
+  }
+}

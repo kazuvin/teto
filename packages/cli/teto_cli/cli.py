@@ -86,8 +86,8 @@ def generate(project_file, validate_only):
 
     except ImportError:
         console.print("[red]エラー: teto-core がインストールされていません[/red]")
-        console.print("以下のコマンドでインストールしてください:")
-        console.print("  uv pip install -e packages/core")
+        console.print("以下のコマンドで teto CLI を再インストールしてください:")
+        console.print("  uv tool install --editable packages/cli --force")
         sys.exit(1)
 
 
