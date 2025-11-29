@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/06_shadow_subtitle.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "start_time": 0.0,
+        "duration": 12.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "shadow",
+        "items": [
+          {
+            "text": "シャドウ付き字幕の例",
+            "start_time": 1.0,
+            "end_time": 4.0
+          }
+        ],
+        "font_size": "xl",
+        "font_color": "white",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "position": "bottom"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "shadow",
+        "items": [
+          {
+            "text": "影が付くことで立体感が出ます",
+            "start_time": 4.5,
+            "end_time": 7.5
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "yellow",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "position": "center"
+      },
+      {
+        "type": "subtitle",
+        "appearance": "shadow",
+        "items": [
+          {
+            "text": "背景が明るい場合でも見やすい！",
+            "start_time": 8.0,
+            "end_time": 11.0
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "cyan",
+        "font_family": null,
+        "font_weight": "bold",
+        "stroke_width": "base",
+        "stroke_color": "navy",
+        "position": "top"
+      }
+    ]
+  }
+}

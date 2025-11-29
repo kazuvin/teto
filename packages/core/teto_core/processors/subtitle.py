@@ -10,6 +10,7 @@ from .subtitle_renderers import (
     SubtitleStyleRenderer,
     PlainStyleRenderer,
     BackgroundStyleRenderer,
+    ShadowStyleRenderer,
 )
 
 
@@ -20,8 +21,8 @@ class SubtitleProcessor:
     _style_renderers: dict[str, SubtitleStyleRenderer] = {
         "plain": PlainStyleRenderer(),
         "background": BackgroundStyleRenderer(),
+        "shadow": ShadowStyleRenderer(),
         # 将来の拡張用:
-        # "shadow": ShadowStyleRenderer(),
         # "3d": ThreeDStyleRenderer(),
     }
 

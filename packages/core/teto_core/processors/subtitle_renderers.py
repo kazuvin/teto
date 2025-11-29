@@ -173,13 +173,66 @@ class BackgroundStyleRenderer(SubtitleStyleRenderer):
         return composite, bg_height
 
 
+class ShadowStyleRenderer(SubtitleStyleRenderer):
+    """シャドウ付きテキストのレンダラー"""
+
+    def render(
+        self,
+        item: SubtitleItem,
+        layer: SubtitleLayer,
+        video_size: tuple[int, int],
+        font_path: str | None,
+        duration: float,
+    ) -> tuple[VideoClip, int]:
+        """シャドウ付きテキストの字幕クリップを作成"""
+        # レンダリングパラメータを準備
+        params = self._prepare_rendering_params(layer, video_size)
+        constants = params["constants"]
+
+        # PILを使ってテキスト画像を作成
+        text_img, (text_width, text_height) = self._create_text_image(
+            item, layer, font_path, params, video_size
+        )
+
+        # シャドウのオフセット（レスポンシブ）
+        shadow_offset_x = constants.get("SHADOW_OFFSET_X", int(video_size[1] * 0.003))
+        shadow_offset_y = constants.get("SHADOW_OFFSET_Y", int(video_size[1] * 0.003))
+
+        # シャドウ用のテキスト画像を作成（黒で半透明）
+        shadow_img, _ = self._create_text_image(
+            item, layer, font_path, params, video_size
+        )
+
+        # 合成サイズを計算（テキスト + シャドウのオフセット分）
+        composite_width = text_width + abs(shadow_offset_x)
+        composite_height = text_height + abs(shadow_offset_y)
+
+        # シャドウクリップを作成（黒で半透明に）
+        import numpy as np
+        shadow_array = np.array(shadow_img)
+        # 透明度を調整（アルファチャンネルを50%に）
+        if shadow_array.shape[2] == 4:  # RGBA
+            shadow_array[:, :, 3] = (shadow_array[:, :, 3] * 0.5).astype(np.uint8)
+            # RGBを黒に変更（アルファ値が0でない部分のみ）
+            mask = shadow_array[:, :, 3] > 0
+            shadow_array[mask, 0:3] = [0, 0, 0]
+
+        shadow_clip = ImageClip(shadow_array).with_duration(duration)
+        shadow_clip = shadow_clip.with_position((shadow_offset_x, shadow_offset_y))
+
+        # テキスト画像をImageClipに変換
+        txt_clip = ImageClip(text_img).with_duration(duration)
+        txt_clip = txt_clip.with_position((0, 0))
+
+        # シャドウとテキストを合成
+        composite = CompositeVideoClip(
+            [shadow_clip, txt_clip], size=(composite_width, composite_height)
+        )
+
+        return composite, composite_height
+
+
 # 将来の拡張用のサンプル
-# class ShadowStyleRenderer(SubtitleStyleRenderer):
-#     """シャドウ付きテキストのレンダラー"""
-#     def render(self, item, layer, video_size, font_path, duration):
-#         # シャドウエフェクトの実装
-#         pass
-#
 # class ThreeDStyleRenderer(SubtitleStyleRenderer):
 #     """3Dエフェクト付きテキストのレンダラー"""
 #     def render(self, item, layer, video_size, font_path, duration):
