@@ -69,7 +69,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "plain",
+        "appearance": "plain",
         "items": [
           {
             "text": "Welcome to Teto!",
@@ -93,7 +93,7 @@
       },
       {
         "type": "subtitle",
-        "variant": "plain",
+        "appearance": "plain",
         "items": [
           {
             "text": "Thank you for watching!",

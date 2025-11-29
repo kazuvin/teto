@@ -69,7 +69,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "rounded_bg",
+        "appearance": "background",
         "items": [
           {
             "text": "イントロ画面",

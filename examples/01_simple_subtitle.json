@@ -23,7 +23,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "plain",
+        "appearance": "plain",
         "items": [
           {
             "text": "シンプルな字幕の例",

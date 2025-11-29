@@ -70,7 +70,7 @@ class SubtitleProcessor:
         return txt_clip.with_position(position).with_start(item.start_time).with_duration(duration)
 
     @staticmethod
-    def _create_rounded_bg_subtitle_clip(
+    def _create_background_subtitle_clip(
         item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int], font: str | None, duration: float
     ) -> VideoClip:
         """角丸背景付きテキストの字幕クリップを作成"""
@@ -134,11 +134,11 @@ class SubtitleProcessor:
         # フォントを決定（font_familyが指定されていればそれを使用、なければシステムフォント）
         font = layer.font_family if layer.font_family else find_system_font(layer.font_weight)
 
-        # variantに基づいて処理を分岐
-        if layer.variant == "plain":
+        # appearanceに基づいて処理を分岐
+        if layer.appearance == "plain":
             return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font, duration)
-        elif layer.variant == "rounded_bg":
-            return SubtitleProcessor._create_rounded_bg_subtitle_clip(item, layer, video_size, font, duration)
+        elif layer.appearance == "background":
+            return SubtitleProcessor._create_background_subtitle_clip(item, layer, video_size, font, duration)
         else:
             # デフォルトはplainとして扱う
             return SubtitleProcessor._create_plain_subtitle_clip(item, layer, video_size, font, duration)

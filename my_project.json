@@ -16,7 +16,7 @@
     "subtitle_layers": [
       {
         "type": "subtitle",
-        "variant": "rounded_bg",
+        "appearance": "background",
         "items": [
           {
             "text": "サンプル字幕",

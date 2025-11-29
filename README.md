@@ -100,11 +100,11 @@ uv sync
 
 ### CLI のインストール方法の比較
 
-| 方法 | コマンド | メリット | デメリット |
-|------|---------|---------|----------|
-| **uv tool** ⭐️推奨 | `uv tool install --editable packages/cli` | グローバルで使える、シンプル | - |
-| 仮想環境 | `uv venv && source .venv/bin/activate.fish` | 標準的 | 毎回アクティベートが必要 |
-| エイリアス | `alias teto='uv run --package teto-cli teto'` | インストール不要 | 毎回 uv run が実行される |
+| 方法                | コマンド                                      | メリット                     | デメリット               |
+| ------------------- | --------------------------------------------- | ---------------------------- | ------------------------ |
+| **uv tool** ⭐️推奨 | `uv tool install --editable packages/cli`     | グローバルで使える、シンプル | -                        |
+| 仮想環境            | `uv venv && source .venv/bin/activate.fish`   | 標準的                       | 毎回アクティベートが必要 |
+| エイリアス          | `alias teto='uv run --package teto-cli teto'` | インストール不要             | 毎回 uv run が実行される |
 
 ### Desktop アプリ（今後実装予定）
 
