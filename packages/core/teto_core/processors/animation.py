@@ -66,13 +66,65 @@ class AnimationProcessor:
 
     @staticmethod
     def _apply_fadein(clip: VideoClip | ImageClip, effect: AnimationEffect) -> VideoClip | ImageClip:
-        """フェードイン効果（moviepy の vfx を使用）"""
-        return clip.with_effects([vfx.FadeIn(duration=effect.duration)])
+        """フェードイン効果（透明度ベース）"""
+        easing_fn = AnimationProcessor._get_easing_function(effect.easing)
+
+        def fadein_frame(get_frame, t):
+            frame = get_frame(t)
+            if t > effect.duration:
+                return frame
+
+            progress = min(t / effect.duration, 1.0)
+            eased_progress = easing_fn(progress)
+
+            # アルファチャンネルがある場合はそれを操作、ない場合は追加
+            if len(frame.shape) == 3 and frame.shape[2] == 4:
+                # RGBA
+                frame = frame.copy()
+                frame[:, :, 3] = (frame[:, :, 3] * eased_progress).astype(np.uint8)
+            elif len(frame.shape) == 3 and frame.shape[2] == 3:
+                # RGB → RGBA に変換
+                alpha = np.full((frame.shape[0], frame.shape[1], 1), int(255 * eased_progress), dtype=np.uint8)
+                frame = np.concatenate([frame, alpha], axis=2)
+            else:
+                # グレースケールの場合は乗算
+                frame = (frame * eased_progress).astype(np.uint8)
+
+            return frame
+
+        return clip.transform(fadein_frame)
 
     @staticmethod
     def _apply_fadeout(clip: VideoClip | ImageClip, effect: AnimationEffect) -> VideoClip | ImageClip:
-        """フェードアウト効果（moviepy の vfx を使用）"""
-        return clip.with_effects([vfx.FadeOut(duration=effect.duration)])
+        """フェードアウト効果（透明度ベース）"""
+        easing_fn = AnimationProcessor._get_easing_function(effect.easing)
+
+        def fadeout_frame(get_frame, t):
+            frame = get_frame(t)
+            time_from_end = clip.duration - t
+            if time_from_end > effect.duration:
+                return frame
+
+            progress = 1 - min(time_from_end / effect.duration, 1.0)
+            eased_progress = easing_fn(progress)
+            opacity = 1.0 - eased_progress
+
+            # アルファチャンネルがある場合はそれを操作、ない場合は追加
+            if len(frame.shape) == 3 and frame.shape[2] == 4:
+                # RGBA
+                frame = frame.copy()
+                frame[:, :, 3] = (frame[:, :, 3] * opacity).astype(np.uint8)
+            elif len(frame.shape) == 3 and frame.shape[2] == 3:
+                # RGB → RGBA に変換
+                alpha = np.full((frame.shape[0], frame.shape[1], 1), int(255 * opacity), dtype=np.uint8)
+                frame = np.concatenate([frame, alpha], axis=2)
+            else:
+                # グレースケールの場合は乗算
+                frame = (frame * opacity).astype(np.uint8)
+
+            return frame
+
+        return clip.transform(fadeout_frame)
 
     @staticmethod
     def _apply_slide_in(
@@ -216,7 +268,7 @@ class AnimationProcessor:
 
     @staticmethod
     def _apply_zoom(clip: VideoClip | ImageClip, effect: AnimationEffect) -> VideoClip | ImageClip:
-        """スムーズズーム効果（イージング付き）"""
+        """スムーズズーム効果（イージング付き、透明背景対応）"""
         start_scale = effect.start_scale or 1.0
         end_scale = effect.end_scale or 1.2
         easing_fn = AnimationProcessor._get_easing_function(effect.easing)
@@ -244,7 +296,22 @@ class AnimationProcessor:
             if current_scale >= 1.0:
                 return zoomed[y_start:y_start + h, x_start:x_start + w]
             else:
-                result = np.zeros_like(frame)
+                # 透明背景を使用（RGBAの場合）
+                if len(frame.shape) == 3:
+                    if frame.shape[2] == 4:
+                        # RGBA - アルファチャンネル付き透明背景
+                        result = np.zeros((h, w, 4), dtype=frame.dtype)
+                    elif frame.shape[2] == 3:
+                        # RGB - アルファチャンネルを追加
+                        result = np.zeros((h, w, 4), dtype=frame.dtype)
+                        # ズーム後の画像にアルファチャンネルを追加
+                        alpha = np.full((zh, zw, 1), 255, dtype=frame.dtype)
+                        zoomed = np.concatenate([zoomed, alpha], axis=2)
+                    else:
+                        result = np.zeros_like(frame)
+                else:
+                    result = np.zeros_like(frame)
+
                 y_offset = (h - zh) // 2
                 x_offset = (w - zw) // 2
                 result[y_offset:y_offset + zh, x_offset:x_offset + zw] = zoomed

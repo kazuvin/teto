@@ -48,7 +48,18 @@
         "position_x": 200,
         "position_y": 150,
         "scale": 1.0,
-        "effects": []
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 0.5,
+            "easing": "easeOut"
+          },
+          {
+            "type": "fadeout",
+            "duration": 0.5,
+            "easing": "easeIn"
+          }
+        ]
       },
       {
         "type": "stamp",
@@ -58,7 +69,15 @@
         "position_x": 1500,
         "position_y": 200,
         "scale": 1.2,
-        "effects": []
+        "effects": [
+          {
+            "type": "zoom",
+            "duration": 3.0,
+            "start_scale": 0.5,
+            "end_scale": 1.5,
+            "easing": "easeInOut"
+          }
+        ]
       },
       {
         "type": "stamp",
@@ -68,7 +87,19 @@
         "position_x": 850,
         "position_y": 400,
         "scale": 1.5,
-        "effects": []
+        "effects": [
+          {
+            "type": "slideIn",
+            "duration": 1.0,
+            "direction": "top",
+            "easing": "easeOut"
+          },
+          {
+            "type": "fadeout",
+            "duration": 1.0,
+            "easing": "easeIn"
+          }
+        ]
       }
     ]
   }
