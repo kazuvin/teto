@@ -8,7 +8,7 @@ from moviepy import (
     CompositeVideoClip,
 )
 from ..models.layers import VideoLayer, ImageLayer, StampLayer
-from .animation import AnimationProcessor
+from .effect import EffectProcessor
 from typing import Union
 
 
@@ -28,9 +28,9 @@ class VideoProcessor:
         if layer.duration is not None:
             clip = clip.subclipped(0, min(layer.duration, clip.duration))
 
-        # アニメーション効果を適用
+        # エフェクトを適用
         if layer.effects and output_size:
-            clip = AnimationProcessor.apply_effects(clip, layer.effects, output_size)
+            clip = EffectProcessor.apply_effects(clip, layer.effects, output_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
@@ -47,9 +47,9 @@ class VideoProcessor:
         if clip.w > target_size[0]:
             clip = clip.resized(width=target_size[0])
 
-        # アニメーション効果を適用
+        # エフェクトを適用
         if layer.effects:
-            clip = AnimationProcessor.apply_effects(clip, layer.effects, target_size)
+            clip = EffectProcessor.apply_effects(clip, layer.effects, target_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
@@ -68,11 +68,11 @@ class VideoProcessor:
         # 位置を設定
         clip = clip.with_position((layer.position_x, layer.position_y))
 
-        # アニメーション効果を適用
+        # エフェクトを適用
         if layer.effects:
             # スタンプのサイズを取得（スケール適用後）
             stamp_size = (int(clip.w), int(clip.h))
-            clip = AnimationProcessor.apply_effects(clip, layer.effects, stamp_size)
+            clip = EffectProcessor.apply_effects(clip, layer.effects, stamp_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
