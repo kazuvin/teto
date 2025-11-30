@@ -11,15 +11,24 @@ def test_simple_project():
     project = (
         ProjectBuilder("output.mp4")
         .output(width=1920, height=1080, fps=30)
-        .add_video("intro.mp4").at(0.0).fade_in(1.0).build()
-        .add_video("main.mp4").at(5.0).with_volume(0.8).fade_out(1.0).build()
-        .add_audio("bgm.mp3").with_volume(0.3).build()
+        .add_video("intro.mp4")
+        .at(0.0)
+        .fade_in(1.0)
+        .build()
+        .add_video("main.mp4")
+        .at(5.0)
+        .with_volume(0.8)
+        .fade_out(1.0)
+        .build()
+        .add_audio("bgm.mp3")
+        .with_volume(0.3)
+        .build()
         .add_subtitle_layer()
-            .add_item("Hello", 0.0, 2.0)
-            .add_item("World", 2.0, 4.0)
-            .font(size="lg", color="white")
-            .style(position="bottom", appearance="background")
-            .build()
+        .add_item("Hello", 0.0, 2.0)
+        .add_item("World", 2.0, 4.0)
+        .font(size="lg", color="white")
+        .style(position="bottom", appearance="background")
+        .build()
         .build()
     )
 
@@ -38,7 +47,9 @@ def test_complex_project():
     builder.output(path="my_video.mp4", width=1280, height=720, fps=60)
 
     # 動画レイヤーの追加
-    builder.add_video("clip1.mp4").at(0.0).fade_in(0.5).zoom(1.0, 1.2, 3.0).fade_out(0.5).build()
+    builder.add_video("clip1.mp4").at(0.0).fade_in(0.5).zoom(1.0, 1.2, 3.0).fade_out(
+        0.5
+    ).build()
     builder.add_video("clip2.mp4").at(10.0).slide_in("left", 1.0).build()
 
     # 画像レイヤーの追加
@@ -47,27 +58,31 @@ def test_complex_project():
 
     # 音声レイヤーの追加
     builder.add_audio("background_music.mp3").with_volume(0.2).build()
-    builder.add_audio("sound_effect.wav").at(5.0).for_duration(2.0).with_volume(0.5).build()
+    builder.add_audio("sound_effect.wav").at(5.0).for_duration(2.0).with_volume(
+        0.5
+    ).build()
 
     # 字幕レイヤーの追加
-    (builder
-        .add_subtitle_layer()
+    (
+        builder.add_subtitle_layer()
         .add_item("Introduction", 0, 3)
         .add_item("Main content", 3, 10)
         .add_item("Conclusion", 10, 15)
         .font(size="xl", google_font="Noto Sans JP", weight="bold")
         .stroke(width=2, color="black")
         .style(position="bottom", appearance="shadow")
-        .build())
+        .build()
+    )
 
     # スタンプレイヤーの追加
-    (builder
-        .add_stamp("logo.png", 3.0)
+    (
+        builder.add_stamp("logo.png", 3.0)
         .at(0.0)
         .position(0.9, 0.1)
         .with_scale(0.2)
         .fade_in(0.5)
-        .build())
+        .build()
+    )
 
     project = builder.build()
 
@@ -100,11 +115,13 @@ def test_json_export():
     project = (
         ProjectBuilder("test_output.mp4")
         .output(width=1920, height=1080)
-        .add_video("test.mp4").fade_in(1.0).build()
+        .add_video("test.mp4")
+        .fade_in(1.0)
+        .build()
         .add_subtitle_layer()
-            .add_item("Test", 0.0, 5.0)
-            .font(size="lg")
-            .build()
+        .add_item("Test", 0.0, 5.0)
+        .font(size="lg")
+        .build()
         .build()
     )
 
@@ -124,4 +141,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Test failed: {e}")
         import traceback
+
         traceback.print_exc()

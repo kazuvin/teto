@@ -8,6 +8,7 @@ from .models import (
     SubtitleLayer,
     SubtitleItem,
     StampLayer,
+    PositionPreset,
 )
 from .builders import (
     VideoLayerBuilder,
@@ -26,6 +27,7 @@ __all__ = [
     "SubtitleLayer",
     "SubtitleItem",
     "StampLayer",
+    "PositionPreset",
     "VideoLayerBuilder",
     "ImageLayerBuilder",
     "AudioLayerBuilder",

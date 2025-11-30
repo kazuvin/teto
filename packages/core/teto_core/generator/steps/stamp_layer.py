@@ -42,7 +42,9 @@ class StampLayerProcessingStep(ProcessingStep):
 
         stamp_clips = []
         for stamp_layer in timeline.stamp_layers:
-            stamp_clip = self.stamp_processor.execute(stamp_layer)
+            stamp_clip = self.stamp_processor.execute(
+                stamp_layer, output_size=context.output_size
+            )
             stamp_clips.append(stamp_clip)
 
         # ベース動画とスタンプを合成

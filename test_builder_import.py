@@ -12,11 +12,14 @@ def test_new_import():
     project = (
         ProjectBuilder("output.mp4")
         .output(width=1920, height=1080, fps=30)
-        .add_video("intro.mp4").at(0.0).fade_in(1.0).build()
+        .add_video("intro.mp4")
+        .at(0.0)
+        .fade_in(1.0)
+        .build()
         .add_subtitle_layer()
-            .add_item("Hello, World!", 0.0, 5.0)
-            .font(size="xl", color="white")
-            .build()
+        .add_item("Hello, World!", 0.0, 5.0)
+        .font(size="xl", color="white")
+        .build()
         .build()
     )
 
@@ -33,4 +36,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Import test failed: {e}")
         import traceback
+
         traceback.print_exc()

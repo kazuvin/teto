@@ -8,7 +8,7 @@ from moviepy import (
     concatenate_videoclips,
 )
 from moviepy.video.fx import CrossFadeIn, CrossFadeOut
-from ..models import VideoLayer, ImageLayer, StampLayer
+from ..models import VideoLayer, ImageLayer, StampLayer, PositionPreset
 from ...effect.processors import EffectProcessor
 from ...core import ProcessorBase
 from typing import Union
@@ -97,18 +97,67 @@ class StampLayerProcessor(ProcessorBase[StampLayer, ImageClip]):
         if not Path(layer.path).exists():
             print(f"Warning: Stamp file not found: {layer.path}")
             return False
+
+        # プリセット位置を使用する場合は output_size が必要
+        if layer.position_preset and layer.position_preset != PositionPreset.CUSTOM:
+            output_size = kwargs.get("output_size")
+            if not output_size:
+                print("Warning: output_size is required when using position_preset")
+                return False
+
         return True
+
+    def _calculate_position_from_preset(
+        self,
+        video_size: tuple[int, int],
+        stamp_size: tuple[int, int],
+        preset: PositionPreset,
+        margin: int,
+    ) -> tuple[int, int]:
+        """プリセットから実際の座標を計算する"""
+        video_w, video_h = video_size
+        stamp_w, stamp_h = stamp_size
+
+        positions = {
+            PositionPreset.TOP_LEFT: (margin, margin),
+            PositionPreset.TOP_RIGHT: (video_w - stamp_w - margin, margin),
+            PositionPreset.BOTTOM_LEFT: (margin, video_h - stamp_h - margin),
+            PositionPreset.BOTTOM_RIGHT: (
+                video_w - stamp_w - margin,
+                video_h - stamp_h - margin,
+            ),
+        }
+        return positions.get(preset, (0, 0))
+
+    def _apply_opacity(self, clip: ImageClip, opacity: float) -> ImageClip:
+        """クリップに透明度を適用する"""
+        if opacity < 1.0:
+            return clip.with_opacity(opacity)
+        return clip
 
     def process(self, layer: StampLayer, **kwargs) -> ImageClip:
         """スタンプレイヤーを読み込む"""
+        output_size = kwargs.get("output_size")
+
         clip = ImageClip(layer.path, duration=layer.duration)
 
         # スケールを適用
         if layer.scale != 1.0:
             clip = clip.resized(layer.scale)
 
-        # 位置を設定
-        clip = clip.with_position((layer.position_x, layer.position_y))
+        # 透明度を適用
+        clip = self._apply_opacity(clip, layer.opacity)
+
+        # 位置を設定（プリセットがある場合はプリセットを優先）
+        if layer.position_preset and layer.position_preset != PositionPreset.CUSTOM:
+            if output_size:
+                stamp_size = (int(clip.w), int(clip.h))
+                position = self._calculate_position_from_preset(
+                    output_size, stamp_size, layer.position_preset, layer.margin
+                )
+                clip = clip.with_position(position)
+        else:
+            clip = clip.with_position((layer.position_x, layer.position_y))
 
         # エフェクトを適用
         if layer.effects:

@@ -28,7 +28,7 @@ def wrap_ssml(
         prosody_attrs.append(f'rate="{rate:.2f}"')
 
     if prosody_attrs:
-        prosody_start = f'<prosody {" ".join(prosody_attrs)}>'
+        prosody_start = f"<prosody {' '.join(prosody_attrs)}>"
         prosody_end = "</prosody>"
         text = f"{prosody_start}{text}{prosody_end}"
 

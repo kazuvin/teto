@@ -8,7 +8,9 @@ from teto_core.models import (
     AudioLayer,
     SubtitleLayer,
     SubtitleItem,
+    StampLayer,
 )
+from teto_core.layer.models import PositionPreset
 
 
 @pytest.mark.unit
@@ -212,3 +214,122 @@ class TestSubtitleLayer:
         layer2 = SubtitleLayer(stroke_width="sm", outer_stroke_width="lg")
         assert layer2.stroke_width == "sm"
         assert layer2.outer_stroke_width == "lg"
+
+
+@pytest.mark.unit
+class TestStampLayer:
+    """Test suite for StampLayer model."""
+
+    def test_stamp_layer_creation(self):
+        """Test creating a basic stamp layer."""
+        layer = StampLayer(path="/path/to/stamp.png", duration=5.0)
+        assert layer.type == "stamp"
+        assert layer.path == "/path/to/stamp.png"
+        assert layer.duration == 5.0
+        assert layer.position_x == 0
+        assert layer.position_y == 0
+        assert layer.scale == 1.0
+        assert layer.opacity == 1.0
+        assert layer.position_preset is None
+        assert layer.margin == 20
+        assert layer.effects == []
+
+    def test_stamp_layer_with_all_fields(self):
+        """Test creating a stamp layer with all fields."""
+        layer = StampLayer(
+            path="/path/to/stamp.png",
+            duration=10.0,
+            position_x=100,
+            position_y=200,
+            scale=0.5,
+            opacity=0.7,
+            position_preset=PositionPreset.TOP_RIGHT,
+            margin=30,
+            start_time=2.0,
+        )
+        assert layer.duration == 10.0
+        assert layer.position_x == 100
+        assert layer.position_y == 200
+        assert layer.scale == 0.5
+        assert layer.opacity == 0.7
+        assert layer.position_preset == PositionPreset.TOP_RIGHT
+        assert layer.margin == 30
+        assert layer.start_time == 2.0
+
+    def test_stamp_layer_requires_duration(self):
+        """Test that stamp layer requires duration."""
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png")
+
+    def test_stamp_layer_duration_must_be_positive(self):
+        """Test that duration must be positive."""
+        StampLayer(path="/test.png", duration=0.1)
+        StampLayer(path="/test.png", duration=10.0)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=0.0)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=-1.0)
+
+    def test_stamp_layer_opacity_validation(self):
+        """Test that opacity is validated to be between 0.0 and 1.0."""
+        # Valid opacity values
+        StampLayer(path="/test.png", duration=1.0, opacity=0.0)
+        StampLayer(path="/test.png", duration=1.0, opacity=0.5)
+        StampLayer(path="/test.png", duration=1.0, opacity=1.0)
+
+        # Invalid opacity values
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=1.0, opacity=-0.1)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=1.0, opacity=1.1)
+
+    def test_stamp_layer_scale_must_be_positive(self):
+        """Test that scale must be positive."""
+        StampLayer(path="/test.png", duration=1.0, scale=0.1)
+        StampLayer(path="/test.png", duration=1.0, scale=2.0)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=1.0, scale=0.0)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=1.0, scale=-1.0)
+
+    def test_stamp_layer_margin_must_be_non_negative(self):
+        """Test that margin must be non-negative."""
+        StampLayer(path="/test.png", duration=1.0, margin=0)
+        StampLayer(path="/test.png", duration=1.0, margin=50)
+
+        with pytest.raises(ValidationError):
+            StampLayer(path="/test.png", duration=1.0, margin=-10)
+
+    def test_stamp_layer_position_preset_options(self):
+        """Test all position preset options."""
+        StampLayer(
+            path="/test.png", duration=1.0, position_preset=PositionPreset.TOP_LEFT
+        )
+        StampLayer(
+            path="/test.png", duration=1.0, position_preset=PositionPreset.TOP_RIGHT
+        )
+        StampLayer(
+            path="/test.png", duration=1.0, position_preset=PositionPreset.BOTTOM_LEFT
+        )
+        StampLayer(
+            path="/test.png", duration=1.0, position_preset=PositionPreset.BOTTOM_RIGHT
+        )
+        StampLayer(
+            path="/test.png", duration=1.0, position_preset=PositionPreset.CUSTOM
+        )
+        StampLayer(path="/test.png", duration=1.0, position_preset=None)
+
+    def test_stamp_layer_position_preset_from_string(self):
+        """Test that position preset can be set from string."""
+        layer = StampLayer(path="/test.png", duration=1.0, position_preset="top-left")
+        assert layer.position_preset == PositionPreset.TOP_LEFT
+
+        layer = StampLayer(
+            path="/test.png", duration=1.0, position_preset="bottom-right"
+        )
+        assert layer.position_preset == PositionPreset.BOTTOM_RIGHT
