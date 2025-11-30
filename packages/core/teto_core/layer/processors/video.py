@@ -4,9 +4,10 @@ from pathlib import Path
 from moviepy import (
     VideoFileClip,
     ImageClip,
-    concatenate_videoclips,
     CompositeVideoClip,
+    concatenate_videoclips,
 )
+from moviepy.video.fx import CrossFadeIn, CrossFadeOut
 from ..models import VideoLayer, ImageLayer, StampLayer
 from ...effect.processors import EffectProcessor
 from ...core import ProcessorBase
@@ -45,9 +46,6 @@ class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
         if layer.effects and output_size:
             clip = self.effect_processor.apply_effects(clip, layer.effects, output_size)
 
-        # 開始時間の設定
-        clip = clip.with_start(layer.start_time)
-
         return clip
 
 
@@ -84,9 +82,6 @@ class ImageLayerProcessor(ProcessorBase[ImageLayer, ImageClip]):
         # エフェクトを適用
         if layer.effects:
             clip = self.effect_processor.apply_effects(clip, layer.effects, target_size)
-
-        # 開始時間の設定
-        clip = clip.with_start(layer.start_time)
 
         return clip
 
@@ -156,9 +151,11 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
         layers: list[Union[VideoLayer, ImageLayer]],
         **kwargs
     ) -> VideoFileClip:
-        """動画・画像レイヤーをタイムライン順に処理"""
+        """動画・画像レイヤーをタイムライン順に処理（トランジション対応）"""
         output_size = kwargs['output_size']
-        clips = []
+
+        # レイヤーとクリップのペアを作成
+        layer_clips: list[tuple[Union[VideoLayer, ImageLayer], any]] = []
 
         for layer in layers:
             if isinstance(layer, VideoLayer):
@@ -174,12 +171,42 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
             else:
                 continue
 
-            clips.append(clip)
+            layer_clips.append((layer, clip))
 
-        # すべてのクリップを連結
-        final_clip = concatenate_videoclips(clips, method="compose")
+        if not layer_clips:
+            raise ValueError("No valid layers to process")
 
-        # 出力サイズにリサイズ
-        final_clip = final_clip.resized(output_size)
+        # トランジションがない場合は単純に連結
+        if not any(layer.transition for layer, _ in layer_clips[:-1]):
+            clips = [clip for _, clip in layer_clips]
+            final_clip = concatenate_videoclips(clips, method="compose")
+            return final_clip.resized(output_size)
+
+        # トランジションがある場合は CompositeVideoClip で合成
+        composite_clips = []
+        current_time = 0.0
+
+        for i, (layer, clip) in enumerate(layer_clips):
+            is_last = i == len(layer_clips) - 1
+            prev_layer = layer_clips[i - 1][0] if i > 0 else None
+
+            # 前のレイヤーからのトランジションがある場合、フェードインを適用
+            if prev_layer and prev_layer.transition:
+                clip = clip.with_effects([CrossFadeIn(prev_layer.transition.duration)])
+
+            # 次のレイヤーへのトランジションがある場合、フェードアウトを適用
+            if not is_last and layer.transition:
+                clip = clip.with_effects([CrossFadeOut(layer.transition.duration)])
+
+            # 開始時間を設定
+            clip = clip.with_start(current_time)
+            composite_clips.append(clip)
+
+            # 次のクリップの開始時間を計算（トランジション分オーバーラップ）
+            overlap = layer.transition.duration if (not is_last and layer.transition) else 0
+            current_time += clip.duration - overlap
+
+        # CompositeVideoClip で合成
+        final_clip = CompositeVideoClip(composite_clips, size=output_size)
 
         return final_clip

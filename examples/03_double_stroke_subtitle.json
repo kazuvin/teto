@@ -15,7 +15,6 @@
       {
         "type": "image",
         "path": "examples/assets/images/intro.png",
-        "start_time": 0.0,
         "duration": 10.0
       }
     ],
