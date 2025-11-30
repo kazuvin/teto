@@ -1,0 +1,121 @@
+{
+  "title": "Python入門講座 第1回",
+  "description": "プログラミング初心者向けのPython入門講座",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "note": "タイトル画面"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "今日からPythonを学んでいきましょう。", "pause_after": 0.5 }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "Pythonは、シンプルで読みやすい" },
+        { "text": "文法が特徴のプログラミング言語です。" }
+      ],
+      "visual": {
+        "type": "image",
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 0.3
+    },
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "Chapter 1 見出し"
+    },
+    {
+      "narrations": [
+        { "text": "まずは、Hello Worldを" },
+        { "text": "表示するプログラムを書いてみましょう。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "printという関数を使います。" },
+        { "text": "括弧の中に表示したい文字を書きます。", "pause_after": 0.3 }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "このように、とても簡単に" },
+        { "text": "プログラムを書くことができます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "まとめ見出し"
+    },
+    {
+      "narrations": [
+        { "text": "今日はPythonの基本を学びました。" },
+        { "text": "次回は変数について学びましょう。", "pause_after": 0.5 }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "チャンネル登録と高評価" },
+        { "text": "よろしくお願いします！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "エンディング"
+    },
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 4.0,
+      "note": "エンドカード（ナレーションなし）"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0,
+    "pitch": 0.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm.mp3",
+    "volume": 0.2,
+    "fade_in": 1.0,
+    "fade_out": 2.0
+  }
+}

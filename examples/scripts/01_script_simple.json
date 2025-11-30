@@ -1,0 +1,52 @@
+{
+  "title": "Scriptサンプル - シンプル",
+  "description": "Scriptファイルの基本的な使い方を示すシンプルな例",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "note": "タイトル画面（ナレーションなし）"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "今日はScriptファイルの使い方を紹介します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "Scriptは、AIが生成しやすい台本形式です。" },
+        {
+          "text": "自動的にProjectに変換され、動画が生成されます。",
+          "pause_after": 0.5
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [{ "text": "ご視聴ありがとうございました！" }],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}
