@@ -14,7 +14,7 @@ class SlideInEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """スライドインを適用"""
         direction = effect.direction or "left"
@@ -27,18 +27,32 @@ class SlideInEffect(EffectStrategy):
             if t > effect.duration:
                 # アニメーション完了後は元のフレームを返す
                 h, w = frame.shape[:2]
-                result = np.zeros((video_h, video_w, frame.shape[2]) if len(frame.shape) == 3 else (video_h, video_w), dtype=frame.dtype)
+                result = np.zeros(
+                    (
+                        (video_h, video_w, frame.shape[2])
+                        if len(frame.shape) == 3
+                        else (video_h, video_w)
+                    ),
+                    dtype=frame.dtype,
+                )
                 # 中央配置
                 y_offset = (video_h - h) // 2
                 x_offset = (video_w - w) // 2
-                result[y_offset:y_offset+h, x_offset:x_offset+w] = frame
+                result[y_offset : y_offset + h, x_offset : x_offset + w] = frame
                 return result
 
             progress = min(t / effect.duration, 1.0)
             eased_progress = easing_fn(progress)
 
             h, w = frame.shape[:2]
-            result = np.zeros((video_h, video_w, frame.shape[2]) if len(frame.shape) == 3 else (video_h, video_w), dtype=frame.dtype)
+            result = np.zeros(
+                (
+                    (video_h, video_w, frame.shape[2])
+                    if len(frame.shape) == 3
+                    else (video_h, video_w)
+                ),
+                dtype=frame.dtype,
+            )
 
             # 最終位置（中央）
             final_y = (video_h - h) // 2
@@ -76,7 +90,9 @@ class SlideInEffect(EffectStrategy):
             dst_y2 = dst_y1 + (src_y2 - src_y1)
 
             if src_x2 > src_x1 and src_y2 > src_y1:
-                result[dst_y1:dst_y2, dst_x1:dst_x2] = frame[src_y1:src_y2, src_x1:src_x2]
+                result[dst_y1:dst_y2, dst_x1:dst_x2] = frame[
+                    src_y1:src_y2, src_x1:src_x2
+                ]
 
             return result
 
@@ -90,7 +106,7 @@ class SlideOutEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """スライドアウトを適用"""
         direction = effect.direction or "left"
@@ -104,17 +120,31 @@ class SlideOutEffect(EffectStrategy):
             if time_from_end > effect.duration:
                 # アニメーション開始前は元のフレームを中央配置
                 h, w = frame.shape[:2]
-                result = np.zeros((video_h, video_w, frame.shape[2]) if len(frame.shape) == 3 else (video_h, video_w), dtype=frame.dtype)
+                result = np.zeros(
+                    (
+                        (video_h, video_w, frame.shape[2])
+                        if len(frame.shape) == 3
+                        else (video_h, video_w)
+                    ),
+                    dtype=frame.dtype,
+                )
                 y_offset = (video_h - h) // 2
                 x_offset = (video_w - w) // 2
-                result[y_offset:y_offset+h, x_offset:x_offset+w] = frame
+                result[y_offset : y_offset + h, x_offset : x_offset + w] = frame
                 return result
 
             progress = 1 - min(time_from_end / effect.duration, 1.0)
             eased_progress = easing_fn(progress)
 
             h, w = frame.shape[:2]
-            result = np.zeros((video_h, video_w, frame.shape[2]) if len(frame.shape) == 3 else (video_h, video_w), dtype=frame.dtype)
+            result = np.zeros(
+                (
+                    (video_h, video_w, frame.shape[2])
+                    if len(frame.shape) == 3
+                    else (video_h, video_w)
+                ),
+                dtype=frame.dtype,
+            )
 
             # 開始位置（中央）
             start_y = (video_h - h) // 2
@@ -152,7 +182,9 @@ class SlideOutEffect(EffectStrategy):
             dst_y2 = dst_y1 + (src_y2 - src_y1)
 
             if src_x2 > src_x1 and src_y2 > src_y1:
-                result[dst_y1:dst_y2, dst_x1:dst_x2] = frame[src_y1:src_y2, src_x1:src_x2]
+                result[dst_y1:dst_y2, dst_x1:dst_x2] = frame[
+                    src_y1:src_y2, src_x1:src_x2
+                ]
 
             return result
 

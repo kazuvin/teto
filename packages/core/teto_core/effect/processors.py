@@ -89,7 +89,7 @@ class EffectProcessor:
     def apply_effects(
         clip: VideoClip | ImageClip,
         effects: list[AnimationEffect],
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """クリップにエフェクトを適用
 

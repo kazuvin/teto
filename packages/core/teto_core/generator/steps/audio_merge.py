@@ -26,7 +26,9 @@ class AudioMergingStep(ProcessingStep):
 
         if context.video_clip.audio is not None:
             # 動画の音声と追加音声を合成
-            final_audio = CompositeAudioClip([context.video_clip.audio, context.audio_clip])
+            final_audio = CompositeAudioClip(
+                [context.video_clip.audio, context.audio_clip]
+            )
             context.video_clip = context.video_clip.with_audio(final_audio)
         else:
             # 追加音声のみ

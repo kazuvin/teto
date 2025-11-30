@@ -15,7 +15,7 @@ class ZoomEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """ズームを適用"""
         start_scale = effect.start_scale or 1.0
@@ -30,7 +30,6 @@ class ZoomEffect(EffectStrategy):
             current_scale = start_scale + (end_scale - start_scale) * eased_progress
 
             h, w = frame.shape[:2]
-            new_h, new_w = int(h * current_scale), int(w * current_scale)
 
             if len(frame.shape) == 3:
                 zoomed = scipy_zoom(frame, (current_scale, current_scale, 1), order=1)
@@ -42,7 +41,7 @@ class ZoomEffect(EffectStrategy):
             x_start = (zw - w) // 2
 
             if current_scale >= 1.0:
-                return zoomed[y_start:y_start + h, x_start:x_start + w]
+                return zoomed[y_start : y_start + h, x_start : x_start + w]
             else:
                 # 透明背景を使用（RGBAの場合）
                 if len(frame.shape) == 3:
@@ -62,7 +61,7 @@ class ZoomEffect(EffectStrategy):
 
                 y_offset = (h - zh) // 2
                 x_offset = (w - zw) // 2
-                result[y_offset:y_offset + zh, x_offset:x_offset + zw] = zoomed
+                result[y_offset : y_offset + zh, x_offset : x_offset + zw] = zoomed
                 return result
 
         return clip.transform(zoom_frame)
@@ -75,7 +74,7 @@ class KenBurnsEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """Ken Burns効果を適用"""
         start_scale = effect.start_scale or 1.0
@@ -107,6 +106,6 @@ class KenBurnsEffect(EffectStrategy):
             x_offset = max(0, min(x_offset, zw - w))
             y_offset = max(0, min(y_offset, zh - h))
 
-            return zoomed[y_offset:y_offset + h, x_offset:x_offset + w]
+            return zoomed[y_offset : y_offset + h, x_offset : x_offset + w]
 
         return clip.transform(ken_burns_frame)

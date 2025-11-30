@@ -20,20 +20,18 @@ class TestVideoLayer:
         layer = VideoLayer(path="/path/to/video.mp4")
         assert layer.type == "video"
         assert layer.path == "/path/to/video.mp4"
-        assert layer.start_time == 0.0
         assert layer.volume == 1.0
         assert layer.duration is None
         assert layer.effects == []
+        assert layer.transition is None
 
     def test_video_layer_with_all_fields(self):
         """Test creating a video layer with all fields."""
         layer = VideoLayer(
             path="/path/to/video.mp4",
-            start_time=5.0,
             duration=10.0,
             volume=0.5,
         )
-        assert layer.start_time == 5.0
         assert layer.duration == 10.0
         assert layer.volume == 0.5
 
@@ -51,14 +49,6 @@ class TestVideoLayer:
         with pytest.raises(ValidationError):
             VideoLayer(path="/test.mp4", volume=1.1)
 
-    def test_video_layer_start_time_validation(self):
-        """Test that start_time must be non-negative."""
-        VideoLayer(path="/test.mp4", start_time=0.0)
-        VideoLayer(path="/test.mp4", start_time=10.0)
-
-        with pytest.raises(ValidationError):
-            VideoLayer(path="/test.mp4", start_time=-1.0)
-
 
 @pytest.mark.unit
 class TestImageLayer:
@@ -70,8 +60,8 @@ class TestImageLayer:
         assert layer.type == "image"
         assert layer.path == "/path/to/image.png"
         assert layer.duration == 5.0
-        assert layer.start_time == 0.0
         assert layer.effects == []
+        assert layer.transition is None
 
     def test_image_layer_requires_duration(self):
         """Test that image layer requires duration."""
@@ -120,11 +110,7 @@ class TestSubtitleItem:
 
     def test_subtitle_item_creation(self):
         """Test creating a subtitle item."""
-        item = SubtitleItem(
-            text="Hello World",
-            start_time=0.0,
-            end_time=2.0
-        )
+        item = SubtitleItem(text="Hello World", start_time=0.0, end_time=2.0)
         assert item.text == "Hello World"
         assert item.start_time == 0.0
         assert item.end_time == 2.0
@@ -179,9 +165,7 @@ class TestSubtitleLayer:
     def test_subtitle_layer_custom_colors(self):
         """Test subtitle layer with custom colors."""
         layer = SubtitleLayer(
-            font_color="red",
-            stroke_color="white",
-            bg_color="black@0.8"
+            font_color="red", stroke_color="white", bg_color="black@0.8"
         )
         assert layer.font_color == "red"
         assert layer.stroke_color == "white"
@@ -220,17 +204,11 @@ class TestSubtitleLayer:
 
     def test_subtitle_layer_stroke_widths(self):
         """Test subtitle layer with stroke widths."""
-        layer = SubtitleLayer(
-            stroke_width=5,
-            outer_stroke_width=10
-        )
+        layer = SubtitleLayer(stroke_width=5, outer_stroke_width=10)
         assert layer.stroke_width == 5
         assert layer.outer_stroke_width == 10
 
         # Test with responsive sizes
-        layer2 = SubtitleLayer(
-            stroke_width="sm",
-            outer_stroke_width="lg"
-        )
+        layer2 = SubtitleLayer(stroke_width="sm", outer_stroke_width="lg")
         assert layer2.stroke_width == "sm"
         assert layer2.outer_stroke_width == "lg"

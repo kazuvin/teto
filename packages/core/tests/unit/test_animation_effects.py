@@ -1,6 +1,5 @@
 """エフェクトシステムのテスト"""
 
-import pytest
 from teto_core.processors.effect import EffectProcessor
 from teto_core.processors.effect.strategies import (
     EffectStrategy,
@@ -76,7 +75,7 @@ class TestEffectProcessorCore:
         # fadein エフェクトを適用しようとする
         clip = MockClip()
         effect = AnimationEffect(type="fadein", duration=1.0)
-        result = EffectProcessor.apply_effects(clip, [effect], (1920, 1080))
+        _ = EffectProcessor.apply_effects(clip, [effect], (1920, 1080))
 
         # 警告メッセージが出力されることを確認
         captured = capsys.readouterr()
@@ -200,28 +199,21 @@ class TestAnimationEffectModel:
 
     def test_animation_effect_with_easing(self):
         """イージング付きエフェクトを作成できる"""
-        effect = AnimationEffect(
-            type="fadeout", duration=1.5, easing="easeInOut"
-        )
+        effect = AnimationEffect(type="fadeout", duration=1.5, easing="easeInOut")
         assert effect.type == "fadeout"
         assert effect.duration == 1.5
         assert effect.easing == "easeInOut"
 
     def test_animation_effect_slide_with_direction(self):
         """方向指定付きスライドエフェクト"""
-        effect = AnimationEffect(
-            type="slideIn", duration=1.0, direction="left"
-        )
+        effect = AnimationEffect(type="slideIn", duration=1.0, direction="left")
         assert effect.type == "slideIn"
         assert effect.direction == "left"
 
     def test_animation_effect_zoom_with_scales(self):
         """スケール指定付きズームエフェクト"""
         effect = AnimationEffect(
-            type="zoom",
-            duration=2.0,
-            start_scale=1.0,
-            end_scale=1.5
+            type="zoom", duration=2.0, start_scale=1.0, end_scale=1.5
         )
         assert effect.type == "zoom"
         assert effect.start_scale == 1.0
@@ -230,10 +222,7 @@ class TestAnimationEffectModel:
     def test_animation_effect_ken_burns_with_pan(self):
         """パン指定付き Ken Burns エフェクト"""
         effect = AnimationEffect(
-            type="kenBurns",
-            duration=3.0,
-            pan_start=(0.0, 0.0),
-            pan_end=(0.1, 0.1)
+            type="kenBurns", duration=3.0, pan_start=(0.0, 0.0), pan_end=(0.1, 0.1)
         )
         assert effect.type == "kenBurns"
         assert effect.pan_start == (0.0, 0.0)
@@ -241,11 +230,7 @@ class TestAnimationEffectModel:
 
     def test_animation_effect_blur_with_amount(self):
         """ブラー量指定付きブラーエフェクト"""
-        effect = AnimationEffect(
-            type="blur",
-            duration=1.0,
-            blur_amount=5.0
-        )
+        effect = AnimationEffect(type="blur", duration=1.0, blur_amount=5.0)
         assert effect.type == "blur"
         assert effect.blur_amount == 5.0
 
@@ -257,7 +242,7 @@ class TestAnimationEffectModel:
             color_temp=0.2,
             saturation=1.2,
             contrast=1.1,
-            brightness=1.0
+            brightness=1.0,
         )
         assert effect.type == "colorGrade"
         assert effect.color_temp == 0.2

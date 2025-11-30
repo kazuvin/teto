@@ -1,7 +1,5 @@
 """プロセッサーの統合テスト"""
 
-import pytest
-from pathlib import Path
 from teto_core.processors import (
     VideoLayerProcessor,
     ImageLayerProcessor,
@@ -162,5 +160,3 @@ class TestDependencyInjection:
         # 注入されたプロセッサーが使用されることを確認
         assert processor.video_processor is custom_video_processor
         assert processor.image_processor is custom_image_processor
-
-

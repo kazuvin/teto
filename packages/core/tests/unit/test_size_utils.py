@@ -11,7 +11,6 @@ from teto_core.utils.size_utils import (
     calculate_margin,
 )
 from teto_core.constants import (
-    BASE_HEIGHT,
     BASE_FONT_SIZE,
     BASE_BORDER_WIDTH,
     BASE_PADDING,

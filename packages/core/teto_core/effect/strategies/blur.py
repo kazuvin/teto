@@ -14,7 +14,7 @@ class BlurEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """ブラーを適用"""
         blur_amount = effect.blur_amount or 3.0
@@ -24,7 +24,9 @@ class BlurEffect(EffectStrategy):
             if len(frame.shape) == 3:
                 blurred = np.zeros_like(frame)
                 for i in range(frame.shape[2]):
-                    blurred[:, :, i] = gaussian_filter(frame[:, :, i], sigma=blur_amount)
+                    blurred[:, :, i] = gaussian_filter(
+                        frame[:, :, i], sigma=blur_amount
+                    )
                 return blurred
             else:
                 return gaussian_filter(frame, sigma=blur_amount)

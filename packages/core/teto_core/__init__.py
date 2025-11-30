@@ -13,7 +13,7 @@ from .layer.models import (
     SubtitleItem,
     StampLayer,
 )
-from .output.models import OutputConfig
+from .output_config.models import OutputConfig
 from .effect.models import AnimationEffect
 from .tts.models import (
     GoogleTTSVoiceConfig,

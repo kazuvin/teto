@@ -13,7 +13,7 @@ class EffectStrategy(ABC):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """エフェクトを適用する
 

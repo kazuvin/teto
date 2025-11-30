@@ -9,7 +9,9 @@ class StampLayerProcessingStep(ProcessingStep):
     """スタンプレイヤー処理ステップ"""
 
     def __init__(
-        self, stamp_processor: StampLayerProcessor = None, next_step: ProcessingStep = None
+        self,
+        stamp_processor: StampLayerProcessor = None,
+        next_step: ProcessingStep = None,
     ):
         """初期化
 

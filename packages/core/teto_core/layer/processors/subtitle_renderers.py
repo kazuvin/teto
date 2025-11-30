@@ -5,7 +5,11 @@ from moviepy import VideoClip, ImageClip, CompositeVideoClip
 from ..models import SubtitleLayer, SubtitleItem
 from ...utils.color_utils import parse_background_color
 from ...utils.image_utils import create_rounded_rectangle, create_text_image_with_pil
-from ...utils.size_utils import get_responsive_constants, calculate_font_size, calculate_stroke_width
+from ...utils.size_utils import (
+    get_responsive_constants,
+    calculate_font_size,
+    calculate_stroke_width,
+)
 
 
 class SubtitleStyleRenderer(ABC):
@@ -53,7 +57,9 @@ class SubtitleStyleRenderer(ABC):
         # レスポンシブサイズを計算
         font_size = calculate_font_size(layer.font_size, video_size[1])
         stroke_width = calculate_stroke_width(layer.stroke_width, video_size[1])
-        outer_stroke_width = calculate_stroke_width(layer.outer_stroke_width, video_size[1])
+        outer_stroke_width = calculate_stroke_width(
+            layer.outer_stroke_width, video_size[1]
+        )
 
         return {
             "constants": constants,
@@ -165,7 +171,9 @@ class BackgroundStyleRenderer(SubtitleStyleRenderer):
         txt_clip = ImageClip(text_img).with_duration(duration)
 
         # テキストを背景内に配置（中央に配置、レスポンシブ）
-        txt_clip = txt_clip.with_position((constants["BG_PADDING_X"], constants["BG_PADDING_Y"]))
+        txt_clip = txt_clip.with_position(
+            (constants["BG_PADDING_X"], constants["BG_PADDING_Y"])
+        )
 
         # 背景とテキストを合成
         composite = CompositeVideoClip([bg_clip, txt_clip], size=(bg_width, bg_height))
@@ -209,6 +217,7 @@ class ShadowStyleRenderer(SubtitleStyleRenderer):
 
         # シャドウクリップを作成（黒で半透明に）
         import numpy as np
+
         shadow_array = np.array(shadow_img)
         # 透明度を調整（アルファチャンネルを50%に）
         if shadow_array.shape[2] == 4:  # RGBA
@@ -286,14 +295,16 @@ class DropShadowStyleRenderer(SubtitleStyleRenderer):
             shadow_array[mask, 0:3] = [0, 0, 0]
 
         # PIL Imageに変換してGaussianブラーを適用
-        shadow_pil = Image.fromarray(shadow_array, 'RGBA')
+        shadow_pil = Image.fromarray(shadow_array, "RGBA")
         shadow_pil = shadow_pil.filter(ImageFilter.GaussianBlur(radius=blur_radius))
 
         # NumPy配列に戻す
         shadow_blurred = np.array(shadow_pil)
 
         shadow_clip = ImageClip(shadow_blurred).with_duration(duration)
-        shadow_clip = shadow_clip.with_position((shadow_offset_x + blur_padding, shadow_offset_y + blur_padding))
+        shadow_clip = shadow_clip.with_position(
+            (shadow_offset_x + blur_padding, shadow_offset_y + blur_padding)
+        )
 
         # テキスト画像をImageClipに変換
         txt_clip = ImageClip(text_img).with_duration(duration)

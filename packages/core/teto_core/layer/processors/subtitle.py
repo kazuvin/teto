@@ -1,7 +1,6 @@
 """字幕処理プロセッサー"""
 
-from pathlib import Path
-from moviepy import VideoClip, CompositeVideoClip, ImageClip
+from moviepy import VideoClip, CompositeVideoClip
 from ..models import SubtitleLayer, SubtitleItem
 from ...utils.font_utils import find_system_font, download_google_font
 from ...utils.time_utils import format_srt_time, format_vtt_time
@@ -17,7 +16,9 @@ from ...core import ProcessorBase
 from typing import Optional
 
 
-class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]], VideoClip]):
+class SubtitleBurnProcessor(
+    ProcessorBase[tuple[VideoClip, list[SubtitleLayer]], VideoClip]
+):
     """字幕焼き込みプロセッサー"""
 
     # Style Renderer のマッピング
@@ -30,7 +31,9 @@ class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]],
         # "3d": ThreeDStyleRenderer(),
     }
 
-    def __init__(self, style_renderers: Optional[dict[str, SubtitleStyleRenderer]] = None):
+    def __init__(
+        self, style_renderers: Optional[dict[str, SubtitleStyleRenderer]] = None
+    ):
         """初期化
 
         Args:
@@ -47,7 +50,9 @@ class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]],
             return False
         return True
 
-    def process(self, data: tuple[VideoClip, list[SubtitleLayer]], **kwargs) -> VideoClip:
+    def process(
+        self, data: tuple[VideoClip, list[SubtitleLayer]], **kwargs
+    ) -> VideoClip:
         """動画に字幕を焼き込む"""
         video, subtitle_layers = data
 
@@ -59,9 +64,7 @@ class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]],
         for layer in subtitle_layers:
             for item in layer.items:
                 try:
-                    clip = self._create_subtitle_clip(
-                        item, layer, (video.w, video.h)
-                    )
+                    clip = self._create_subtitle_clip(item, layer, (video.w, video.h))
                     subtitle_clips.append(clip)
                 except Exception as e:
                     print(f"Warning: Failed to create subtitle clip: {e}")
@@ -72,7 +75,9 @@ class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]],
         else:
             return video
 
-    def _calculate_position(self, layer: SubtitleLayer, clip_height: int, video_size: tuple[int, int]) -> tuple:
+    def _calculate_position(
+        self, layer: SubtitleLayer, clip_height: int, video_size: tuple[int, int]
+    ) -> tuple:
         """レイヤー設定に基づいてクリップの位置を計算する
 
         Args:
@@ -112,11 +117,17 @@ class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]],
         )
 
         # レンダラーを使ってクリップを作成
-        clip, clip_height = renderer.render(item, layer, video_size, font_path, duration)
+        clip, clip_height = renderer.render(
+            item, layer, video_size, font_path, duration
+        )
 
         # 位置の計算
         position = self._calculate_position(layer, clip_height, video_size)
-        return clip.with_position(position).with_start(item.start_time).with_duration(duration)
+        return (
+            clip.with_position(position)
+            .with_start(item.start_time)
+            .with_duration(duration)
+        )
 
 
 class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
@@ -132,7 +143,7 @@ class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
 
     def validate(self, layers: list[SubtitleLayer], **kwargs) -> bool:
         """バリデーション"""
-        output_path = kwargs.get('output_path')
+        output_path = kwargs.get("output_path")
         if not output_path:
             print("Error: output_path is required")
             return False
@@ -145,7 +156,7 @@ class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
 
     def process(self, layers: list[SubtitleLayer], **kwargs) -> None:
         """字幕をエクスポート"""
-        output_path = kwargs['output_path']
+        output_path = kwargs["output_path"]
 
         if not layers:
             return
@@ -155,7 +166,9 @@ class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
         elif self.format == "vtt":
             self._export_vtt(layers, output_path)
 
-    def _export_srt(self, subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
+    def _export_srt(
+        self, subtitle_layers: list[SubtitleLayer], output_path: str
+    ) -> None:
         """SRT形式で字幕をエクスポート"""
         with open(output_path, "w", encoding="utf-8") as f:
             index = 1
@@ -170,7 +183,9 @@ class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
 
                     index += 1
 
-    def _export_vtt(self, subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
+    def _export_vtt(
+        self, subtitle_layers: list[SubtitleLayer], output_path: str
+    ) -> None:
         """VTT形式で字幕をエクスポート"""
         with open(output_path, "w", encoding="utf-8") as f:
             f.write("WEBVTT\n\n")

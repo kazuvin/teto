@@ -1,9 +1,12 @@
 """Google Cloud Text-to-Speech API クライアント"""
 
 from google.cloud import texttospeech
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from pathlib import Path
 import os
+
+if TYPE_CHECKING:
+    from .models import GoogleTTSVoiceConfig, GoogleTTSAudioConfig
 
 try:
     from dotenv import load_dotenv
@@ -49,7 +52,9 @@ class GoogleTTSClient:
                     # .envファイルの場所を基準に相対パスを解決
                     abs_credentials = (env_path.parent / credentials_env).resolve()
                     if abs_credentials.exists():
-                        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(abs_credentials)
+                        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(
+                            abs_credentials
+                        )
                 break
 
     def synthesize(
