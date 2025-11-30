@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Callable
 from moviepy import VideoClip, AudioClip
 
-from ..models import Project
+from ..project import Project
 
 
 @dataclass

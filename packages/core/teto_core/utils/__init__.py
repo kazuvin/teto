@@ -8,7 +8,7 @@ from .image_utils import (
     wrap_text_japanese_aware,
 )
 from .time_utils import format_srt_time, format_vtt_time
-from ..constants import (
+from ..core.constants import (
     COLOR_MAP,
     PUNCTUATION_CHARS,
 )

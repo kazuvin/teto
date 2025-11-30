@@ -2,7 +2,7 @@
 
 from ..pipeline import ProcessingStep
 from ..context import ProcessingContext
-from ...processors import StampLayerProcessor
+from ...layer.processors.video import StampLayerProcessor
 
 
 class StampLayerProcessingStep(ProcessingStep):

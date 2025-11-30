@@ -146,8 +146,8 @@ def tts(text, output, voice, pitch, speed, volume, format, ssml):
     TEXT: 変換するテキスト (または --text-file でファイルから読み込み)
     """
     try:
-        from teto_core.models.builders.tts import TTSBuilder
-        from teto_core.processors.tts import GoogleTTSProcessor
+        from teto_core.tts.builders import TTSBuilder
+        from teto_core.tts.processors import GoogleTTSProcessor
 
         console.print("[cyan]テキスト音声変換を開始します...[/cyan]\n")
 

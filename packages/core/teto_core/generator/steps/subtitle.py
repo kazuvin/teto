@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ..pipeline import ProcessingStep
 from ..context import ProcessingContext
-from ...processors import SubtitleBurnProcessor, SubtitleExportProcessor
+from ...layer.processors.subtitle import SubtitleBurnProcessor, SubtitleExportProcessor
 
 
 class SubtitleProcessingStep(ProcessingStep):

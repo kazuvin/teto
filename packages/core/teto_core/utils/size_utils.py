@@ -1,7 +1,7 @@
 """レスポンシブサイズ計算ユーティリティ"""
 
 from typing import Union
-from ..constants import (
+from ..core.constants import (
     BASE_HEIGHT,
     SIZE_SCALE_MAP,
     BASE_FONT_SIZE,
@@ -17,7 +17,7 @@ from ..constants import (
     BASE_MARGIN_TOP,
     BASE_MAX_TEXT_WIDTH_OFFSET
 )
-from ..types import ResponsiveSize
+from ..core.types import ResponsiveSize
 
 
 def get_scale_factor(video_height: int) -> float:

@@ -2,7 +2,7 @@
 
 from ..pipeline import ProcessingStep
 from ..context import ProcessingContext
-from ...processors import AudioProcessor
+from ...layer.processors import AudioProcessor
 
 
 class AudioLayerProcessingStep(ProcessingStep):

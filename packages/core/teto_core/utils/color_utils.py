@@ -1,6 +1,6 @@
 """カラー関連のユーティリティ関数"""
 
-from ..constants import COLOR_MAP
+from ..core.constants import COLOR_MAP
 
 
 def parse_color(color: str) -> tuple[int, int, int]:

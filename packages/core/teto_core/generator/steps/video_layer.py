@@ -2,7 +2,7 @@
 
 from ..pipeline import ProcessingStep
 from ..context import ProcessingContext
-from ...processors import VideoProcessor
+from ...layer.processors import VideoProcessor
 
 
 class VideoLayerProcessingStep(ProcessingStep):
