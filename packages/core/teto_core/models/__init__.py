@@ -9,6 +9,13 @@ from .layers import (
 )
 from .output import OutputConfig
 from .effects import AnimationEffect
+from .tts import (
+    GoogleTTSVoiceConfig,
+    GoogleTTSAudioConfig,
+    TTSRequest,
+    TTSResult,
+    TTSSegment,
+)
 from .builders import (
     ProjectBuilder,
     VideoLayerBuilder,
@@ -17,6 +24,7 @@ from .builders import (
     SubtitleLayerBuilder,
     SubtitleItemBuilder,
     StampLayerBuilder,
+    TTSBuilder,
 )
 
 __all__ = [
@@ -30,6 +38,11 @@ __all__ = [
     "StampLayer",
     "OutputConfig",
     "AnimationEffect",
+    "GoogleTTSVoiceConfig",
+    "GoogleTTSAudioConfig",
+    "TTSRequest",
+    "TTSResult",
+    "TTSSegment",
     "ProjectBuilder",
     "VideoLayerBuilder",
     "ImageLayerBuilder",
@@ -37,4 +50,5 @@ __all__ = [
     "SubtitleLayerBuilder",
     "SubtitleItemBuilder",
     "StampLayerBuilder",
+    "TTSBuilder",
 ]
