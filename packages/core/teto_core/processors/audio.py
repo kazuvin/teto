@@ -1,14 +1,22 @@
 """音声処理プロセッサー"""
 
+from pathlib import Path
 from moviepy import AudioFileClip, CompositeAudioClip
 from ..models.layers import AudioLayer
+from .base import ProcessorBase
 
 
-class AudioProcessor:
-    """音声処理を担当するプロセッサー"""
+class AudioLayerProcessor(ProcessorBase[AudioLayer, AudioFileClip]):
+    """音声レイヤー処理プロセッサー"""
 
-    @staticmethod
-    def load_audio_layer(layer: AudioLayer) -> AudioFileClip:
+    def validate(self, layer: AudioLayer, **kwargs) -> bool:
+        """音声ファイルの存在チェック"""
+        if not Path(layer.path).exists():
+            print(f"Warning: Audio file not found: {layer.path}")
+            return False
+        return True
+
+    def process(self, layer: AudioLayer, **kwargs) -> AudioFileClip:
         """音声レイヤーを読み込む"""
         clip = AudioFileClip(layer.path)
 
@@ -25,13 +33,24 @@ class AudioProcessor:
 
         return clip
 
-    @staticmethod
-    def process_audio_timeline(layers: list[AudioLayer]) -> CompositeAudioClip | None:
+
+class AudioProcessor(ProcessorBase[list[AudioLayer], CompositeAudioClip | None]):
+    """音声タイムライン処理プロセッサー"""
+
+    def __init__(self, audio_processor: AudioLayerProcessor = None):
+        self.audio_processor = audio_processor or AudioLayerProcessor()
+
+    def validate(self, layers: list[AudioLayer], **kwargs) -> bool:
+        """レイヤーリストのバリデーション"""
+        # 空の場合も許可（Noneを返すため）
+        return True
+
+    def process(self, layers: list[AudioLayer], **kwargs) -> CompositeAudioClip | None:
         """音声レイヤーを処理して合成"""
         if not layers:
             return None
 
-        audio_clips = [AudioProcessor.load_audio_layer(layer) for layer in layers]
+        audio_clips = [self.audio_processor.execute(layer) for layer in layers]
 
         # 複数の音声を合成
         if len(audio_clips) == 1:

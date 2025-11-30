@@ -9,15 +9,28 @@ from moviepy import (
 )
 from ..models.layers import VideoLayer, ImageLayer, StampLayer
 from .effect import EffectProcessor
+from .base import ProcessorBase
 from typing import Union
 
 
-class VideoProcessor:
-    """動画・画像処理を担当するプロセッサー"""
+class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
+    """動画レイヤー処理プロセッサー"""
 
-    @staticmethod
-    def load_video_layer(layer: VideoLayer, output_size: tuple[int, int] = None) -> VideoFileClip:
+    def __init__(self, effect_processor: EffectProcessor = None):
+        self.effect_processor = effect_processor or EffectProcessor()
+
+    def validate(self, layer: VideoLayer, **kwargs) -> bool:
+        """動画ファイルの存在チェック"""
+        if not Path(layer.path).exists():
+            print(f"Warning: Video file not found: {layer.path}")
+            return False
+        return True
+
+    def process(self, layer: VideoLayer, **kwargs) -> VideoFileClip:
         """動画レイヤーを読み込む"""
+        output_size = kwargs.get('output_size')
+
+        # 動画を読み込む
         clip = VideoFileClip(layer.path)
 
         # 音量調整
@@ -30,16 +43,37 @@ class VideoProcessor:
 
         # エフェクトを適用
         if layer.effects and output_size:
-            clip = EffectProcessor.apply_effects(clip, layer.effects, output_size)
+            clip = self.effect_processor.apply_effects(clip, layer.effects, output_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
 
         return clip
 
-    @staticmethod
-    def load_image_layer(layer: ImageLayer, target_size: tuple[int, int]) -> ImageClip:
+
+class ImageLayerProcessor(ProcessorBase[ImageLayer, ImageClip]):
+    """画像レイヤー処理プロセッサー"""
+
+    def __init__(self, effect_processor: EffectProcessor = None):
+        self.effect_processor = effect_processor or EffectProcessor()
+
+    def validate(self, layer: ImageLayer, **kwargs) -> bool:
+        """画像ファイルの存在チェック"""
+        if not Path(layer.path).exists():
+            print(f"Warning: Image file not found: {layer.path}")
+            return False
+
+        target_size = kwargs.get('target_size')
+        if not target_size:
+            print("Warning: target_size is required for ImageLayer")
+            return False
+
+        return True
+
+    def process(self, layer: ImageLayer, **kwargs) -> ImageClip:
         """画像レイヤーを読み込む"""
+        target_size = kwargs['target_size']
+
         clip = ImageClip(layer.path, duration=layer.duration)
 
         # リサイズして中央配置
@@ -49,15 +83,28 @@ class VideoProcessor:
 
         # エフェクトを適用
         if layer.effects:
-            clip = EffectProcessor.apply_effects(clip, layer.effects, target_size)
+            clip = self.effect_processor.apply_effects(clip, layer.effects, target_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
 
         return clip
 
-    @staticmethod
-    def load_stamp_layer(layer: StampLayer) -> ImageClip:
+
+class StampLayerProcessor(ProcessorBase[StampLayer, ImageClip]):
+    """スタンプレイヤー処理プロセッサー"""
+
+    def __init__(self, effect_processor: EffectProcessor = None):
+        self.effect_processor = effect_processor or EffectProcessor()
+
+    def validate(self, layer: StampLayer, **kwargs) -> bool:
+        """スタンプファイルの存在チェック"""
+        if not Path(layer.path).exists():
+            print(f"Warning: Stamp file not found: {layer.path}")
+            return False
+        return True
+
+    def process(self, layer: StampLayer, **kwargs) -> ImageClip:
         """スタンプレイヤーを読み込む"""
         clip = ImageClip(layer.path, duration=layer.duration)
 
@@ -72,33 +119,62 @@ class VideoProcessor:
         if layer.effects:
             # スタンプのサイズを取得（スケール適用後）
             stamp_size = (int(clip.w), int(clip.h))
-            clip = EffectProcessor.apply_effects(clip, layer.effects, stamp_size)
+            clip = self.effect_processor.apply_effects(clip, layer.effects, stamp_size)
 
         # 開始時間の設定
         clip = clip.with_start(layer.start_time)
 
         return clip
 
-    @staticmethod
-    def process_video_timeline(
+
+class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFileClip]):
+    """動画タイムライン処理プロセッサー"""
+
+    def __init__(
+        self,
+        video_processor: VideoLayerProcessor = None,
+        image_processor: ImageLayerProcessor = None
+    ):
+        self.video_processor = video_processor or VideoLayerProcessor()
+        self.image_processor = image_processor or ImageLayerProcessor()
+
+    def validate(self, layers: list, **kwargs) -> bool:
+        """レイヤーリストのバリデーション"""
+        if not layers:
+            print("Error: At least one video or image layer is required")
+            return False
+
+        output_size = kwargs.get('output_size')
+        if not output_size:
+            print("Error: output_size is required")
+            return False
+
+        return True
+
+    def process(
+        self,
         layers: list[Union[VideoLayer, ImageLayer]],
-        output_size: tuple[int, int],
+        **kwargs
     ) -> VideoFileClip:
         """動画・画像レイヤーをタイムライン順に処理"""
+        output_size = kwargs['output_size']
         clips = []
 
         for layer in layers:
             if isinstance(layer, VideoLayer):
-                clip = VideoProcessor.load_video_layer(layer, output_size)
+                clip = self.video_processor.execute(
+                    layer,
+                    output_size=output_size
+                )
             elif isinstance(layer, ImageLayer):
-                clip = VideoProcessor.load_image_layer(layer, output_size)
+                clip = self.image_processor.execute(
+                    layer,
+                    target_size=output_size
+                )
             else:
                 continue
 
             clips.append(clip)
-
-        if not clips:
-            raise ValueError("少なくとも1つの動画または画像レイヤーが必要です")
 
         # すべてのクリップを連結
         final_clip = concatenate_videoclips(clips, method="compose")

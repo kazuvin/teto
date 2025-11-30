@@ -13,10 +13,12 @@ from .subtitle_renderers import (
     ShadowStyleRenderer,
     DropShadowStyleRenderer,
 )
+from .base import ProcessorBase
+from typing import Optional
 
 
-class SubtitleProcessor:
-    """字幕処理を担当するプロセッサー"""
+class SubtitleBurnProcessor(ProcessorBase[tuple[VideoClip, list[SubtitleLayer]], VideoClip]):
+    """字幕焼き込みプロセッサー"""
 
     # Style Renderer のマッピング
     _style_renderers: dict[str, SubtitleStyleRenderer] = {
@@ -28,8 +30,49 @@ class SubtitleProcessor:
         # "3d": ThreeDStyleRenderer(),
     }
 
-    @staticmethod
-    def _calculate_position(layer: SubtitleLayer, clip_height: int, video_size: tuple[int, int]) -> tuple:
+    def __init__(self, style_renderers: Optional[dict[str, SubtitleStyleRenderer]] = None):
+        """初期化
+
+        Args:
+            style_renderers: カスタムスタイルレンダラー（省略時はデフォルトを使用）
+        """
+        if style_renderers:
+            self._style_renderers = style_renderers
+
+    def validate(self, data: tuple[VideoClip, list[SubtitleLayer]], **kwargs) -> bool:
+        """バリデーション"""
+        video, subtitle_layers = data
+        if video is None:
+            print("Error: Video is None")
+            return False
+        return True
+
+    def process(self, data: tuple[VideoClip, list[SubtitleLayer]], **kwargs) -> VideoClip:
+        """動画に字幕を焼き込む"""
+        video, subtitle_layers = data
+
+        if not subtitle_layers:
+            return video
+
+        subtitle_clips = []
+
+        for layer in subtitle_layers:
+            for item in layer.items:
+                try:
+                    clip = self._create_subtitle_clip(
+                        item, layer, (video.w, video.h)
+                    )
+                    subtitle_clips.append(clip)
+                except Exception as e:
+                    print(f"Warning: Failed to create subtitle clip: {e}")
+                    continue
+
+        if subtitle_clips:
+            return CompositeVideoClip([video] + subtitle_clips, size=(video.w, video.h))
+        else:
+            return video
+
+    def _calculate_position(self, layer: SubtitleLayer, clip_height: int, video_size: tuple[int, int]) -> tuple:
         """レイヤー設定に基づいてクリップの位置を計算する
 
         Args:
@@ -50,9 +93,8 @@ class SubtitleProcessor:
         else:  # center
             return ("center", "center")
 
-    @staticmethod
-    def create_subtitle_clip(
-        item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int]
+    def _create_subtitle_clip(
+        self, item: SubtitleItem, layer: SubtitleLayer, video_size: tuple[int, int]
     ) -> VideoClip:
         """字幕アイテムからテキストクリップを作成"""
         duration = item.end_time - item.start_time
@@ -65,49 +107,56 @@ class SubtitleProcessor:
             font_path = find_system_font(layer.font_weight)
 
         # appearanceに基づいて適切なレンダラーを取得
-        renderer = SubtitleProcessor._style_renderers.get(
-            layer.appearance, SubtitleProcessor._style_renderers["plain"]
+        renderer = self._style_renderers.get(
+            layer.appearance, self._style_renderers["plain"]
         )
 
         # レンダラーを使ってクリップを作成
         clip, clip_height = renderer.render(item, layer, video_size, font_path, duration)
 
         # 位置の計算
-        position = SubtitleProcessor._calculate_position(layer, clip_height, video_size)
+        position = self._calculate_position(layer, clip_height, video_size)
         return clip.with_position(position).with_start(item.start_time).with_duration(duration)
 
-    @staticmethod
-    def burn_subtitles(
-        video: VideoClip, subtitle_layers: list[SubtitleLayer]
-    ) -> VideoClip:
-        """動画に字幕を焼き込む"""
-        if not subtitle_layers:
-            return video
 
-        subtitle_clips = []
+class SubtitleExportProcessor(ProcessorBase[list[SubtitleLayer], None]):
+    """字幕エクスポートプロセッサー"""
 
-        for layer in subtitle_layers:
-            for item in layer.items:
-                try:
-                    clip = SubtitleProcessor.create_subtitle_clip(
-                        item, layer, (video.w, video.h)
-                    )
-                    subtitle_clips.append(clip)
-                except Exception as e:
-                    print(f"Warning: Failed to create subtitle clip: {e}")
-                    continue
+    def __init__(self, format: str = "srt"):
+        """初期化
 
-        if subtitle_clips:
-            return CompositeVideoClip([video] + subtitle_clips, size=(video.w, video.h))
-        else:
-            return video
+        Args:
+            format: エクスポートフォーマット（"srt" または "vtt"）
+        """
+        self.format = format
 
-    @staticmethod
-    def export_srt(subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
-        """SRT形式で字幕をエクスポート"""
-        if not subtitle_layers:
+    def validate(self, layers: list[SubtitleLayer], **kwargs) -> bool:
+        """バリデーション"""
+        output_path = kwargs.get('output_path')
+        if not output_path:
+            print("Error: output_path is required")
+            return False
+
+        if self.format not in ["srt", "vtt"]:
+            print(f"Error: Unsupported format: {self.format}")
+            return False
+
+        return True
+
+    def process(self, layers: list[SubtitleLayer], **kwargs) -> None:
+        """字幕をエクスポート"""
+        output_path = kwargs['output_path']
+
+        if not layers:
             return
 
+        if self.format == "srt":
+            self._export_srt(layers, output_path)
+        elif self.format == "vtt":
+            self._export_vtt(layers, output_path)
+
+    def _export_srt(self, subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
+        """SRT形式で字幕をエクスポート"""
         with open(output_path, "w", encoding="utf-8") as f:
             index = 1
             for layer in subtitle_layers:
@@ -121,12 +170,8 @@ class SubtitleProcessor:
 
                     index += 1
 
-    @staticmethod
-    def export_vtt(subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
+    def _export_vtt(self, subtitle_layers: list[SubtitleLayer], output_path: str) -> None:
         """VTT形式で字幕をエクスポート"""
-        if not subtitle_layers:
-            return
-
         with open(output_path, "w", encoding="utf-8") as f:
             f.write("WEBVTT\n\n")
 

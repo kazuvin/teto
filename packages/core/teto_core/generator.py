@@ -3,7 +3,13 @@
 from pathlib import Path
 from typing import Callable, Any
 from .models import Project
-from .processors import VideoProcessor, AudioProcessor, SubtitleProcessor
+from .processors import (
+    VideoProcessor,
+    AudioProcessor,
+    StampLayerProcessor,
+    SubtitleBurnProcessor,
+    SubtitleExportProcessor,
+)
 
 
 class VideoGenerator:
@@ -12,11 +18,26 @@ class VideoGenerator:
     プラグインシステムにより、カスタム処理を追加可能
     """
 
-    def __init__(self, project: Project):
+    def __init__(
+        self,
+        project: Project,
+        video_processor: VideoProcessor = None,
+        audio_processor: AudioProcessor = None,
+        stamp_processor: StampLayerProcessor = None,
+        subtitle_burn_processor: SubtitleBurnProcessor = None,
+        subtitle_export_processor: SubtitleExportProcessor = None,
+    ):
         self.project = project
         self._pre_hooks: list[Callable[[Project], Any]] = []
         self._post_hooks: list[Callable[[str, Project], Any]] = []
         self._custom_processors: dict[str, Any] = {}
+
+        # プロセッサーの初期化（依存性注入）
+        self.video_processor = video_processor or VideoProcessor()
+        self.audio_processor = audio_processor or AudioProcessor()
+        self.stamp_processor = stamp_processor or StampLayerProcessor()
+        self.subtitle_burn_processor = subtitle_burn_processor or SubtitleBurnProcessor()
+        self.subtitle_export_processor = subtitle_export_processor or SubtitleExportProcessor()
 
     def register_pre_hook(self, hook: Callable[[Project], Any]) -> None:
         """生成前に実行されるフックを登録
@@ -78,15 +99,15 @@ class VideoGenerator:
             progress_callback("動画・画像レイヤーを処理中...")
 
         # 1. 動画・画像レイヤーを処理
-        video_clip = VideoProcessor.process_video_timeline(
-            timeline.video_layers, output_size
+        video_clip = self.video_processor.execute(
+            timeline.video_layers, output_size=output_size
         )
 
         if progress_callback:
             progress_callback("音声レイヤーを処理中...")
 
         # 2. 音声レイヤーを処理
-        audio_clip = AudioProcessor.process_audio_timeline(timeline.audio_layers)
+        audio_clip = self.audio_processor.execute(timeline.audio_layers)
 
         # 3. 既存の動画音声と追加音声を合成
         if audio_clip is not None:
@@ -109,7 +130,7 @@ class VideoGenerator:
 
             stamp_clips = []
             for stamp_layer in timeline.stamp_layers:
-                stamp_clip = VideoProcessor.load_stamp_layer(stamp_layer)
+                stamp_clip = self.stamp_processor.execute(stamp_layer)
                 stamp_clips.append(stamp_clip)
 
             # ベース動画とスタンプを合成
@@ -123,18 +144,16 @@ class VideoGenerator:
 
         if subtitle_mode == "burn":
             # 字幕を動画に焼き込む
-            video_clip = SubtitleProcessor.burn_subtitles(
-                video_clip, timeline.subtitle_layers
+            video_clip = self.subtitle_burn_processor.execute(
+                (video_clip, timeline.subtitle_layers)
             )
         elif subtitle_mode in ["srt", "vtt"]:
             # 字幕ファイルを別途出力
             subtitle_path = Path(output_config.path).with_suffix(
                 f".{subtitle_mode}"
             )
-            if subtitle_mode == "srt":
-                SubtitleProcessor.export_srt(timeline.subtitle_layers, str(subtitle_path))
-            else:
-                SubtitleProcessor.export_vtt(timeline.subtitle_layers, str(subtitle_path))
+            export_processor = SubtitleExportProcessor(format=subtitle_mode)
+            export_processor.execute(timeline.subtitle_layers, output_path=str(subtitle_path))
 
         if progress_callback:
             progress_callback("動画を出力中...")
