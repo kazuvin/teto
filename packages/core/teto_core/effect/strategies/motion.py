@@ -14,7 +14,7 @@ class ParallaxEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """パララックスを適用"""
         direction = effect.direction or "right"
@@ -38,9 +38,9 @@ class ParallaxEffect(EffectStrategy):
 
             result = np.zeros_like(frame)
             if shift_x > 0:
-                result[:, shift_x:] = frame[:, :w - shift_x]
+                result[:, shift_x:] = frame[:, : w - shift_x]
             elif shift_x < 0:
-                result[:, :w + shift_x] = frame[:, -shift_x:]
+                result[:, : w + shift_x] = frame[:, -shift_x:]
             else:
                 result = frame
 
@@ -56,7 +56,7 @@ class BounceEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """バウンスを適用"""
         direction = effect.direction or "bottom"
@@ -73,11 +73,11 @@ class BounceEffect(EffectStrategy):
             if direction == "bottom":
                 offset = int(h * 0.3 * (1 - bounce_curve))
                 if offset < h:
-                    result[offset:] = frame[:h - offset]
+                    result[offset:] = frame[: h - offset]
             elif direction == "top":
                 offset = int(h * 0.3 * (1 - bounce_curve))
                 if offset < h:
-                    result[:h - offset] = frame[offset:]
+                    result[: h - offset] = frame[offset:]
 
             return result
 

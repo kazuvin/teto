@@ -2,7 +2,7 @@
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from ..core.constants import PUNCTUATION_CHARS, COLOR_MAP
+from ..core.constants import PUNCTUATION_CHARS
 
 
 def create_rounded_rectangle(
@@ -176,6 +176,7 @@ def create_text_image_with_pil(
     """
     # レスポンシブな定数を取得
     from .size_utils import get_responsive_constants
+
     constants = get_responsive_constants(video_height)
 
     # フォントを読み込み
@@ -183,10 +184,12 @@ def create_text_image_with_pil(
         font = load_font_func(font_path, font_size, font_weight)
     else:
         from .font_utils import load_font
+
         font = load_font(font_path, font_size, font_weight)
 
     # 色をRGBに変換
     from .color_utils import parse_color
+
     text_color = parse_color(color)
     stroke_color_rgb = parse_color(stroke_color)
     outer_stroke_color_rgb = parse_color(outer_stroke_color)
@@ -200,7 +203,11 @@ def create_text_image_with_pil(
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
     bbox = dummy_draw.multiline_textbbox(
-        (0, 0), wrapped_text, font=font, spacing=constants["LINE_SPACING"], stroke_width=max_stroke
+        (0, 0),
+        wrapped_text,
+        font=font,
+        spacing=constants["LINE_SPACING"],
+        stroke_width=max_stroke,
     )
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
@@ -212,7 +219,10 @@ def create_text_image_with_pil(
     draw = ImageDraw.Draw(img)
 
     # テキスト描画位置
-    text_position = (constants["TEXT_PADDING"] - bbox[0], constants["TEXT_PADDING"] - bbox[1])
+    text_position = (
+        constants["TEXT_PADDING"] - bbox[0],
+        constants["TEXT_PADDING"] - bbox[1],
+    )
 
     # 二重縁取りの場合は3層で描画
     if outer_stroke_width > 0:

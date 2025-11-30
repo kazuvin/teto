@@ -21,23 +21,31 @@ class VideoLayerBuilder:
         self._effects: list[AnimationEffect] = []
         self._transition: TransitionConfig | None = None
 
-    def for_duration(self, duration: float) -> 'VideoLayerBuilder':
+    def for_duration(self, duration: float) -> "VideoLayerBuilder":
         """継続時間を設定"""
         self._duration = duration
         return self
 
-    def with_volume(self, volume: float) -> 'VideoLayerBuilder':
+    def with_volume(self, volume: float) -> "VideoLayerBuilder":
         """音量を設定"""
         self._volume = volume
         return self
 
-    def fade_in(self, duration: float = 1.0, easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut") -> 'VideoLayerBuilder':
+    def fade_in(
+        self,
+        duration: float = 1.0,
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """フェードインエフェクトを追加"""
         effect = AnimationEffect(type="fadein", duration=duration, easing=easing)
         self._effects.append(effect)
         return self
 
-    def fade_out(self, duration: float = 1.0, easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut") -> 'VideoLayerBuilder':
+    def fade_out(
+        self,
+        duration: float = 1.0,
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """フェードアウトエフェクトを追加"""
         effect = AnimationEffect(type="fadeout", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -47,14 +55,11 @@ class VideoLayerBuilder:
         self,
         direction: Literal["left", "right", "top", "bottom"] = "left",
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """スライドインエフェクトを追加"""
         effect = AnimationEffect(
-            type="slideIn",
-            duration=duration,
-            direction=direction,
-            easing=easing
+            type="slideIn", duration=duration, direction=direction, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -63,14 +68,11 @@ class VideoLayerBuilder:
         self,
         direction: Literal["left", "right", "top", "bottom"] = "left",
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """スライドアウトエフェクトを追加"""
         effect = AnimationEffect(
-            type="slideOut",
-            duration=duration,
-            direction=direction,
-            easing=easing
+            type="slideOut", duration=duration, direction=direction, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -80,15 +82,15 @@ class VideoLayerBuilder:
         start_scale: float = 1.0,
         end_scale: float = 1.2,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """ズームエフェクトを追加"""
         effect = AnimationEffect(
             type="zoom",
             duration=duration,
             start_scale=start_scale,
             end_scale=end_scale,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -97,14 +99,11 @@ class VideoLayerBuilder:
         self,
         amount: float = 5.0,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """ブラーエフェクトを追加"""
         effect = AnimationEffect(
-            type="blur",
-            duration=duration,
-            blur_amount=amount,
-            easing=easing
+            type="blur", duration=duration, blur_amount=amount, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -116,8 +115,8 @@ class VideoLayerBuilder:
         saturation: float | None = None,
         contrast: float | None = None,
         brightness: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """カラーグレーディングエフェクトを追加"""
         effect = AnimationEffect(
             type="colorGrade",
@@ -126,7 +125,7 @@ class VideoLayerBuilder:
             saturation=saturation,
             contrast=contrast,
             brightness=brightness,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -135,14 +134,11 @@ class VideoLayerBuilder:
         self,
         amount: float = 0.5,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """ビネットエフェクトを追加"""
         effect = AnimationEffect(
-            type="vignette",
-            duration=duration,
-            vignette_amount=amount,
-            easing=easing
+            type="vignette", duration=duration, vignette_amount=amount, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -151,14 +147,11 @@ class VideoLayerBuilder:
         self,
         intensity: float = 0.5,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """グリッチエフェクトを追加"""
         effect = AnimationEffect(
-            type="glitch",
-            duration=duration,
-            glitch_intensity=intensity,
-            easing=easing
+            type="glitch", duration=duration, glitch_intensity=intensity, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -167,19 +160,16 @@ class VideoLayerBuilder:
         self,
         angle: float,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'VideoLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "VideoLayerBuilder":
         """回転エフェクトを追加"""
         effect = AnimationEffect(
-            type="rotate",
-            duration=duration,
-            rotation_angle=angle,
-            easing=easing
+            type="rotate", duration=duration, rotation_angle=angle, easing=easing
         )
         self._effects.append(effect)
         return self
 
-    def crossfade(self, duration: float = 0.5) -> 'VideoLayerBuilder':
+    def crossfade(self, duration: float = 0.5) -> "VideoLayerBuilder":
         """次のクリップへのクロスフェードトランジションを設定"""
         self._transition = TransitionConfig(type="crossfade", duration=duration)
         return self
@@ -207,8 +197,8 @@ class ImageLayerBuilder:
     def fade_in(
         self,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """フェードインエフェクトを追加"""
         effect = AnimationEffect(type="fadein", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -217,8 +207,8 @@ class ImageLayerBuilder:
     def fade_out(
         self,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """フェードアウトエフェクトを追加"""
         effect = AnimationEffect(type="fadeout", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -231,8 +221,8 @@ class ImageLayerBuilder:
         pan_start: tuple[float, float] = (0.0, 0.0),
         pan_end: tuple[float, float] = (0.1, 0.1),
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """Ken Burns エフェクトを追加"""
         effect = AnimationEffect(
             type="kenBurns",
@@ -241,7 +231,7 @@ class ImageLayerBuilder:
             end_scale=end_scale,
             pan_start=pan_start,
             pan_end=pan_end,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -251,15 +241,15 @@ class ImageLayerBuilder:
         start_scale: float = 1.0,
         end_scale: float = 1.2,
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """ズームエフェクトを追加"""
         effect = AnimationEffect(
             type="zoom",
             duration=duration or self._duration,
             start_scale=start_scale,
             end_scale=end_scale,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -268,14 +258,11 @@ class ImageLayerBuilder:
         self,
         direction: Literal["left", "right", "top", "bottom"] = "left",
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """スライドインエフェクトを追加"""
         effect = AnimationEffect(
-            type="slideIn",
-            duration=duration,
-            direction=direction,
-            easing=easing
+            type="slideIn", duration=duration, direction=direction, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -284,14 +271,11 @@ class ImageLayerBuilder:
         self,
         amount: float = 5.0,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """ブラーエフェクトを追加"""
         effect = AnimationEffect(
-            type="blur",
-            duration=duration,
-            blur_amount=amount,
-            easing=easing
+            type="blur", duration=duration, blur_amount=amount, easing=easing
         )
         self._effects.append(effect)
         return self
@@ -303,8 +287,8 @@ class ImageLayerBuilder:
         saturation: float | None = None,
         contrast: float | None = None,
         brightness: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """カラーグレーディングエフェクトを追加"""
         effect = AnimationEffect(
             type="colorGrade",
@@ -313,7 +297,7 @@ class ImageLayerBuilder:
             saturation=saturation,
             contrast=contrast,
             brightness=brightness,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -322,14 +306,14 @@ class ImageLayerBuilder:
         self,
         amount: float = 0.5,
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """ビネットエフェクトを追加"""
         effect = AnimationEffect(
             type="vignette",
             duration=duration or self._duration,
             vignette_amount=amount,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -338,19 +322,19 @@ class ImageLayerBuilder:
         self,
         angle: float,
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'ImageLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "ImageLayerBuilder":
         """回転エフェクトを追加"""
         effect = AnimationEffect(
             type="rotate",
             duration=duration or self._duration,
             rotation_angle=angle,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
 
-    def crossfade(self, duration: float = 0.5) -> 'ImageLayerBuilder':
+    def crossfade(self, duration: float = 0.5) -> "ImageLayerBuilder":
         """次のクリップへのクロスフェードトランジションを設定"""
         self._transition = TransitionConfig(type="crossfade", duration=duration)
         return self
@@ -374,17 +358,17 @@ class AudioLayerBuilder:
         self._duration = None
         self._volume = 1.0
 
-    def at(self, start_time: float) -> 'AudioLayerBuilder':
+    def at(self, start_time: float) -> "AudioLayerBuilder":
         """開始時間を設定"""
         self._start_time = start_time
         return self
 
-    def for_duration(self, duration: float) -> 'AudioLayerBuilder':
+    def for_duration(self, duration: float) -> "AudioLayerBuilder":
         """継続時間を設定"""
         self._duration = duration
         return self
 
-    def with_volume(self, volume: float) -> 'AudioLayerBuilder':
+    def with_volume(self, volume: float) -> "AudioLayerBuilder":
         """音量を設定"""
         self._volume = volume
         return self
@@ -431,9 +415,13 @@ class SubtitleLayerBuilder:
         self._outer_stroke_color = "white"
         self._bg_color = "black@0.5"
         self._position: Literal["bottom", "top", "center"] = "bottom"
-        self._appearance: Literal["plain", "background", "shadow", "drop-shadow"] = "background"
+        self._appearance: Literal["plain", "background", "shadow", "drop-shadow"] = (
+            "background"
+        )
 
-    def add_item(self, text: str, start_time: float, end_time: float) -> 'SubtitleLayerBuilder':
+    def add_item(
+        self, text: str, start_time: float, end_time: float
+    ) -> "SubtitleLayerBuilder":
         """字幕アイテムを追加"""
         item = SubtitleItem(text=text, start_time=start_time, end_time=end_time)
         self._items.append(item)
@@ -444,8 +432,8 @@ class SubtitleLayerBuilder:
         size: Union[int, ResponsiveSize] = "base",
         color: str = "white",
         google_font: str | None = None,
-        weight: Literal["normal", "bold"] = "normal"
-    ) -> 'SubtitleLayerBuilder':
+        weight: Literal["normal", "bold"] = "normal",
+    ) -> "SubtitleLayerBuilder":
         """フォント設定"""
         self._font_size = size
         self._font_color = color
@@ -458,8 +446,8 @@ class SubtitleLayerBuilder:
         width: Union[int, ResponsiveSize] = 0,
         color: str = "black",
         outer_width: Union[int, ResponsiveSize] = 0,
-        outer_color: str = "white"
-    ) -> 'SubtitleLayerBuilder':
+        outer_color: str = "white",
+    ) -> "SubtitleLayerBuilder":
         """縁取り設定"""
         self._stroke_width = width
         self._stroke_color = color
@@ -470,9 +458,11 @@ class SubtitleLayerBuilder:
     def style(
         self,
         position: Literal["bottom", "top", "center"] = "bottom",
-        appearance: Literal["plain", "background", "shadow", "drop-shadow"] = "background",
-        bg_color: str | None = "black@0.5"
-    ) -> 'SubtitleLayerBuilder':
+        appearance: Literal[
+            "plain", "background", "shadow", "drop-shadow"
+        ] = "background",
+        bg_color: str | None = "black@0.5",
+    ) -> "SubtitleLayerBuilder":
         """スタイル設定"""
         self._position = position
         self._appearance = appearance
@@ -509,18 +499,20 @@ class StampLayerBuilder:
         self._scale = 1.0
         self._effects: list[AnimationEffect] = []
 
-    def at(self, start_time: float) -> 'StampLayerBuilder':
+    def at(self, start_time: float) -> "StampLayerBuilder":
         """開始時間を設定"""
         self._start_time = start_time
         return self
 
-    def position(self, x: Union[int, float], y: Union[int, float]) -> 'StampLayerBuilder':
+    def position(
+        self, x: Union[int, float], y: Union[int, float]
+    ) -> "StampLayerBuilder":
         """位置を設定（ピクセルまたは0-1の割合）"""
         self._position_x = x
         self._position_y = y
         return self
 
-    def with_scale(self, scale: float) -> 'StampLayerBuilder':
+    def with_scale(self, scale: float) -> "StampLayerBuilder":
         """スケールを設定"""
         self._scale = scale
         return self
@@ -528,8 +520,8 @@ class StampLayerBuilder:
     def fade_in(
         self,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'StampLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "StampLayerBuilder":
         """フェードインエフェクトを追加"""
         effect = AnimationEffect(type="fadein", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -538,8 +530,8 @@ class StampLayerBuilder:
     def fade_out(
         self,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'StampLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "StampLayerBuilder":
         """フェードアウトエフェクトを追加"""
         effect = AnimationEffect(type="fadeout", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -548,8 +540,8 @@ class StampLayerBuilder:
     def bounce(
         self,
         duration: float = 1.0,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'StampLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "StampLayerBuilder":
         """バウンスエフェクトを追加"""
         effect = AnimationEffect(type="bounce", duration=duration, easing=easing)
         self._effects.append(effect)
@@ -559,14 +551,14 @@ class StampLayerBuilder:
         self,
         angle: float,
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'StampLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "StampLayerBuilder":
         """回転エフェクトを追加"""
         effect = AnimationEffect(
             type="rotate",
             duration=duration or self._duration,
             rotation_angle=angle,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self
@@ -576,15 +568,15 @@ class StampLayerBuilder:
         start_scale: float = 1.0,
         end_scale: float = 1.2,
         duration: float | None = None,
-        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut"
-    ) -> 'StampLayerBuilder':
+        easing: Literal["linear", "easeIn", "easeOut", "easeInOut"] = "easeInOut",
+    ) -> "StampLayerBuilder":
         """ズームエフェクトを追加"""
         effect = AnimationEffect(
             type="zoom",
             duration=duration or self._duration,
             start_scale=start_scale,
             end_scale=end_scale,
-            easing=easing
+            easing=easing,
         )
         self._effects.append(effect)
         return self

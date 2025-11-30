@@ -29,7 +29,7 @@ class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
 
     def process(self, layer: VideoLayer, **kwargs) -> VideoFileClip:
         """動画レイヤーを読み込む"""
-        output_size = kwargs.get('output_size')
+        output_size = kwargs.get("output_size")
 
         # 動画を読み込む
         clip = VideoFileClip(layer.path)
@@ -61,7 +61,7 @@ class ImageLayerProcessor(ProcessorBase[ImageLayer, ImageClip]):
             print(f"Warning: Image file not found: {layer.path}")
             return False
 
-        target_size = kwargs.get('target_size')
+        target_size = kwargs.get("target_size")
         if not target_size:
             print("Warning: target_size is required for ImageLayer")
             return False
@@ -70,7 +70,7 @@ class ImageLayerProcessor(ProcessorBase[ImageLayer, ImageClip]):
 
     def process(self, layer: ImageLayer, **kwargs) -> ImageClip:
         """画像レイヤーを読み込む"""
-        target_size = kwargs['target_size']
+        target_size = kwargs["target_size"]
 
         clip = ImageClip(layer.path, duration=layer.duration)
 
@@ -128,7 +128,7 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
     def __init__(
         self,
         video_processor: VideoLayerProcessor = None,
-        image_processor: ImageLayerProcessor = None
+        image_processor: ImageLayerProcessor = None,
     ):
         self.video_processor = video_processor or VideoLayerProcessor()
         self.image_processor = image_processor or ImageLayerProcessor()
@@ -139,7 +139,7 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
             print("Error: At least one video or image layer is required")
             return False
 
-        output_size = kwargs.get('output_size')
+        output_size = kwargs.get("output_size")
         if not output_size:
             print("Error: output_size is required")
             return False
@@ -147,27 +147,19 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
         return True
 
     def process(
-        self,
-        layers: list[Union[VideoLayer, ImageLayer]],
-        **kwargs
+        self, layers: list[Union[VideoLayer, ImageLayer]], **kwargs
     ) -> VideoFileClip:
         """動画・画像レイヤーをタイムライン順に処理（トランジション対応）"""
-        output_size = kwargs['output_size']
+        output_size = kwargs["output_size"]
 
         # レイヤーとクリップのペアを作成
         layer_clips: list[tuple[Union[VideoLayer, ImageLayer], any]] = []
 
         for layer in layers:
             if isinstance(layer, VideoLayer):
-                clip = self.video_processor.execute(
-                    layer,
-                    output_size=output_size
-                )
+                clip = self.video_processor.execute(layer, output_size=output_size)
             elif isinstance(layer, ImageLayer):
-                clip = self.image_processor.execute(
-                    layer,
-                    target_size=output_size
-                )
+                clip = self.image_processor.execute(layer, target_size=output_size)
             else:
                 continue
 
@@ -203,7 +195,9 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
             composite_clips.append(clip)
 
             # 次のクリップの開始時間を計算（トランジション分オーバーラップ）
-            overlap = layer.transition.duration if (not is_last and layer.transition) else 0
+            overlap = (
+                layer.transition.duration if (not is_last and layer.transition) else 0
+            )
             current_time += clip.duration - overlap
 
         # CompositeVideoClip で合成

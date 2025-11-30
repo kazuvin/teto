@@ -14,7 +14,7 @@ class RotateEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """回転を適用"""
         rotation_angle = effect.rotation_angle or 360

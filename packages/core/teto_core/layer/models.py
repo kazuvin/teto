@@ -9,7 +9,9 @@ if TYPE_CHECKING:
 class BaseLayer(BaseModel):
     """レイヤーの基底クラス"""
 
-    duration: float | None = Field(None, description="継続時間（秒）。None の場合は自動", ge=0)
+    duration: float | None = Field(
+        None, description="継続時間（秒）。None の場合は自動", ge=0
+    )
 
 
 class OverlayBaseLayer(BaseLayer):
@@ -24,8 +26,12 @@ class VideoLayer(BaseLayer):
     type: Literal["video"] = "video"
     path: str = Field(..., description="動画ファイルパス")
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
-    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
-    transition: "TransitionConfig | None" = Field(None, description="次のクリップへのトランジション")
+    effects: list["AnimationEffect"] = Field(
+        default_factory=list, description="アニメーション効果"
+    )
+    transition: "TransitionConfig | None" = Field(
+        None, description="次のクリップへのトランジション"
+    )
 
 
 class ImageLayer(BaseLayer):
@@ -34,8 +40,12 @@ class ImageLayer(BaseLayer):
     type: Literal["image"] = "image"
     path: str = Field(..., description="画像ファイルパス")
     duration: float = Field(..., description="表示時間（秒）", gt=0)
-    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
-    transition: "TransitionConfig | None" = Field(None, description="次のクリップへのトランジション")
+    effects: list["AnimationEffect"] = Field(
+        default_factory=list, description="アニメーション効果"
+    )
+    transition: "TransitionConfig | None" = Field(
+        None, description="次のクリップへのトランジション"
+    )
 
 
 class AudioLayer(OverlayBaseLayer):
@@ -52,10 +62,16 @@ class StampLayer(OverlayBaseLayer):
     type: Literal["stamp"] = "stamp"
     path: str = Field(..., description="画像ファイルパス")
     duration: float = Field(..., description="表示時間（秒）", gt=0)
-    position_x: Union[int, float] = Field(0, description="X座標（ピクセルまたは0-1の割合）")
-    position_y: Union[int, float] = Field(0, description="Y座標（ピクセルまたは0-1の割合）")
+    position_x: Union[int, float] = Field(
+        0, description="X座標（ピクセルまたは0-1の割合）"
+    )
+    position_y: Union[int, float] = Field(
+        0, description="Y座標（ピクセルまたは0-1の割合）"
+    )
     scale: float = Field(1.0, description="スケール", gt=0)
-    effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
+    effects: list["AnimationEffect"] = Field(
+        default_factory=list, description="アニメーション効果"
+    )
 
 
 class SubtitleItem(BaseModel):
@@ -70,21 +86,40 @@ class SubtitleLayer(BaseModel):
     """字幕レイヤー"""
 
     type: Literal["subtitle"] = "subtitle"
-    items: list[SubtitleItem] = Field(default_factory=list, description="字幕アイテムのリスト")
-    font_size: Union[int, ResponsiveSize] = Field("base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）")
+    items: list[SubtitleItem] = Field(
+        default_factory=list, description="字幕アイテムのリスト"
+    )
+    font_size: Union[int, ResponsiveSize] = Field(
+        "base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）"
+    )
     font_color: str = Field("white", description="フォントカラー")
-    google_font: str | None = Field(None, description="Google Fontsのフォント名（例: 'Noto Sans JP', 'Roboto'）")
-    font_weight: Literal["normal", "bold"] = Field("normal", description="フォントの太さ")
-    stroke_width: Union[int, ResponsiveSize] = Field(0, description="縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）")
+    google_font: str | None = Field(
+        None, description="Google Fontsのフォント名（例: 'Noto Sans JP', 'Roboto'）"
+    )
+    font_weight: Literal["normal", "bold"] = Field(
+        "normal", description="フォントの太さ"
+    )
+    stroke_width: Union[int, ResponsiveSize] = Field(
+        0, description="縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）"
+    )
     stroke_color: str = Field("black", description="縁取りの色")
-    outer_stroke_width: Union[int, ResponsiveSize] = Field(0, description="外側縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）")
+    outer_stroke_width: Union[int, ResponsiveSize] = Field(
+        0, description="外側縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）"
+    )
     outer_stroke_color: str = Field("white", description="外側縁取りの色")
     bg_color: str | None = Field("black@0.5", description="背景色（透明度付き）")
-    position: Literal["bottom", "top", "center"] = Field("bottom", description="字幕位置")
-    appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field("background", description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き、drop-shadow: ぼかしシャドウ付き）")
+    position: Literal["bottom", "top", "center"] = Field(
+        "bottom", description="字幕位置"
+    )
+    appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field(
+        "background",
+        description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き、drop-shadow: ぼかしシャドウ付き）",
+    )
+
 
 # Forward reference の解決
-from ..effect.models import AnimationEffect, TransitionConfig
+from ..effect.models import AnimationEffect, TransitionConfig  # noqa: E402
+
 VideoLayer.model_rebuild()
 ImageLayer.model_rebuild()
 StampLayer.model_rebuild()

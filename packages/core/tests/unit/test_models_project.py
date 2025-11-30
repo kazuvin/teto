@@ -2,7 +2,6 @@
 
 import pytest
 import json
-from pathlib import Path
 from pydantic import ValidationError
 from teto_core.models import Project, Timeline, OutputConfig, SubtitleItem
 
@@ -29,7 +28,7 @@ class TestTimeline:
         timeline = Timeline(
             video_layers=[video_layer],
             audio_layers=[audio_layer],
-            subtitle_layers=[subtitle_layer]
+            subtitle_layers=[subtitle_layer],
         )
 
         assert len(timeline.video_layers) == 1
@@ -61,9 +60,7 @@ class TestProject:
         from teto_core.models import VideoLayer
 
         output = OutputConfig(path="/output/video.mp4")
-        timeline = Timeline(
-            video_layers=[VideoLayer(path="/test.mp4")]
-        )
+        timeline = Timeline(video_layers=[VideoLayer(path="/test.mp4")])
         project = Project(output=output, timeline=timeline)
 
         assert len(project.timeline.video_layers) == 1
@@ -102,13 +99,9 @@ class TestProject:
                 "fps": 30,
                 "codec": "libx264",
                 "audio_codec": "aac",
-                "subtitle_mode": "burn"
+                "subtitle_mode": "burn",
             },
-            "timeline": {
-                "video_layers": [],
-                "audio_layers": [],
-                "subtitle_layers": []
-            }
+            "timeline": {"video_layers": [], "audio_layers": [], "subtitle_layers": []},
         }
 
         json_path = temp_dir / "project.json"
@@ -127,21 +120,12 @@ class TestProject:
         """Test saving and loading project produces same result."""
         from teto_core.models import VideoLayer, SubtitleLayer
 
-        output = OutputConfig(
-            path="/output/video.mp4",
-            width=1280,
-            height=720,
-            fps=24
-        )
+        output = OutputConfig(path="/output/video.mp4", width=1280, height=720, fps=24)
         timeline = Timeline(
             video_layers=[VideoLayer(path="/test.mp4")],
-            subtitle_layers=[SubtitleLayer()]
+            subtitle_layers=[SubtitleLayer()],
         )
-        original_project = Project(
-            version="1.5",
-            output=output,
-            timeline=timeline
-        )
+        original_project = Project(version="1.5", output=output, timeline=timeline)
 
         # Save
         json_path = temp_dir / "project.json"
@@ -167,21 +151,19 @@ class TestProject:
         timeline = Timeline(
             video_layers=[
                 VideoLayer(path="/video1.mp4", start_time=0, volume=0.8),
-                ImageLayer(path="/image1.png", duration=5.0, start_time=10)
+                ImageLayer(path="/image1.png", duration=5.0, start_time=10),
             ],
-            audio_layers=[
-                AudioLayer(path="/audio1.mp3", volume=0.5)
-            ],
+            audio_layers=[AudioLayer(path="/audio1.mp3", volume=0.5)],
             subtitle_layers=[
                 SubtitleLayer(
                     items=[
                         SubtitleItem(text="Hello", start_time=0, end_time=2),
-                        SubtitleItem(text="World", start_time=2, end_time=4)
+                        SubtitleItem(text="World", start_time=2, end_time=4),
                     ],
                     font_size="lg",
-                    position="top"
+                    position="top",
                 )
-            ]
+            ],
         )
         project = Project(output=output, timeline=timeline)
 

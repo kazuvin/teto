@@ -1,7 +1,6 @@
 """Integration tests for VideoGenerator."""
 
 import pytest
-from pathlib import Path
 from teto_core import VideoGenerator
 from teto_core.models import Project, OutputConfig, Timeline
 

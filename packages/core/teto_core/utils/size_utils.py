@@ -15,7 +15,7 @@ from ..core.constants import (
     BASE_BG_RADIUS,
     BASE_MARGIN_BOTTOM,
     BASE_MARGIN_TOP,
-    BASE_MAX_TEXT_WIDTH_OFFSET
+    BASE_MAX_TEXT_WIDTH_OFFSET,
 )
 from ..core.types import ResponsiveSize
 
@@ -66,7 +66,7 @@ def get_responsive_constants(video_height: int) -> dict:
 def calculate_size(
     size: Union[int, ResponsiveSize],
     video_height: int,
-    base_value: int = BASE_FONT_SIZE
+    base_value: int = BASE_FONT_SIZE,
 ) -> int:
     """サイズを計算
 
@@ -99,10 +99,7 @@ def calculate_size(
     return int(base_value * scale_factor * size_scale)
 
 
-def calculate_font_size(
-    size: Union[int, ResponsiveSize],
-    video_height: int
-) -> int:
+def calculate_font_size(size: Union[int, ResponsiveSize], video_height: int) -> int:
     """フォントサイズを計算
 
     Args:
@@ -115,10 +112,7 @@ def calculate_font_size(
     return calculate_size(size, video_height, BASE_FONT_SIZE)
 
 
-def calculate_stroke_width(
-    size: Union[int, ResponsiveSize],
-    video_height: int
-) -> int:
+def calculate_stroke_width(size: Union[int, ResponsiveSize], video_height: int) -> int:
     """縁取り幅を計算
 
     Args:
@@ -131,10 +125,7 @@ def calculate_stroke_width(
     return calculate_size(size, video_height, BASE_BORDER_WIDTH)
 
 
-def calculate_padding(
-    size: Union[int, ResponsiveSize],
-    video_height: int
-) -> int:
+def calculate_padding(size: Union[int, ResponsiveSize], video_height: int) -> int:
     """パディングを計算
 
     Args:
@@ -147,10 +138,7 @@ def calculate_padding(
     return calculate_size(size, video_height, BASE_PADDING)
 
 
-def calculate_margin(
-    size: Union[int, ResponsiveSize],
-    video_height: int
-) -> int:
+def calculate_margin(size: Union[int, ResponsiveSize], video_height: int) -> int:
     """マージンを計算
 
     Args:

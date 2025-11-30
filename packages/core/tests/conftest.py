@@ -19,7 +19,7 @@ def sample_image_path(temp_dir):
     """Create a sample image for testing."""
     from PIL import Image
 
-    img = Image.new('RGB', (100, 100), color='red')
+    img = Image.new("RGB", (100, 100), color="red")
     img_path = temp_dir / "test_image.png"
     img.save(img_path)
     return img_path

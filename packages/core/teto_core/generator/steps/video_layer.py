@@ -8,7 +8,9 @@ from ...layer.processors import VideoProcessor
 class VideoLayerProcessingStep(ProcessingStep):
     """動画・画像レイヤー処理ステップ"""
 
-    def __init__(self, video_processor: VideoProcessor = None, next_step: ProcessingStep = None):
+    def __init__(
+        self, video_processor: VideoProcessor = None, next_step: ProcessingStep = None
+    ):
         """初期化
 
         Args:

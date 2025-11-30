@@ -8,9 +8,7 @@ from fontTools import ttLib
 
 
 def load_font(
-    font_path: str | None = None,
-    font_size: int = 40,
-    font_weight: str = "normal"
+    font_path: str | None = None, font_size: int = 40, font_weight: str = "normal"
 ) -> ImageFont.FreeTypeFont:
     """フォントを読み込む
 
@@ -138,10 +136,7 @@ def download_google_font(font_name: str, font_weight: str = "normal") -> str | N
 
         # API v2のURL（wght パラメータを使用）
         api_url = "https://fonts.googleapis.com/css2"
-        params = {
-            "family": f"{font_name}:wght@{weight_value}",
-            "display": "swap"
-        }
+        params = {"family": f"{font_name}:wght@{weight_value}", "display": "swap"}
 
         # User-Agentを指定してwoff2を取得
         headers = {
@@ -154,8 +149,11 @@ def download_google_font(font_name: str, font_weight: str = "normal") -> str | N
         # CSSからwoff/woff2のURLを抽出
         css_content = response.text
         import re
+
         # URL内に.woff2や.woffの拡張子がない場合もあるため、より柔軟にマッチング
-        url_match = re.search(r'src:\s*url\((https://[^\)]+)\)\s*format\([\'"]woff2?[\'"]\)', css_content)
+        url_match = re.search(
+            r'src:\s*url\((https://[^\)]+)\)\s*format\([\'"]woff2?[\'"]\)', css_content
+        )
 
         if not url_match:
             print(f"Warning: Could not find font URL in CSS for '{font_name}'")

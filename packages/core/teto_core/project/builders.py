@@ -1,7 +1,7 @@
 from typing import Literal, Union
 from .models import Project, Timeline
 from ..layer.models import VideoLayer, ImageLayer, AudioLayer, SubtitleLayer, StampLayer
-from ..output.models import OutputConfig
+from ..output_config.models import OutputConfig
 from ..layer.builders import (
     VideoLayerBuilder,
     ImageLayerBuilder,
@@ -30,8 +30,8 @@ class ProjectBuilder:
         codec: str = "libx264",
         audio_codec: str = "aac",
         bitrate: str | None = None,
-        subtitle_mode: Literal["burn", "srt", "vtt", "none"] = "burn"
-    ) -> 'ProjectBuilder':
+        subtitle_mode: Literal["burn", "srt", "vtt", "none"] = "burn",
+    ) -> "ProjectBuilder":
         """出力設定"""
         if path:
             self._output.path = path

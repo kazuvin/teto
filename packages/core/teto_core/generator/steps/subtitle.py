@@ -24,7 +24,9 @@ class SubtitleProcessingStep(ProcessingStep):
             next_step: 次の処理ステップ（オプション）
         """
         super().__init__(next_step)
-        self.subtitle_burn_processor = subtitle_burn_processor or SubtitleBurnProcessor()
+        self.subtitle_burn_processor = (
+            subtitle_burn_processor or SubtitleBurnProcessor()
+        )
         self.subtitle_export_processor = subtitle_export_processor
 
     def process(self, context: ProcessingContext) -> ProcessingContext:
@@ -51,6 +53,8 @@ class SubtitleProcessingStep(ProcessingStep):
             # 字幕ファイルを別途出力
             subtitle_path = Path(output_config.path).with_suffix(f".{subtitle_mode}")
             export_processor = SubtitleExportProcessor(format=subtitle_mode)
-            export_processor.execute(timeline.subtitle_layers, output_path=str(subtitle_path))
+            export_processor.execute(
+                timeline.subtitle_layers, output_path=str(subtitle_path)
+            )
 
         return context

@@ -14,7 +14,7 @@ class FadeInEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """フェードインを適用"""
         easing_fn = get_easing_function(effect.easing)
@@ -43,7 +43,7 @@ class FadeOutEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """フェードアウトを適用"""
         easing_fn = get_easing_function(effect.easing)

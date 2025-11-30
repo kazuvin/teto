@@ -42,8 +42,12 @@ class VideoGenerator:
         self.video_processor = video_processor or VideoProcessor()
         self.audio_processor = audio_processor or AudioProcessor()
         self.stamp_processor = stamp_processor or StampLayerProcessor()
-        self.subtitle_burn_processor = subtitle_burn_processor or SubtitleBurnProcessor()
-        self.subtitle_export_processor = subtitle_export_processor or SubtitleExportProcessor()
+        self.subtitle_burn_processor = (
+            subtitle_burn_processor or SubtitleBurnProcessor()
+        )
+        self.subtitle_export_processor = (
+            subtitle_export_processor or SubtitleExportProcessor()
+        )
 
         # パイプラインを構築
         self._pipeline = self._build_default_pipeline()
@@ -91,15 +95,20 @@ class VideoGenerator:
             処理パイプラインの先頭ステップ
         """
         video_step = VideoLayerProcessingStep(video_processor=self.video_processor)
-        video_step.then(AudioLayerProcessingStep(audio_processor=self.audio_processor)) \
-            .then(AudioMergingStep()) \
-            .then(StampLayerProcessingStep(stamp_processor=self.stamp_processor)) \
-            .then(SubtitleProcessingStep(
+        video_step.then(
+            AudioLayerProcessingStep(audio_processor=self.audio_processor)
+        ).then(AudioMergingStep()).then(
+            StampLayerProcessingStep(stamp_processor=self.stamp_processor)
+        ).then(
+            SubtitleProcessingStep(
                 subtitle_burn_processor=self.subtitle_burn_processor,
-                subtitle_export_processor=self.subtitle_export_processor
-            )) \
-            .then(VideoOutputStep()) \
-            .then(CleanupStep())
+                subtitle_export_processor=self.subtitle_export_processor,
+            )
+        ).then(
+            VideoOutputStep()
+        ).then(
+            CleanupStep()
+        )
 
         return video_step
 

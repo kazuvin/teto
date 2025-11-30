@@ -1,15 +1,19 @@
-"""Layer processors - Video, Audio, and Subtitle processing logic"""
+"""Compatibility layer for processors imports"""
 
-from .video import (
+from ..layer.processors import (
     VideoProcessor,
     VideoLayerProcessor,
     ImageLayerProcessor,
     StampLayerProcessor,
+    AudioProcessor,
+    AudioLayerProcessor,
+    SubtitleBurnProcessor,
+    SubtitleExportProcessor,
 )
-from .audio import AudioProcessor, AudioLayerProcessor
-from .subtitle import SubtitleBurnProcessor, SubtitleExportProcessor
+from ..core.base import ProcessorBase
 
 __all__ = [
+    "ProcessorBase",
     "VideoProcessor",
     "VideoLayerProcessor",
     "ImageLayerProcessor",

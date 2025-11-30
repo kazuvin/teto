@@ -8,7 +8,9 @@ from ...layer.processors import AudioProcessor
 class AudioLayerProcessingStep(ProcessingStep):
     """音声レイヤー処理ステップ"""
 
-    def __init__(self, audio_processor: AudioProcessor = None, next_step: ProcessingStep = None):
+    def __init__(
+        self, audio_processor: AudioProcessor = None, next_step: ProcessingStep = None
+    ):
         """初期化
 
         Args:

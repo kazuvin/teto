@@ -48,14 +48,16 @@ def generate(project_file, validate_only):
         try:
             project = Project.from_json_file(str(project_path))
         except Exception as e:
-            console.print(f"[red]エラー: プロジェクトファイルの読み込みに失敗しました[/red]")
+            console.print(
+                "[red]エラー: プロジェクトファイルの読み込みに失敗しました[/red]"
+            )
             console.print(f"[red]{e}[/red]")
             sys.exit(1)
 
         # バリデーションのみの場合
         if validate_only:
             console.print("[green]✓ プロジェクトファイルは有効です[/green]")
-            console.print(f"\n出力設定:")
+            console.print("\n出力設定:")
             console.print(f"  パス: {project.output.path}")
             console.print(f"  サイズ: {project.output.width}x{project.output.height}")
             console.print(f"  FPS: {project.output.fps}")
@@ -75,13 +77,14 @@ def generate(project_file, validate_only):
 
         try:
             output_path = generator.generate(progress_callback=progress_callback)
-            console.print(f"\n[bold green]✓ 動画生成が完了しました！[/bold green]")
+            console.print("\n[bold green]✓ 動画生成が完了しました！[/bold green]")
             console.print(f"[green]出力ファイル: {output_path}[/green]")
 
         except Exception as e:
-            console.print(f"\n[red]エラー: 動画生成に失敗しました[/red]")
+            console.print("\n[red]エラー: 動画生成に失敗しました[/red]")
             console.print(f"[red]{e}[/red]")
             import traceback
+
             console.print(f"[dim]{traceback.format_exc()}[/dim]")
             sys.exit(1)
 
@@ -133,11 +136,21 @@ def init(output_file):
 @main.command()
 @click.argument("text")
 @click.option("-o", "--output", required=True, help="出力ファイルパス")
-@click.option("-v", "--voice", default="ja-JP-Wavenet-A", help="音声名 (デフォルト: ja-JP-Wavenet-A)")
+@click.option(
+    "-v",
+    "--voice",
+    default="ja-JP-Wavenet-A",
+    help="音声名 (デフォルト: ja-JP-Wavenet-A)",
+)
 @click.option("--pitch", type=float, default=0.0, help="ピッチ調整 (-20.0～20.0)")
 @click.option("--speed", type=float, default=1.0, help="話す速度 (0.25～4.0)")
 @click.option("--volume", type=float, default=0.0, help="音量調整 (dB)")
-@click.option("--format", type=click.Choice(["mp3", "wav", "ogg"]), default="mp3", help="出力フォーマット")
+@click.option(
+    "--format",
+    type=click.Choice(["mp3", "wav", "ogg"]),
+    default="mp3",
+    help="出力フォーマット",
+)
 @click.option("--ssml", is_flag=True, help="テキストをSSMLとして解釈")
 def tts(text, output, voice, pitch, speed, volume, format, ssml):
     """
@@ -152,14 +165,16 @@ def tts(text, output, voice, pitch, speed, volume, format, ssml):
         console.print("[cyan]テキスト音声変換を開始します...[/cyan]\n")
 
         # リクエストを構築
-        builder = TTSBuilder() \
-            .text(text) \
-            .voice(voice) \
-            .pitch(pitch) \
-            .speed(speed) \
-            .volume(volume) \
-            .output_format(format) \
+        builder = (
+            TTSBuilder()
+            .text(text)
+            .voice(voice)
+            .pitch(pitch)
+            .speed(speed)
+            .volume(volume)
+            .output_format(format)
             .output_path(output)
+        )
 
         if ssml:
             builder.ssml(True)
@@ -189,24 +204,32 @@ def tts(text, output, voice, pitch, speed, volume, format, ssml):
                 result = processor.execute(request)
                 progress.update(task, completed=True)
             except Exception as e:
-                console.print(f"\n[red]エラー: 音声生成に失敗しました[/red]")
+                console.print("\n[red]エラー: 音声生成に失敗しました[/red]")
                 console.print(f"[red]{e}[/red]")
                 console.print("\n[yellow]ヒント:[/yellow]")
-                console.print("  1. Google Cloud の認証情報が設定されているか確認してください")
-                console.print("  2. GOOGLE_APPLICATION_CREDENTIALS 環境変数を設定してください")
-                console.print("  3. Text-to-Speech API が有効になっているか確認してください")
+                console.print(
+                    "  1. Google Cloud の認証情報が設定されているか確認してください"
+                )
+                console.print(
+                    "  2. GOOGLE_APPLICATION_CREDENTIALS 環境変数を設定してください"
+                )
+                console.print(
+                    "  3. Text-to-Speech API が有効になっているか確認してください"
+                )
                 sys.exit(1)
 
         # 結果を表示
-        console.print(f"\n[bold green]✓ 音声生成が完了しました！[/bold green]")
+        console.print("\n[bold green]✓ 音声生成が完了しました！[/bold green]")
         console.print(f"[green]出力ファイル: {result.audio_path}[/green]")
-        console.print(f"\n[bold]詳細:[/bold]")
+        console.print("\n[bold]詳細:[/bold]")
         console.print(f"  音声長: {result.duration_seconds:.2f}秒")
         console.print(f"  文字数: {result.character_count}文字")
         console.print(f"  推定コスト: ${result.estimated_cost_usd:.6f} USD")
 
     except ImportError as e:
-        console.print("[red]エラー: teto-core の TTS 機能がインストールされていません[/red]")
+        console.print(
+            "[red]エラー: teto-core の TTS 機能がインストールされていません[/red]"
+        )
         console.print(f"[red]{e}[/red]")
         console.print("\n必要な依存パッケージ:")
         console.print("  • google-cloud-texttospeech")
@@ -233,11 +256,15 @@ def tts_voices(language):
             client = GoogleTTSClient()
             voices = client.list_voices(language_code=language)
         except Exception as e:
-            console.print(f"[red]エラー: 音声リストの取得に失敗しました[/red]")
+            console.print("[red]エラー: 音声リストの取得に失敗しました[/red]")
             console.print(f"[red]{e}[/red]")
             console.print("\n[yellow]ヒント:[/yellow]")
-            console.print("  1. Google Cloud の認証情報が設定されているか確認してください")
-            console.print("  2. GOOGLE_APPLICATION_CREDENTIALS 環境変数を設定してください")
+            console.print(
+                "  1. Google Cloud の認証情報が設定されているか確認してください"
+            )
+            console.print(
+                "  2. GOOGLE_APPLICATION_CREDENTIALS 環境変数を設定してください"
+            )
             sys.exit(1)
 
         # テーブルで表示
@@ -257,7 +284,9 @@ def tts_voices(language):
         console.print(f"\n合計: {len(voices)} 個の音声")
 
     except ImportError as e:
-        console.print("[red]エラー: teto-core の TTS 機能がインストールされていません[/red]")
+        console.print(
+            "[red]エラー: teto-core の TTS 機能がインストールされていません[/red]"
+        )
         console.print(f"[red]{e}[/red]")
         sys.exit(1)
 

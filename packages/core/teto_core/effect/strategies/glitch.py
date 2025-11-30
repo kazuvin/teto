@@ -13,7 +13,7 @@ class GlitchEffect(EffectStrategy):
         self,
         clip: VideoClip | ImageClip,
         effect: AnimationEffect,
-        video_size: tuple[int, int]
+        video_size: tuple[int, int],
     ) -> VideoClip | ImageClip:
         """グリッチを適用"""
         intensity = effect.glitch_intensity or 0.3
@@ -37,7 +37,9 @@ class GlitchEffect(EffectStrategy):
 
                 if np.random.random() < 0.5 and len(frame.shape) == 3:
                     channel = np.random.randint(0, 3)
-                    frame[:, :, channel] = np.roll(frame[:, :, channel], np.random.randint(-5, 5), axis=1)
+                    frame[:, :, channel] = np.roll(
+                        frame[:, :, channel], np.random.randint(-5, 5), axis=1
+                    )
 
             return frame
 

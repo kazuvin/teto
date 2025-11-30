@@ -57,8 +57,7 @@ class SecureLogger:
             voice_name: 音声名
         """
         self.logger.info(
-            f"TTS request - Voice: {voice_name}, "
-            f"Text: {sanitize_for_logging(text)}"
+            f"TTS request - Voice: {voice_name}, " f"Text: {sanitize_for_logging(text)}"
         )
 
     def log_credentials_loaded(self, credentials_path: Path):

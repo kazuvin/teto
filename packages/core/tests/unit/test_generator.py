@@ -1,8 +1,7 @@
 """Tests for VideoGenerator class."""
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
-from pathlib import Path
+from unittest.mock import Mock
 from teto_core import VideoGenerator
 from teto_core.models import Project
 
