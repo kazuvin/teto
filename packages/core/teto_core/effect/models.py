@@ -2,6 +2,13 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 
+class TransitionConfig(BaseModel):
+    """トランジション設定"""
+
+    type: Literal["crossfade"] = Field("crossfade", description="トランジションタイプ")
+    duration: float = Field(0.5, description="トランジション時間（秒）", gt=0)
+
+
 class AnimationEffect(BaseModel):
     """アニメーション効果の定義"""
 

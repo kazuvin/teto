@@ -7,7 +7,7 @@ from .models import (
     SubtitleItem,
     StampLayer,
 )
-from ..effect.models import AnimationEffect
+from ..effect.models import AnimationEffect, TransitionConfig
 from ..core.types import ResponsiveSize
 
 
@@ -16,15 +16,10 @@ class VideoLayerBuilder:
 
     def __init__(self, path: str):
         self._path = path
-        self._start_time = 0.0
         self._duration = None
         self._volume = 1.0
         self._effects: list[AnimationEffect] = []
-
-    def at(self, start_time: float) -> 'VideoLayerBuilder':
-        """開始時間を設定"""
-        self._start_time = start_time
-        return self
+        self._transition: TransitionConfig | None = None
 
     def for_duration(self, duration: float) -> 'VideoLayerBuilder':
         """継続時間を設定"""
@@ -184,14 +179,19 @@ class VideoLayerBuilder:
         self._effects.append(effect)
         return self
 
+    def crossfade(self, duration: float = 0.5) -> 'VideoLayerBuilder':
+        """次のクリップへのクロスフェードトランジションを設定"""
+        self._transition = TransitionConfig(type="crossfade", duration=duration)
+        return self
+
     def build(self) -> VideoLayer:
         """VideoLayer を構築"""
         return VideoLayer(
             path=self._path,
-            start_time=self._start_time,
             duration=self._duration,
             volume=self._volume,
             effects=self._effects,
+            transition=self._transition,
         )
 
 
@@ -201,13 +201,8 @@ class ImageLayerBuilder:
     def __init__(self, path: str, duration: float):
         self._path = path
         self._duration = duration
-        self._start_time = 0.0
         self._effects: list[AnimationEffect] = []
-
-    def at(self, start_time: float) -> 'ImageLayerBuilder':
-        """開始時間を設定"""
-        self._start_time = start_time
-        return self
+        self._transition: TransitionConfig | None = None
 
     def fade_in(
         self,
@@ -355,13 +350,18 @@ class ImageLayerBuilder:
         self._effects.append(effect)
         return self
 
+    def crossfade(self, duration: float = 0.5) -> 'ImageLayerBuilder':
+        """次のクリップへのクロスフェードトランジションを設定"""
+        self._transition = TransitionConfig(type="crossfade", duration=duration)
+        return self
+
     def build(self) -> ImageLayer:
         """ImageLayer を構築"""
         return ImageLayer(
             path=self._path,
             duration=self._duration,
-            start_time=self._start_time,
             effects=self._effects,
+            transition=self._transition,
         )
 
 

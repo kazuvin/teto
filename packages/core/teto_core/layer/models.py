@@ -3,14 +3,19 @@ from typing import TYPE_CHECKING, Union, Literal
 from ..core.types import ResponsiveSize
 
 if TYPE_CHECKING:
-    from ..effect.models import AnimationEffect
+    from ..effect.models import AnimationEffect, TransitionConfig
 
 
 class BaseLayer(BaseModel):
     """レイヤーの基底クラス"""
 
-    start_time: float = Field(0.0, description="開始時間（秒）", ge=0)
     duration: float | None = Field(None, description="継続時間（秒）。None の場合は自動", ge=0)
+
+
+class OverlayBaseLayer(BaseLayer):
+    """オーバーレイレイヤーの基底クラス（自由配置用）"""
+
+    start_time: float = Field(0.0, description="開始時間（秒）", ge=0)
 
 
 class VideoLayer(BaseLayer):
@@ -20,6 +25,7 @@ class VideoLayer(BaseLayer):
     path: str = Field(..., description="動画ファイルパス")
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
     effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
+    transition: "TransitionConfig | None" = Field(None, description="次のクリップへのトランジション")
 
 
 class ImageLayer(BaseLayer):
@@ -29,9 +35,10 @@ class ImageLayer(BaseLayer):
     path: str = Field(..., description="画像ファイルパス")
     duration: float = Field(..., description="表示時間（秒）", gt=0)
     effects: list["AnimationEffect"] = Field(default_factory=list, description="アニメーション効果")
+    transition: "TransitionConfig | None" = Field(None, description="次のクリップへのトランジション")
 
 
-class AudioLayer(BaseLayer):
+class AudioLayer(OverlayBaseLayer):
     """音声レイヤー"""
 
     type: Literal["audio"] = "audio"
@@ -39,7 +46,7 @@ class AudioLayer(BaseLayer):
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
 
 
-class StampLayer(BaseLayer):
+class StampLayer(OverlayBaseLayer):
     """スタンプレイヤー（装飾的な画像オーバーレイ）"""
 
     type: Literal["stamp"] = "stamp"
@@ -77,7 +84,7 @@ class SubtitleLayer(BaseModel):
     appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field("background", description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き、drop-shadow: ぼかしシャドウ付き）")
 
 # Forward reference の解決
-from ..effect.models import AnimationEffect
+from ..effect.models import AnimationEffect, TransitionConfig
 VideoLayer.model_rebuild()
 ImageLayer.model_rebuild()
 StampLayer.model_rebuild()
