@@ -64,6 +64,12 @@ lerna-debug.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*.local
+
+# Google Cloud credentials
+*-key.json
+service-account*.json
+credentials.json
 
 # Build outputs
 dist/

@@ -4,6 +4,7 @@ from .image_layer import ImageLayerBuilder
 from .audio_layer import AudioLayerBuilder
 from .subtitle_layer import SubtitleLayerBuilder, SubtitleItemBuilder
 from .stamp_layer import StampLayerBuilder
+from .tts import TTSBuilder
 
 __all__ = [
     "ProjectBuilder",
@@ -13,4 +14,5 @@ __all__ = [
     "SubtitleLayerBuilder",
     "SubtitleItemBuilder",
     "StampLayerBuilder",
+    "TTSBuilder",
 ]

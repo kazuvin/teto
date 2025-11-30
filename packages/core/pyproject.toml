@@ -13,6 +13,9 @@ dependencies = [
     "fonttools>=4.0.0",
     "brotli>=1.0.0",
     "scipy>=1.11.0",
+    "pydub>=0.25.0",
+    "python-dotenv>=1.0.0",
+    "google-cloud-texttospeech>=2.14.0",
 ]
 
 [build-system]

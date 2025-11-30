@@ -19,6 +19,7 @@ from .subtitle import (
     SubtitleExportProcessor,
 )
 from .effect import EffectProcessor
+from .tts import GoogleTTSProcessor
 
 __all__ = [
     # 基底クラス
@@ -36,4 +37,6 @@ __all__ = [
     "SubtitleExportProcessor",
     # エフェクト処理
     "EffectProcessor",
+    # TTS処理
+    "GoogleTTSProcessor",
 ]
