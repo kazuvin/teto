@@ -1,0 +1,107 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/09_watermark.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "duration": 15.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "background",
+        "items": [
+          {
+            "text": "ウォーターマーク機能のデモ",
+            "start_time": 0.5,
+            "end_time": 14.5
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "white",
+        "font_weight": "bold",
+        "stroke_width": 0,
+        "stroke_color": "black",
+        "position": "bottom"
+      }
+    ],
+    "stamp_layers": [
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_star.png",
+        "start_time": 0.0,
+        "duration": 15.0,
+        "position_preset": "top-left",
+        "margin": 30,
+        "scale": 0.5,
+        "opacity": 0.7
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_heart.png",
+        "start_time": 0.0,
+        "duration": 15.0,
+        "position_preset": "top-right",
+        "margin": 30,
+        "scale": 0.5,
+        "opacity": 0.5
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_check.png",
+        "start_time": 0.0,
+        "duration": 15.0,
+        "position_preset": "bottom-left",
+        "margin": 30,
+        "scale": 0.5,
+        "opacity": 0.3
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_star.png",
+        "start_time": 0.0,
+        "duration": 15.0,
+        "position_preset": "bottom-right",
+        "margin": 30,
+        "scale": 0.5,
+        "opacity": 1.0
+      },
+      {
+        "type": "stamp",
+        "path": "examples/assets/images/stamp_heart.png",
+        "start_time": 5.0,
+        "duration": 5.0,
+        "position_preset": "custom",
+        "position_x": 860,
+        "position_y": 440,
+        "scale": 0.8,
+        "opacity": 0.6,
+        "effects": [
+          {
+            "type": "fadein",
+            "duration": 1.0,
+            "easing": "easeOut"
+          },
+          {
+            "type": "fadeout",
+            "duration": 1.0,
+            "easing": "easeIn"
+          }
+        ]
+      }
+    ]
+  }
+}

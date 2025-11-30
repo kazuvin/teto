@@ -1,6 +1,18 @@
-from pydantic import BaseModel, Field
+from enum import Enum
+from pydantic import BaseModel, Field, field_validator
 from typing import TYPE_CHECKING, Union, Literal
 from ..core.types import ResponsiveSize
+
+
+class PositionPreset(str, Enum):
+    """プリセット位置の列挙型"""
+
+    TOP_LEFT = "top-left"
+    TOP_RIGHT = "top-right"
+    BOTTOM_LEFT = "bottom-left"
+    BOTTOM_RIGHT = "bottom-right"
+    CUSTOM = "custom"  # x, y を直接指定
+
 
 if TYPE_CHECKING:
     from ..effect.models import AnimationEffect, TransitionConfig
@@ -69,9 +81,24 @@ class StampLayer(OverlayBaseLayer):
         0, description="Y座標（ピクセルまたは0-1の割合）"
     )
     scale: float = Field(1.0, description="スケール", gt=0)
+    opacity: float = Field(1.0, description="透明度（0.0〜1.0）", ge=0.0, le=1.0)
+    position_preset: PositionPreset | None = Field(
+        None, description="プリセット位置（指定時はposition_x, position_yより優先）"
+    )
+    margin: int = Field(
+        20, description="プリセット使用時の端からの余白（ピクセル）", ge=0
+    )
     effects: list["AnimationEffect"] = Field(
         default_factory=list, description="アニメーション効果"
     )
+
+    @field_validator("opacity")
+    @classmethod
+    def validate_opacity(cls, v: float) -> float:
+        """透明度が0.0〜1.0の範囲であることを確認"""
+        if not 0.0 <= v <= 1.0:
+            raise ValueError("opacity must be between 0.0 and 1.0")
+        return v
 
 
 class SubtitleItem(BaseModel):
