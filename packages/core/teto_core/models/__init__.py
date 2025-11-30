@@ -9,6 +9,15 @@ from .layers import (
 )
 from .output import OutputConfig
 from .effects import AnimationEffect
+from .builders import (
+    ProjectBuilder,
+    VideoLayerBuilder,
+    ImageLayerBuilder,
+    AudioLayerBuilder,
+    SubtitleLayerBuilder,
+    SubtitleItemBuilder,
+    StampLayerBuilder,
+)
 
 __all__ = [
     "Project",
@@ -21,4 +30,11 @@ __all__ = [
     "StampLayer",
     "OutputConfig",
     "AnimationEffect",
+    "ProjectBuilder",
+    "VideoLayerBuilder",
+    "ImageLayerBuilder",
+    "AudioLayerBuilder",
+    "SubtitleLayerBuilder",
+    "SubtitleItemBuilder",
+    "StampLayerBuilder",
 ]
