@@ -1,0 +1,18 @@
+{
+  "name": "teto-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Teto monorepo workspace",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
