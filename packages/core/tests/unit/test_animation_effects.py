@@ -1,7 +1,7 @@
 """エフェクトシステムのテスト"""
 
 import pytest
-from teto_core.processors.effect import EffectProcessor, AnimationProcessor
+from teto_core.processors.effect import EffectProcessor
 from teto_core.processors.effect.strategies import (
     EffectStrategy,
     FadeInEffect,
@@ -9,15 +9,6 @@ from teto_core.processors.effect.strategies import (
 )
 from teto_core.models.effects import AnimationEffect
 
-
-class TestEffectProcessor:
-    """EffectProcessor のテスト"""
-
-    def test_animation_processor_alias(self):
-        """AnimationProcessor は EffectProcessor のエイリアスとして動作する"""
-        assert AnimationProcessor is EffectProcessor
-        # 後方互換性のため、同じクラスを指している
-        assert AnimationProcessor.list_effects() == EffectProcessor.list_effects()
 
 class TestEffectProcessorCore:
     """EffectProcessor のコア機能テスト"""
