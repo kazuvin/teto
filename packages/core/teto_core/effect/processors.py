@@ -109,7 +109,3 @@ class EffectProcessor:
                 print(f"Warning: Unknown effect type '{effect.type}'. Skipping.")
 
         return clip
-
-
-# 後方互換性のためのエイリアス
-AnimationProcessor = EffectProcessor
