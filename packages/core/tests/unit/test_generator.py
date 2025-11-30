@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import Mock, MagicMock, patch
 from pathlib import Path
-from teto_core.generator import VideoGenerator
+from teto_core import VideoGenerator
 from teto_core.models import Project
 
 

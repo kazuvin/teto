@@ -13,7 +13,7 @@ from .models import (
     SubtitleItem,
     OutputConfig,
 )
-from .generator import VideoGenerator
+from .video_generator import VideoGenerator
 
 __all__ = [
     "Project",
