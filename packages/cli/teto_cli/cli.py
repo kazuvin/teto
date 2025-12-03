@@ -216,7 +216,6 @@ def _generate_from_script(
         MockTTSProvider,
         LocalAssetResolver,
     )
-    from teto_core.script.presets import LayerPresetRegistry
     from teto_core import VideoGenerator
 
     script_path = Path(input_file)
@@ -246,9 +245,14 @@ def _generate_from_script(
         console.print(f"  話速: {script_data.voice.speed}x")
         return
 
-    # プリセットを取得
-    layer_preset = LayerPresetRegistry.get(preset)
-    console.print(f"[cyan]プリセット: {preset}[/cyan]")
+    # CLIで指定されたプリセットでscriptのdefault_presetを上書き
+    if preset != script_data.default_preset:
+        console.print(
+            f"[cyan]プリセット: {preset} (スクリプトのdefault_preset '{script_data.default_preset}' を上書き)[/cyan]"
+        )
+        script_data = script_data.model_copy(update={"default_preset": preset})
+    else:
+        console.print(f"[cyan]プリセット: {preset}[/cyan]")
 
     # TTSプロバイダーを選択
     if dry_run:
@@ -269,7 +273,6 @@ def _generate_from_script(
     compiler = ScriptCompiler(
         tts_provider=tts_provider,
         asset_resolver=LocalAssetResolver(),
-        layer_preset=layer_preset,
         output_dir=output_dir,
     )
 
@@ -589,27 +592,30 @@ def script(
 def script_presets():
     """
     利用可能なScriptプリセットの一覧を表示
+
+    プリセットはシーン毎のエフェクトとトランジションを定義します。
+    出力設定と字幕スタイルはScriptファイルで直接指定してください。
     """
     try:
-        from teto_core.script.presets import LayerPresetRegistry
+        from teto_core.script.presets import ScenePresetRegistry
         from rich.table import Table
 
-        console.print("[cyan]利用可能なScriptプリセット[/cyan]\n")
+        console.print("[cyan]利用可能なシーンプリセット[/cyan]\n")
 
         table = Table(title="プリセット一覧")
         table.add_column("名前", style="cyan")
-        table.add_column("解像度", style="green")
-        table.add_column("字幕スタイル", style="magenta")
+        table.add_column("画像エフェクト", style="green")
         table.add_column("トランジション", style="yellow")
+        table.add_column("説明", style="magenta")
 
         presets_info = {
-            "default": ("1920x1080", "shadow, lg", "crossfade 0.5s"),
-            "bold_subtitle": ("1920x1080", "drop-shadow, xl, yellow", "crossfade 0.3s"),
-            "minimal": ("1920x1080", "plain, base", "なし（カット）"),
-            "vertical": ("1080x1920", "background, xl", "crossfade 0.3s"),
+            "default": ("kenBurns", "crossfade 0.5s", "標準的なプリセット"),
+            "bold_subtitle": ("zoom", "crossfade 0.3s", "インパクトのある演出向け"),
+            "minimal": ("なし", "なし（カット）", "シンプルな演出向け"),
+            "vertical": ("kenBurns", "crossfade 0.3s", "縦型動画向け"),
         }
 
-        for name in LayerPresetRegistry.list_names():
+        for name in ScenePresetRegistry.list_names():
             info = presets_info.get(name, ("", "", ""))
             table.add_row(name, info[0], info[1], info[2])
 
@@ -617,7 +623,11 @@ def script_presets():
 
         console.print("\n[bold]使用例:[/bold]")
         console.print("  teto generate my_script.json --preset default")
-        console.print("  teto generate my_script.json --preset vertical")
+        console.print("  teto generate my_script.json --preset minimal")
+        console.print("\n[bold]シーン毎にプリセットを指定:[/bold]")
+        console.print('  各シーンの "preset" フィールドでプリセットを上書きできます')
+        console.print("\n[bold]出力設定と字幕スタイル:[/bold]")
+        console.print('  Scriptファイルの "output" と "subtitle_style" で設定します')
 
     except ImportError as e:
         console.print("[red]エラー: teto-core がインストールされていません[/red]")
@@ -639,12 +649,14 @@ def script_init(output_file):
     sample_script = {
         "title": "サンプル動画",
         "description": "Scriptファイルのサンプルです",
+        "default_preset": "default",
         "scenes": [
             {
                 "narrations": [],
                 "visual": {"path": "./assets/title.png"},
                 "duration": 3.0,
                 "note": "タイトル画面（ナレーションなし）",
+                "preset": "minimal",
             },
             {
                 "narrations": [
@@ -671,6 +683,18 @@ def script_init(output_file):
             "default_scene_gap": 0.5,
             "subtitle_padding": 0.1,
         },
+        "output": {
+            "width": 1920,
+            "height": 1080,
+            "fps": 30,
+        },
+        "subtitle_style": {
+            "font_size": "lg",
+            "font_color": "white",
+            "google_font": "Noto Sans JP",
+            "appearance": "background",
+            "position": "bottom",
+        },
     }
 
     output_path = Path(output_file)
@@ -689,7 +713,10 @@ def script_init(output_file):
     console.print(f"  3. teto generate {output_file} で動画を生成")
     console.print("\n[bold]ヒント:[/bold]")
     console.print("  • --dry-run オプションでTTSなしでテストできます")
-    console.print("  • --preset オプションでスタイルを変更できます")
+    console.print("  • --preset オプションでデフォルトプリセットを変更できます")
+    console.print(
+        '  • 各シーンに "preset" を指定してシーン毎にプリセットを変更できます'
+    )
     console.print("  • teto script-presets で利用可能なプリセットを確認できます")
 
 

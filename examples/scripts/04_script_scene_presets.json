@@ -1,0 +1,90 @@
+{
+  "title": "シーン毎プリセットのサンプル",
+  "description": "シーン毎に異なるプリセットを適用するデモ",
+  "default_preset": "default",
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "subtitle_style": {
+    "font_size": "lg",
+    "font_color": "white",
+    "google_font": "Noto Sans JP",
+    "font_weight": "normal",
+    "appearance": "shadow",
+    "position": "bottom"
+  },
+  "subtitle_styles": {
+    "emphasis": {
+      "font_color": "red",
+      "font_weight": "bold"
+    },
+    "highlight": {
+      "font_color": "yellow"
+    }
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "preset": "minimal",
+      "note": "タイトル画面（エフェクトなし、トランジションなし）"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "今日はシーン毎プリセットの使い方を紹介します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "イントロ（default プリセット - Ken Burns + crossfade）"
+    },
+    {
+      "narrations": [
+        { "text": "<emphasis>重要:</emphasis> シーン毎にプリセットを指定できます。" },
+        { "text": "preset フィールドを使用します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "preset": "bold_subtitle",
+      "note": "強調シーン（bold_subtitle プリセット - zoom + crossfade）"
+    },
+    {
+      "narrations": [
+        { "text": "プリセット未指定の場合は" },
+        { "text": "<highlight>default_preset</highlight> が使用されます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "説明シーン（default_preset を使用）"
+    },
+    {
+      "narrations": [
+        { "text": "ご視聴ありがとうございました！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "preset": "minimal",
+      "pause_after": 1.0,
+      "note": "エンディング（minimal プリセット - エフェクトなし）"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}

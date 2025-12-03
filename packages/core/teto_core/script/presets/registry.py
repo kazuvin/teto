@@ -1,15 +1,15 @@
-"""Layer preset registry"""
+"""Scene preset registry"""
 
-from .base import LayerPreset
+from .base import ScenePreset
 
 
-class LayerPresetRegistry:
+class ScenePresetRegistry:
     """プリセット管理"""
 
-    _presets: dict[str, LayerPreset] = {}
+    _presets: dict[str, ScenePreset] = {}
 
     @classmethod
-    def register(cls, preset: LayerPreset) -> None:
+    def register(cls, preset: ScenePreset) -> None:
         """プリセットを登録する
 
         Args:
@@ -18,14 +18,14 @@ class LayerPresetRegistry:
         cls._presets[preset.name] = preset
 
     @classmethod
-    def get(cls, name: str) -> LayerPreset:
+    def get(cls, name: str) -> ScenePreset:
         """プリセットを取得する
 
         Args:
             name: プリセット名
 
         Returns:
-            LayerPreset: プリセット
+            ScenePreset: プリセット
 
         Raises:
             ValueError: 指定された名前のプリセットが存在しない場合
@@ -49,17 +49,21 @@ class LayerPresetRegistry:
         cls._presets = {}
 
 
+# 後方互換性のためのエイリアス
+LayerPresetRegistry = ScenePresetRegistry
+
+
 def _register_default_presets() -> None:
     """デフォルトプリセットを登録する"""
-    from .default import DefaultLayerPreset
-    from .bold_subtitle import BoldSubtitlePreset
-    from .minimal import MinimalPreset
-    from .vertical import VerticalPreset
+    from .default import DefaultScenePreset
+    from .bold_subtitle import BoldSubtitleScenePreset
+    from .minimal import MinimalScenePreset
+    from .vertical import VerticalScenePreset
 
-    LayerPresetRegistry.register(DefaultLayerPreset())
-    LayerPresetRegistry.register(BoldSubtitlePreset())
-    LayerPresetRegistry.register(MinimalPreset())
-    LayerPresetRegistry.register(VerticalPreset())
+    ScenePresetRegistry.register(DefaultScenePreset())
+    ScenePresetRegistry.register(BoldSubtitleScenePreset())
+    ScenePresetRegistry.register(MinimalScenePreset())
+    ScenePresetRegistry.register(VerticalScenePreset())
 
 
 # モジュールロード時にデフォルトプリセットを登録
