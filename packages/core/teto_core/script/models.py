@@ -5,6 +5,8 @@ from typing import Literal
 from enum import Enum
 
 from ..layer.models import PartialStyle
+from ..output_config.models import OutputSettings
+from .presets.base import SubtitleStyleConfig
 
 
 class AssetType(str, Enum):
@@ -79,6 +81,10 @@ class Scene(BaseModel):
     note: str | None = Field(
         None, description="演出メモ（人間向け、処理には使用しない）"
     )
+    preset: str | None = Field(
+        None,
+        description="このシーンに適用するプリセット名（未指定時はデフォルトプリセットを使用）",
+    )
 
     @model_validator(mode="after")
     def validate_duration_for_no_narration(self) -> "Scene":
@@ -134,10 +140,26 @@ class Script(BaseModel):
     )
     bgm: BGMConfig | None = Field(None, description="BGM設定")
 
+    # 出力設定（解像度、FPS など）
+    output: OutputSettings = Field(
+        default_factory=OutputSettings, description="出力設定（解像度、FPSなど）"
+    )
+
     # 字幕スタイル設定
+    subtitle_style: SubtitleStyleConfig = Field(
+        default_factory=SubtitleStyleConfig, description="字幕スタイル設定"
+    )
+
+    # 部分スタイル（マークアップ）設定
     subtitle_styles: dict[str, PartialStyle] = Field(
         default_factory=dict,
         description="部分スタイル定義（マークアップタグ名とスタイルのマッピング）",
+    )
+
+    # プリセット設定
+    default_preset: str = Field(
+        "default",
+        description="シーンにプリセット指定がない場合に使用するデフォルトプリセット名",
     )
 
     # メタデータ

@@ -1,11 +1,10 @@
-"""Layer preset base interface"""
+"""Scene preset base interface"""
 
 from abc import ABC, abstractmethod
 from typing import Union, Literal
 from pydantic import BaseModel, Field
 
 from ...effect.models import AnimationEffect, TransitionConfig
-from ...output_config.models import OutputConfig
 from ...core.types import ResponsiveSize
 from ...layer.models import PartialStyle
 
@@ -44,38 +43,19 @@ class SubtitleStyleConfig(BaseModel):
     )
 
 
-class LayerPreset(ABC):
-    """レイヤー設定プリセット（Strategy）
+class ScenePreset(ABC):
+    """シーンプリセット（Strategy）
 
-    動画のレイヤー設定（エフェクト、フォント、トランジション）を
-    定型化するインターフェース。
+    シーン毎のエフェクト・トランジション設定を定型化するインターフェース。
+
+    Note:
+        出力設定と字幕スタイルは Script モデルで直接指定する。
     """
 
     @property
     @abstractmethod
     def name(self) -> str:
         """プリセット名"""
-        ...
-
-    @abstractmethod
-    def get_output_config(self, output_path: str = "output.mp4") -> OutputConfig:
-        """出力設定を取得
-
-        Args:
-            output_path: 出力ファイルパス
-
-        Returns:
-            OutputConfig: 出力設定
-        """
-        ...
-
-    @abstractmethod
-    def get_subtitle_style(self) -> SubtitleStyleConfig:
-        """字幕スタイル設定を取得
-
-        Returns:
-            SubtitleStyleConfig: 字幕スタイル設定
-        """
         ...
 
     @abstractmethod
@@ -104,3 +84,7 @@ class LayerPreset(ABC):
             TransitionConfig | None: トランジション設定（Noneの場合はカット）
         """
         ...
+
+
+# 後方互換性のためのエイリアス
+LayerPreset = ScenePreset

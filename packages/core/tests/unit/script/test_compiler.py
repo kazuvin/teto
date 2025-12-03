@@ -13,7 +13,6 @@ from teto_core.script import (
     VoiceConfig,
 )
 from teto_core.script.providers import MockTTSProvider, LocalAssetResolver
-from teto_core.script.presets import DefaultLayerPreset, MinimalPreset
 
 
 class TestScriptCompiler:
@@ -65,7 +64,6 @@ class TestScriptCompiler:
             yield ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
@@ -75,7 +73,6 @@ class TestScriptCompiler:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
@@ -101,7 +98,6 @@ class TestScriptCompiler:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
@@ -122,7 +118,6 @@ class TestScriptCompiler:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
@@ -136,6 +131,7 @@ class TestScriptCompiler:
         """タイミング計算が正しいこと"""
         script = Script(
             title="テスト",
+            default_preset="minimal",
             scenes=[
                 Scene(
                     narrations=[
@@ -157,7 +153,6 @@ class TestScriptCompiler:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(chars_per_second=5.0),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=MinimalPreset(),
                 output_dir=tmpdir,
             )
 
@@ -174,59 +169,238 @@ class TestScriptCompiler:
             assert scene2.start_time == pytest.approx(2.5, rel=0.01)
 
     def test_preset_applied_to_layers(self, simple_script: Script):
-        """プリセットがレイヤーに適用されること"""
+        """プリセットがレイヤーに適用されること（default_preset="default"がデフォルト）"""
         with tempfile.TemporaryDirectory() as tmpdir:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
             result = compiler.compile(simple_script)
 
-            # トランジションが適用されていること
+            # トランジションが適用されていること（DefaultScenePreset）
             for layer in result.project.timeline.video_layers:
                 assert layer.transition is not None
                 assert layer.transition.type == "crossfade"
 
-            # 字幕スタイルが適用されていること
+            # 字幕スタイルはScript.subtitle_styleから取得（デフォルト値）
             subtitle_layer = result.project.timeline.subtitle_layers[0]
-            assert subtitle_layer.font_size == "lg"
-            assert subtitle_layer.appearance == "shadow"
+            assert subtitle_layer.font_size == "base"
+            assert subtitle_layer.appearance == "background"
 
-    def test_minimal_preset_no_transition(self, simple_script: Script):
+    def test_minimal_preset_no_transition(self):
         """MinimalPresetではトランジションがないこと"""
+        # default_preset="minimal" を指定したScript
+        script = Script(
+            title="テスト動画",
+            default_preset="minimal",
+            scenes=[
+                Scene(
+                    narrations=[
+                        NarrationSegment(text="こんにちは"),
+                        NarrationSegment(text="今日は良い天気ですね"),
+                    ],
+                    visual=Visual(path="./image1.png"),
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="さようなら")],
+                    visual=Visual(path="./image2.png"),
+                ),
+            ],
+        )
+
         with tempfile.TemporaryDirectory() as tmpdir:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=MinimalPreset(),
                 output_dir=tmpdir,
             )
 
-            result = compiler.compile(simple_script)
+            result = compiler.compile(script)
 
             # トランジションがないこと
             for layer in result.project.timeline.video_layers:
                 assert layer.transition is None
 
     def test_output_config_from_preset(self, simple_script: Script):
-        """出力設定がプリセットから取得されること"""
+        """出力設定がdefault_presetから取得されること"""
         with tempfile.TemporaryDirectory() as tmpdir:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
                 asset_resolver=LocalAssetResolver(),
-                layer_preset=DefaultLayerPreset(),
                 output_dir=tmpdir,
             )
 
             result = compiler.compile(simple_script, output_path="custom_output.mp4")
 
+            # DefaultLayerPreset (default_preset="default") の設定
             assert result.project.output.path == "custom_output.mp4"
             assert result.project.output.width == 1920
             assert result.project.output.height == 1080
             assert result.project.output.fps == 30
+
+    def test_scene_level_preset(self):
+        """シーン毎に異なるプリセットを適用できること"""
+        script = Script(
+            title="シーン毎プリセットテスト",
+            default_preset="default",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="デフォルト")],
+                    visual=Visual(path="./image1.png"),
+                    # preset未指定 → default_preset ("default") を使用
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="ミニマル")],
+                    visual=Visual(path="./image2.png"),
+                    preset="minimal",  # minimal プリセットを使用
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="またデフォルト")],
+                    visual=Visual(path="./image3.png"),
+                    # preset未指定 → default_preset を使用
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            compiler = ScriptCompiler(
+                tts_provider=MockTTSProvider(),
+                asset_resolver=LocalAssetResolver(),
+                output_dir=tmpdir,
+            )
+
+            result = compiler.compile(script)
+
+            # 3つのビデオレイヤーが生成されること
+            assert len(result.project.timeline.video_layers) == 3
+
+            # シーン1: default プリセット → crossfade トランジション
+            layer1 = result.project.timeline.video_layers[0]
+            assert layer1.transition is not None
+            assert layer1.transition.type == "crossfade"
+
+            # シーン2: minimal プリセット → トランジションなし
+            layer2 = result.project.timeline.video_layers[1]
+            assert layer2.transition is None
+
+            # シーン3: default プリセット → crossfade トランジション
+            layer3 = result.project.timeline.video_layers[2]
+            assert layer3.transition is not None
+            assert layer3.transition.type == "crossfade"
+
+    def test_scene_level_preset_with_different_effects(self):
+        """シーン毎のプリセットでエフェクトが正しく適用されること"""
+        script = Script(
+            title="エフェクトテスト",
+            default_preset="minimal",  # デフォルトはminimal（エフェクトなし）
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="シーン1")],
+                    visual=Visual(path="./image1.png"),
+                    preset="default",  # default プリセット（kenBurnsエフェクト）
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="シーン2")],
+                    visual=Visual(path="./image2.png"),
+                    # preset未指定 → minimal（エフェクトなし）
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            compiler = ScriptCompiler(
+                tts_provider=MockTTSProvider(),
+                asset_resolver=LocalAssetResolver(),
+                output_dir=tmpdir,
+            )
+
+            result = compiler.compile(script)
+
+            # シーン1: default プリセット → kenBurns エフェクト
+            layer1 = result.project.timeline.video_layers[0]
+            assert len(layer1.effects) == 1
+            assert layer1.effects[0].type == "kenBurns"
+
+            # シーン2: minimal プリセット → エフェクトなし
+            layer2 = result.project.timeline.video_layers[1]
+            assert len(layer2.effects) == 0
+
+    def test_subtitle_style_from_script(self):
+        """字幕スタイルはScript.subtitle_styleから取得されること（プリセットに関係なく）"""
+        from teto_core.script.presets.base import SubtitleStyleConfig
+
+        script = Script(
+            title="字幕スタイルテスト",
+            default_preset="default",
+            subtitle_style=SubtitleStyleConfig(
+                font_size="xl",
+                appearance="shadow",
+                font_weight="bold",
+            ),
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="シーン1")],
+                    visual=Visual(path="./image1.png"),
+                    preset="minimal",
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="シーン2")],
+                    visual=Visual(path="./image2.png"),
+                    preset="bold_subtitle",
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            compiler = ScriptCompiler(
+                tts_provider=MockTTSProvider(),
+                asset_resolver=LocalAssetResolver(),
+                output_dir=tmpdir,
+            )
+
+            result = compiler.compile(script)
+
+            # 字幕スタイルはScript.subtitle_styleから取得される
+            subtitle_layer = result.project.timeline.subtitle_layers[0]
+            assert subtitle_layer.font_size == "xl"
+            assert subtitle_layer.appearance == "shadow"
+            assert subtitle_layer.font_weight == "bold"
+
+    def test_output_config_from_script(self):
+        """出力設定はScript.outputから取得されること（プリセットに関係なく）"""
+        from teto_core.output_config.models import OutputSettings
+
+        script = Script(
+            title="出力設定テスト",
+            default_preset="default",
+            output=OutputSettings(
+                width=1080,
+                height=1920,
+                fps=60,
+            ),
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="シーン1")],
+                    visual=Visual(path="./image1.png"),
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            compiler = ScriptCompiler(
+                tts_provider=MockTTSProvider(),
+                asset_resolver=LocalAssetResolver(),
+                output_dir=tmpdir,
+            )
+
+            result = compiler.compile(script)
+
+            # 出力設定はScript.outputから取得される
+            assert result.project.output.width == 1080
+            assert result.project.output.height == 1920
+            assert result.project.output.fps == 60
 
 
 class TestLocalAssetResolver:

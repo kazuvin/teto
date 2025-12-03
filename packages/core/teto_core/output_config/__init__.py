@@ -1,5 +1,5 @@
 """Output configuration module"""
 
-from .models import OutputConfig
+from .models import OutputConfig, OutputSettings
 
-__all__ = ["OutputConfig"]
+__all__ = ["OutputConfig", "OutputSettings"]

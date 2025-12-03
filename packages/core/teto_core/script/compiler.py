@@ -11,12 +11,14 @@ from ..layer.models import (
     SubtitleLayer,
     SubtitleItem,
 )
+from ..output_config.models import OutputConfig
 from ..utils.markup_utils import strip_markup
 
-from .models import Script, AssetType
+from .models import Script, Scene, AssetType
 from .providers.tts import TTSProvider, TTSResult
 from .providers.assets import AssetResolver
-from .presets.base import LayerPreset
+from .presets.base import ScenePreset
+from .presets.registry import ScenePresetRegistry
 
 
 @dataclass
@@ -64,7 +66,6 @@ class ScriptCompiler:
         self,
         tts_provider: TTSProvider,
         asset_resolver: AssetResolver,
-        layer_preset: LayerPreset,
         output_dir: str = "./output",
     ):
         """ScriptCompilerを初期化する
@@ -72,13 +73,28 @@ class ScriptCompiler:
         Args:
             tts_provider: TTSプロバイダー
             asset_resolver: アセット解決プロバイダー
-            layer_preset: レイヤー設定プリセット
             output_dir: 出力ディレクトリ
+
+        Note:
+            - 出力設定と字幕スタイルは Script から直接取得
+            - シーン毎のエフェクト・トランジションは Scene.preset または Script.default_preset から取得
         """
         self._tts = tts_provider
         self._assets = asset_resolver
-        self._preset = layer_preset
         self._output_dir = output_dir
+
+    def _get_preset_for_scene(self, script: Script, scene: Scene) -> ScenePreset:
+        """シーンに適用するプリセットを取得
+
+        Args:
+            script: 台本（デフォルトプリセット情報を含む）
+            scene: シーン
+
+        Returns:
+            ScenePreset: 適用するプリセット
+        """
+        preset_name = scene.preset or script.default_preset
+        return ScenePresetRegistry.get(preset_name)
 
     def compile(self, script: Script, output_path: str = "output.mp4") -> CompileResult:
         """Script を Project に変換する（Template Method）
@@ -106,7 +122,7 @@ class ScriptCompiler:
 
         # 5. Project を組み立て
         project = self._assemble_project(
-            video_layers, audio_layers, subtitle_layers, output_path
+            script, video_layers, audio_layers, subtitle_layers, output_path
         )
 
         # 6. メタデータ作成
@@ -221,24 +237,27 @@ class ScriptCompiler:
         layers: list[Union[VideoLayer, ImageLayer]] = []
 
         for scene, timing in zip(script.scenes, scene_timings):
+            # シーン毎にプリセットを取得
+            preset = self._get_preset_for_scene(script, scene)
+
             asset_path = self._assets.resolve(scene.visual)
             duration = timing.end_time - timing.start_time
 
             if scene.visual.type == AssetType.VIDEO:
-                effects = self._preset.get_video_effects()
+                effects = preset.get_video_effects()
                 layer: Union[VideoLayer, ImageLayer] = VideoLayer(
                     path=asset_path,
                     duration=duration,
                     effects=effects,
-                    transition=self._preset.get_transition(),
+                    transition=preset.get_transition(),
                 )
             else:
-                effects = self._preset.get_image_effects()
+                effects = preset.get_image_effects()
                 layer = ImageLayer(
                     path=asset_path,
                     duration=duration,
                     effects=effects,
-                    transition=self._preset.get_transition(),
+                    transition=preset.get_transition(),
                 )
 
             layers.append(layer)
@@ -303,9 +322,10 @@ class ScriptCompiler:
         if not items:
             return []
 
-        style = self._preset.get_subtitle_style()
+        # 字幕スタイルは Script から直接取得
+        style = script.subtitle_style
 
-        # styles の優先順位: Script > プリセット
+        # styles の優先順位: Script.subtitle_styles > Script.subtitle_style.styles
         styles = script.subtitle_styles if script.subtitle_styles else style.styles
 
         return [
@@ -328,14 +348,18 @@ class ScriptCompiler:
 
     def _assemble_project(
         self,
+        script: Script,
         video_layers: list[Union[VideoLayer, ImageLayer]],
         audio_layers: list[AudioLayer],
         subtitle_layers: list[SubtitleLayer],
         output_path: str,
     ) -> Project:
         """Project を組み立て"""
+        # 出力設定は Script から直接取得
+        output_config = OutputConfig.from_settings(script.output, output_path)
+
         return Project(
-            output=self._preset.get_output_config(output_path),
+            output=output_config,
             timeline=Timeline(
                 video_layers=video_layers,
                 audio_layers=audio_layers,
