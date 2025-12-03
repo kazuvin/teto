@@ -11,6 +11,7 @@ from ..layer.models import (
     SubtitleLayer,
     SubtitleItem,
 )
+from ..utils.markup_utils import strip_markup
 
 from .models import Script, AssetType
 from .providers.tts import TTSProvider, TTSResult
@@ -127,8 +128,10 @@ class ScriptCompiler:
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations: list[TTSResult] = []
             for seg_idx, segment in enumerate(scene.narrations):
+                # マークアップを除去したテキストをTTSに渡す
+                plain_text = strip_markup(segment.text)
                 result = self._tts.generate(
-                    text=segment.text,
+                    text=plain_text,
                     config=script.voice,
                 )
                 # 音声ファイルを保存
@@ -302,9 +305,13 @@ class ScriptCompiler:
 
         style = self._preset.get_subtitle_style()
 
+        # styles の優先順位: Script > プリセット
+        styles = script.subtitle_styles if script.subtitle_styles else style.styles
+
         return [
             SubtitleLayer(
                 items=items,
+                styles=styles,
                 font_size=style.font_size,
                 font_color=style.font_color,
                 google_font=style.google_font,

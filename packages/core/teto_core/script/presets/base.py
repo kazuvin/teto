@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from ...effect.models import AnimationEffect, TransitionConfig
 from ...output_config.models import OutputConfig
 from ...core.types import ResponsiveSize
+from ...layer.models import PartialStyle
 
 
 class SubtitleStyleConfig(BaseModel):
@@ -36,6 +37,10 @@ class SubtitleStyleConfig(BaseModel):
     )
     appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field(
         "background", description="字幕スタイル"
+    )
+    styles: dict[str, PartialStyle] = Field(
+        default_factory=dict,
+        description="部分スタイル定義（マークアップタグ名とスタイルのマッピング）",
     )
 
 

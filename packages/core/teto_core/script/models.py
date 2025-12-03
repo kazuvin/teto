@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field, model_validator
 from typing import Literal
 from enum import Enum
 
+from ..layer.models import PartialStyle
+
 
 class AssetType(str, Enum):
     """アセットの種類"""
@@ -131,6 +133,12 @@ class Script(BaseModel):
         default_factory=TimingConfig, description="タイミング設定"
     )
     bgm: BGMConfig | None = Field(None, description="BGM設定")
+
+    # 字幕スタイル設定
+    subtitle_styles: dict[str, PartialStyle] = Field(
+        default_factory=dict,
+        description="部分スタイル定義（マークアップタグ名とスタイルのマッピング）",
+    )
 
     # メタデータ
     description: str | None = Field(None, description="動画の説明")
