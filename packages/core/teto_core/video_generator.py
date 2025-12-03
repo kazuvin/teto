@@ -104,11 +104,7 @@ class VideoGenerator:
                 subtitle_burn_processor=self.subtitle_burn_processor,
                 subtitle_export_processor=self.subtitle_export_processor,
             )
-        ).then(
-            VideoOutputStep()
-        ).then(
-            CleanupStep()
-        )
+        ).then(VideoOutputStep()).then(CleanupStep())
 
         return video_step
 

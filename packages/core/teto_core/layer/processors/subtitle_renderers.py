@@ -4,7 +4,12 @@ from abc import ABC, abstractmethod
 from moviepy import VideoClip, ImageClip, CompositeVideoClip
 from ..models import SubtitleLayer, SubtitleItem
 from ...utils.color_utils import parse_background_color
-from ...utils.image_utils import create_rounded_rectangle, create_text_image_with_pil
+from ...utils.image_utils import (
+    create_rounded_rectangle,
+    create_text_image_with_pil,
+    create_styled_text_image_with_pil,
+)
+from ...utils.markup_utils import parse_styled_text, has_markup
 from ...utils.size_utils import (
     get_responsive_constants,
     calculate_font_size,
@@ -89,6 +94,25 @@ class SubtitleStyleRenderer(ABC):
         Returns:
             (text_img, (text_width, text_height)) のタプル
         """
+        # マークアップがある場合はスタイル付きレンダリング
+        if has_markup(item.text) and layer.styles:
+            spans = parse_styled_text(item.text)
+            return create_styled_text_image_with_pil(
+                spans=spans,
+                styles=layer.styles,
+                default_font_color=layer.font_color,
+                default_font_weight=layer.font_weight,
+                font_path=font_path,
+                font_size=params["font_size"],
+                max_width=params["max_width"],
+                stroke_width=params["stroke_width"],
+                stroke_color=layer.stroke_color,
+                outer_stroke_width=params["outer_stroke_width"],
+                outer_stroke_color=layer.outer_stroke_color,
+                video_height=video_size[1],
+            )
+
+        # 従来の単一スタイルレンダリング
         return create_text_image_with_pil(
             text=item.text,
             font_path=font_path,

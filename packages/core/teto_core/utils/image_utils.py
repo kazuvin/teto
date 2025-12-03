@@ -1,8 +1,16 @@
 """画像処理関連のユーティリティ関数"""
 
+from __future__ import annotations
+
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+from typing import TYPE_CHECKING
+
 from ..core.constants import PUNCTUATION_CHARS
+
+if TYPE_CHECKING:
+    from ..layer.models import PartialStyle
+    from .markup_utils import TextSpan
 
 
 def create_rounded_rectangle(
@@ -272,5 +280,223 @@ def create_text_image_with_pil(
             stroke_width=stroke_width,
             stroke_fill=(*stroke_color_rgb, 255),
         )
+
+    return np.array(img), (img_width, img_height)
+
+
+def create_styled_text_image_with_pil(
+    spans: list[TextSpan],
+    styles: dict[str, PartialStyle],
+    default_font_color: str,
+    default_font_weight: str,
+    font_path: str | None,
+    font_size: int,
+    max_width: int,
+    stroke_width: int = 0,
+    stroke_color: str = "black",
+    outer_stroke_width: int = 0,
+    outer_stroke_color: str = "white",
+    video_height: int = 1080,
+    load_font_func=None,
+) -> tuple[np.ndarray, tuple[int, int]]:
+    """スパンごとにスタイルを適用してテキスト画像を生成
+
+    マークアップでスタイルが指定されたテキストを、スパンごとに異なる色・太さで描画する。
+    縁取りはレイヤー全体で統一される。
+
+    Args:
+        spans: テキストスパンのリスト
+        styles: スタイル名と PartialStyle のマッピング
+        default_font_color: デフォルトのフォント色
+        default_font_weight: デフォルトのフォント太さ
+        font_path: フォントファイルパス
+        font_size: フォントサイズ（ピクセル値）
+        max_width: 最大幅
+        stroke_width: 縁取りの幅（ピクセル値）
+        stroke_color: 縁取りの色
+        outer_stroke_width: 外側縁取りの幅（ピクセル値）
+        outer_stroke_color: 外側縁取りの色
+        video_height: 動画の高さ（レスポンシブ定数計算用）
+        load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
+
+    Returns:
+        (画像のnumpy配列, (幅, 高さ))のタプル
+    """
+    from .size_utils import get_responsive_constants
+    from .color_utils import parse_color
+
+    constants = get_responsive_constants(video_height)
+
+    # フォントを読み込み（normal と bold 両方）
+    if load_font_func:
+        font_normal = load_font_func(font_path, font_size, "normal")
+        font_bold = load_font_func(font_path, font_size, "bold")
+    else:
+        from .font_utils import load_font
+
+        font_normal = load_font(font_path, font_size, "normal")
+        font_bold = load_font(font_path, font_size, "bold")
+
+    # 色をパース
+    stroke_color_rgb = parse_color(stroke_color)
+    outer_stroke_color_rgb = parse_color(outer_stroke_color)
+
+    # 各スパンのスタイルを解決
+    resolved_spans = []
+    for span in spans:
+        font_color = default_font_color
+        font_weight = default_font_weight
+
+        if span.style_name and span.style_name in styles:
+            style = styles[span.style_name]
+            if style.font_color is not None:
+                font_color = style.font_color
+            if style.font_weight is not None:
+                font_weight = style.font_weight
+
+        resolved_spans.append(
+            {
+                "text": span.text,
+                "font_color": parse_color(font_color),
+                "font_weight": font_weight,
+                "font": font_bold if font_weight == "bold" else font_normal,
+            }
+        )
+
+    # 全体のテキストを結合して折り返しを計算
+    full_text = "".join(span.text for span in spans)
+    font_for_wrap = font_bold if default_font_weight == "bold" else font_normal
+    wrapped_text = wrap_text_japanese_aware(full_text, font_for_wrap, max_width)
+
+    # 折り返し後の行を取得
+    lines = wrapped_text.split("\n")
+
+    # 各行の高さとbounding boxを計算
+    dummy_img = Image.new("RGBA", (1, 1))
+    dummy_draw = ImageDraw.Draw(dummy_img)
+
+    max_stroke = max(stroke_width, outer_stroke_width)
+    line_bboxes = []
+    line_heights = []
+    line_widths = []
+
+    for line in lines:
+        bbox = dummy_draw.textbbox(
+            (0, 0), line, font=font_for_wrap, stroke_width=max_stroke
+        )
+        line_bboxes.append(bbox)
+        line_widths.append(bbox[2] - bbox[0])
+        line_heights.append(bbox[3] - bbox[1])
+
+    total_width = max(line_widths) if line_widths else 0
+    total_height = (
+        sum(line_heights) + constants["LINE_SPACING"] * (len(lines) - 1) if lines else 0
+    )
+
+    # bboxのオフセットを取得（縁取りによる負のオフセットを考慮）
+    min_bbox_y = min(bbox[1] for bbox in line_bboxes) if line_bboxes else 0
+
+    # 画像を作成
+    img_width = total_width + constants["TEXT_PADDING"] * 2
+    img_height = total_height + constants["TEXT_PADDING"] * 2
+    img = Image.new("RGBA", (img_width, img_height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # スパンを行ごとに分配
+    span_index = 0
+    char_index = 0
+    # bboxオフセットを考慮した開始Y座標
+    current_y = constants["TEXT_PADDING"] - min_bbox_y
+
+    for line_idx, line in enumerate(lines):
+        line_width = line_widths[line_idx]
+        line_height = line_heights[line_idx]
+        line_bbox = line_bboxes[line_idx]
+
+        # 行を中央揃えにするためのX開始位置（bboxオフセットを考慮）
+        line_start_x = (
+            constants["TEXT_PADDING"] + (total_width - line_width) // 2 - line_bbox[0]
+        )
+        current_x = line_start_x
+
+        # この行の文字を処理
+        line_char_idx = 0
+        while line_char_idx < len(line):
+            # 現在のスパンを取得
+            if span_index >= len(resolved_spans):
+                break
+
+            current_span = resolved_spans[span_index]
+            span_text = current_span["text"]
+
+            # スパン内の残り文字数
+            remaining_in_span = len(span_text) - char_index
+            # 行内の残り文字数
+            remaining_in_line = len(line) - line_char_idx
+
+            # 描画する文字数を決定
+            chars_to_draw = min(remaining_in_span, remaining_in_line)
+            text_to_draw = span_text[char_index : char_index + chars_to_draw]
+
+            font = current_span["font"]
+            text_color = current_span["font_color"]
+
+            # 文字幅を計算
+            text_bbox = dummy_draw.textbbox(
+                (0, 0), text_to_draw, font=font, stroke_width=max_stroke
+            )
+            text_draw_width = text_bbox[2] - text_bbox[0]
+
+            # 縁取りを先に描画
+            if outer_stroke_width > 0:
+                # 外側縁取り
+                draw.text(
+                    (current_x, current_y),
+                    text_to_draw,
+                    font=font,
+                    fill=(*outer_stroke_color_rgb, 255),
+                    stroke_width=outer_stroke_width,
+                    stroke_fill=(*outer_stroke_color_rgb, 255),
+                )
+                # 内側縁取り
+                if stroke_width > 0:
+                    draw.text(
+                        (current_x, current_y),
+                        text_to_draw,
+                        font=font,
+                        fill=(*stroke_color_rgb, 255),
+                        stroke_width=stroke_width,
+                        stroke_fill=(*stroke_color_rgb, 255),
+                    )
+                # テキスト本体
+                draw.text(
+                    (current_x, current_y),
+                    text_to_draw,
+                    font=font,
+                    fill=(*text_color, 255),
+                )
+            else:
+                # 単一縁取りまたは縁取りなし
+                draw.text(
+                    (current_x, current_y),
+                    text_to_draw,
+                    font=font,
+                    fill=(*text_color, 255),
+                    stroke_width=stroke_width,
+                    stroke_fill=(*stroke_color_rgb, 255) if stroke_width > 0 else None,
+                )
+
+            # 位置を更新
+            current_x += text_draw_width
+            line_char_idx += chars_to_draw
+            char_index += chars_to_draw
+
+            # スパンの終端に達したら次のスパンへ
+            if char_index >= len(span_text):
+                span_index += 1
+                char_index = 0
+
+        # 次の行へ
+        current_y += line_height + constants["LINE_SPACING"]
 
     return np.array(img), (img_width, img_height)

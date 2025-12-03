@@ -109,6 +109,29 @@ class SubtitleItem(BaseModel):
     end_time: float = Field(..., description="終了時間（秒）", ge=0)
 
 
+class PartialStyle(BaseModel):
+    """部分スタイル定義（マークアップで適用）
+
+    字幕テキスト内で部分的にスタイルを変更する際に使用。
+    指定されたフィールドのみがデフォルトスタイルを上書きする。
+
+    Example:
+        ```json
+        {
+            "styles": {
+                "emphasis": {"font_color": "red", "font_weight": "bold"},
+                "highlight": {"font_color": "yellow"}
+            }
+        }
+        ```
+    """
+
+    font_color: str | None = Field(None, description="フォントカラー")
+    font_weight: Literal["normal", "bold"] | None = Field(
+        None, description="フォントの太さ"
+    )
+
+
 class SubtitleLayer(BaseModel):
     """字幕レイヤー"""
 
@@ -116,6 +139,14 @@ class SubtitleLayer(BaseModel):
     items: list[SubtitleItem] = Field(
         default_factory=list, description="字幕アイテムのリスト"
     )
+
+    # 部分スタイル定義
+    styles: dict[str, PartialStyle] = Field(
+        default_factory=dict,
+        description="マークアップタグ名とスタイルのマッピング（例: {'emphasis': {'font_color': 'red'}}）",
+    )
+
+    # デフォルトフォント設定
     font_size: Union[int, ResponsiveSize] = Field(
         "base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）"
     )
@@ -126,6 +157,8 @@ class SubtitleLayer(BaseModel):
     font_weight: Literal["normal", "bold"] = Field(
         "normal", description="フォントの太さ"
     )
+
+    # 縁取り設定（レイヤー全体で統一）
     stroke_width: Union[int, ResponsiveSize] = Field(
         0, description="縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）"
     )
@@ -134,6 +167,8 @@ class SubtitleLayer(BaseModel):
         0, description="外側縁取りの幅（数値またはxs/sm/base/lg/xl/2xl）"
     )
     outer_stroke_color: str = Field("white", description="外側縁取りの色")
+
+    # 背景・位置設定
     bg_color: str | None = Field("black@0.5", description="背景色（透明度付き）")
     position: Literal["bottom", "top", "center"] = Field(
         "bottom", description="字幕位置"

@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "output": {
+    "path": "output/04_partial_styled_subtitle.mp4",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "codec": "libx264",
+    "audio_codec": "aac",
+    "bitrate": "5000k",
+    "subtitle_mode": "burn"
+  },
+  "timeline": {
+    "video_layers": [
+      {
+        "type": "image",
+        "path": "examples/assets/images/intro.png",
+        "duration": 15.0
+      }
+    ],
+    "audio_layers": [],
+    "subtitle_layers": [
+      {
+        "type": "subtitle",
+        "appearance": "plain",
+        "styles": {
+          "emphasis": {
+            "font_color": "red",
+            "font_weight": "bold"
+          },
+          "highlight": {
+            "font_color": "yellow"
+          },
+          "keyword": {
+            "font_color": "#00FF00",
+            "font_weight": "bold"
+          }
+        },
+        "items": [
+          {
+            "text": "<emphasis>重要:</emphasis> これは部分スタイルのデモです",
+            "start_time": 1.0,
+            "end_time": 4.0
+          },
+          {
+            "text": "特定の<highlight>キーワード</highlight>だけを強調できます",
+            "start_time": 4.5,
+            "end_time": 7.5
+          },
+          {
+            "text": "<keyword>複数</keyword>の<emphasis>スタイル</emphasis>を<highlight>組み合わせ</highlight>可能",
+            "start_time": 8.0,
+            "end_time": 11.0
+          },
+          {
+            "text": "マークアップなしの通常テキストも表示可能",
+            "start_time": 11.5,
+            "end_time": 14.0
+          }
+        ],
+        "font_size": "lg",
+        "font_color": "white",
+        "font_weight": "normal",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "outer_stroke_width": "base",
+        "outer_stroke_color": "white",
+        "position": "bottom"
+      }
+    ]
+  }
+}

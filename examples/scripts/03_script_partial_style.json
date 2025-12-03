@@ -1,0 +1,63 @@
+{
+  "title": "部分スタイル字幕のサンプル",
+  "description": "マークアップを使った部分スタイル変更のデモ",
+  "subtitle_styles": {
+    "emphasis": {
+      "font_color": "red",
+      "font_weight": "bold"
+    },
+    "highlight": {
+      "font_color": "yellow"
+    },
+    "keyword": {
+      "font_color": "#00FF00",
+      "font_weight": "bold"
+    }
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "タイトル画面"
+    },
+    {
+      "narrations": [
+        { "text": "<emphasis>重要:</emphasis> これは部分スタイルのデモです。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "特定の<highlight>キーワード</highlight>だけを強調できます。" },
+        { "text": "<keyword>複数</keyword>の<emphasis>スタイル</emphasis>を組み合わせることも可能です。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "マークアップなしの通常テキストも表示できます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}
