@@ -137,7 +137,7 @@ class BGMConfig(BaseModel):
 class VoiceConfig(BaseModel):
     """ナレーション音声設定"""
 
-    provider: Literal["google", "openai", "voicevox", "elevenlabs"] = Field(
+    provider: Literal["google", "openai", "voicevox", "elevenlabs", "gemini"] = Field(
         "google", description="TTSプロバイダー"
     )
     voice_id: str | None = Field(None, description="声の指定（プロバイダー依存）")
@@ -149,6 +149,15 @@ class VoiceConfig(BaseModel):
     model_id: str = Field("eleven_multilingual_v2", description="ElevenLabsモデルID")
     output_format: str = Field(
         "mp3_44100_128", description="ElevenLabs出力フォーマット"
+    )
+
+    # Gemini 固有設定
+    voice_name: str = Field("Kore", description="Gemini音声名")
+    gemini_model_id: str = Field(
+        "gemini-2.5-flash-preview-tts", description="GeminiモデルID"
+    )
+    style_prompt: str | None = Field(
+        None, description="Gemini音声スタイルの指示プロンプト"
     )
 
 

@@ -141,6 +141,9 @@ class ScriptCompiler:
         """全シーン・全セグメントのナレーションを生成"""
         all_narrations: list[list[TTSResult]] = []
 
+        # プロバイダーに応じて拡張子を決定
+        audio_ext = ".wav" if script.voice.provider == "gemini" else ".mp3"
+
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations: list[TTSResult] = []
             for seg_idx, segment in enumerate(scene.narrations):
@@ -153,7 +156,7 @@ class ScriptCompiler:
                 # 音声ファイルを保存
                 output_path = (
                     f"{self._output_dir}/narrations/"
-                    f"scene_{scene_idx:03d}_seg_{seg_idx:03d}.mp3"
+                    f"scene_{scene_idx:03d}_seg_{seg_idx:03d}{audio_ext}"
                 )
                 result.save(output_path)
                 scene_narrations.append(result)

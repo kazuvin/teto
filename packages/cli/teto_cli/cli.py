@@ -214,6 +214,7 @@ def _generate_from_script(
     from teto_core.script.providers import (
         GoogleTTSProvider,
         ElevenLabsTTSProvider,
+        GeminiTTSProvider,
         MockTTSProvider,
         LocalAssetResolver,
     )
@@ -265,6 +266,9 @@ def _generate_from_script(
             if provider_name == "elevenlabs":
                 console.print("[cyan]ElevenLabs TTSを使用[/cyan]")
                 tts_provider = ElevenLabsTTSProvider()
+            elif provider_name == "gemini":
+                console.print("[cyan]Gemini TTSを使用[/cyan]")
+                tts_provider = GeminiTTSProvider()
             else:
                 console.print("[cyan]Google Cloud TTSを使用[/cyan]")
                 tts_provider = GoogleTTSProvider()

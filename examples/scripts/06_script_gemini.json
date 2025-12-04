@@ -1,0 +1,34 @@
+{
+  "title": "Scriptサンプル - Gemini TTS",
+  "description": "Google Gemini Text-to-Speechを使用したサンプル",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "note": "タイトル画面（ナレーションなし）"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "Geminiの音声合成を使ったサンプルです。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    }
+  ],
+  "voice": {
+    "provider": "gemini",
+    "voice_name": "Kore",
+    "gemini_model_id": "gemini-2.5-flash-preview-tts",
+    "style_prompt": "落ち着くダウナー系お姉さんの声で読んでください:"
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}
