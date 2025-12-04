@@ -19,6 +19,7 @@ from .providers.tts import TTSProvider, TTSResult
 from .providers.assets import AssetResolver
 from .presets.base import ScenePreset
 from .presets.registry import ScenePresetRegistry
+from .cache import TTSCacheManager, get_cache_manager
 
 
 @dataclass
@@ -67,6 +68,8 @@ class ScriptCompiler:
         tts_provider: TTSProvider,
         asset_resolver: AssetResolver,
         output_dir: str = "./output",
+        cache_manager: TTSCacheManager | None = None,
+        use_cache: bool = True,
     ):
         """ScriptCompilerを初期化する
 
@@ -74,6 +77,8 @@ class ScriptCompiler:
             tts_provider: TTSプロバイダー
             asset_resolver: アセット解決プロバイダー
             output_dir: 出力ディレクトリ
+            cache_manager: TTSキャッシュマネージャー（Noneの場合はデフォルト）
+            use_cache: キャッシュを使用するか
 
         Note:
             - 出力設定と字幕スタイルは Script から直接取得
@@ -82,6 +87,8 @@ class ScriptCompiler:
         self._tts = tts_provider
         self._assets = asset_resolver
         self._output_dir = output_dir
+        self._cache = cache_manager or get_cache_manager()
+        self._use_cache = use_cache
 
     def _get_preset_for_scene(self, script: Script, scene: Scene) -> ScenePreset:
         """シーンに適用するプリセットを取得
@@ -144,15 +151,42 @@ class ScriptCompiler:
         # プロバイダーに応じて拡張子を決定
         audio_ext = ".wav" if script.voice.provider == "gemini" else ".mp3"
 
+        cache_hits = 0
+        cache_misses = 0
+
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations: list[TTSResult] = []
             for seg_idx, segment in enumerate(scene.narrations):
                 # マークアップを除去したテキストをTTSに渡す
                 plain_text = strip_markup(segment.text)
-                result = self._tts.generate(
-                    text=plain_text,
-                    config=script.voice,
-                )
+
+                # キャッシュをチェック
+                cached_audio = None
+                if self._use_cache:
+                    cached_audio = self._cache.get(plain_text, script.voice, audio_ext)
+
+                if cached_audio is not None:
+                    # キャッシュヒット
+                    cache_hits += 1
+                    duration = self._tts.estimate_duration(plain_text, script.voice)
+                    result = TTSResult(
+                        audio_content=cached_audio,
+                        duration=duration,
+                        text=plain_text,
+                    )
+                else:
+                    # キャッシュミス - TTS生成
+                    cache_misses += 1
+                    result = self._tts.generate(
+                        text=plain_text,
+                        config=script.voice,
+                    )
+                    # キャッシュに保存
+                    if self._use_cache:
+                        self._cache.put(
+                            plain_text, script.voice, audio_ext, result.audio_content
+                        )
+
                 # 音声ファイルを保存
                 output_path = (
                     f"{self._output_dir}/narrations/"
@@ -161,6 +195,14 @@ class ScriptCompiler:
                 result.save(output_path)
                 scene_narrations.append(result)
             all_narrations.append(scene_narrations)
+
+        # キャッシュ統計を表示
+        total = cache_hits + cache_misses
+        if total > 0:
+            print(
+                f"  TTS キャッシュ: {cache_hits}/{total} ヒット "
+                f"({cache_hits * 100 // total}%)"
+            )
 
         return all_narrations
 

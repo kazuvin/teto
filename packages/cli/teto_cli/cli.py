@@ -730,5 +730,171 @@ def script_init(output_file):
     console.print("  • teto script-presets で利用可能なプリセットを確認できます")
 
 
+@main.group()
+def cache():
+    """アセットキャッシュを管理（TTS、画像、動画）"""
+    pass
+
+
+@cache.command("info")
+@click.option(
+    "--type",
+    "cache_type",
+    type=click.Choice(["all", "tts", "image", "video"]),
+    default="all",
+    help="表示するキャッシュタイプ",
+)
+def cache_info(cache_type):
+    """
+    キャッシュ情報を表示
+
+    アセットキャッシュの現在の状態（ファイル数、サイズ）を表示します。
+    """
+    try:
+        from teto_core.cache import get_cache_manager
+        from rich.table import Table
+
+        manager = get_cache_manager()
+        all_info = manager.get_info()
+
+        if cache_type == "all":
+            console.print("[cyan]アセットキャッシュ情報[/cyan]\n")
+
+            table = Table()
+            table.add_column("タイプ", style="cyan")
+            table.add_column("ファイル数", justify="right")
+            table.add_column("サイズ", justify="right")
+            table.add_column("ディレクトリ", style="dim")
+
+            table.add_row(
+                "TTS",
+                str(all_info.tts.total_files),
+                f"{all_info.tts.total_size_mb:.2f} MB",
+                str(all_info.tts.cache_dir),
+            )
+            table.add_row(
+                "画像",
+                str(all_info.image.total_files),
+                f"{all_info.image.total_size_mb:.2f} MB",
+                str(all_info.image.cache_dir),
+            )
+            table.add_row(
+                "動画",
+                str(all_info.video.total_files),
+                f"{all_info.video.total_size_mb:.2f} MB",
+                str(all_info.video.cache_dir),
+            )
+            table.add_row(
+                "[bold]合計[/bold]",
+                f"[bold]{all_info.total_files}[/bold]",
+                f"[bold]{all_info.total_size_mb:.2f} MB[/bold]",
+                "",
+            )
+
+            console.print(table)
+        else:
+            if cache_type == "tts":
+                info = all_info.tts
+                type_name = "TTS"
+            elif cache_type == "image":
+                info = all_info.image
+                type_name = "画像"
+            else:
+                info = all_info.video
+                type_name = "動画"
+
+            console.print(f"[cyan]{type_name} キャッシュ情報[/cyan]\n")
+            console.print(f"  キャッシュディレクトリ: {info.cache_dir}")
+            console.print(f"  ファイル数: {info.total_files}")
+            console.print(f"  合計サイズ: {info.total_size_mb:.2f} MB")
+
+    except ImportError as e:
+        console.print("[red]エラー: teto-core がインストールされていません[/red]")
+        console.print(f"[red]{e}[/red]")
+        sys.exit(1)
+
+
+@cache.command("clear")
+@click.option("--yes", "-y", is_flag=True, help="確認をスキップ")
+@click.option(
+    "--type",
+    "cache_type",
+    type=click.Choice(["all", "tts", "image", "video"]),
+    default="all",
+    help="クリアするキャッシュタイプ",
+)
+def cache_clear(yes, cache_type):
+    """
+    キャッシュをクリア
+
+    アセットキャッシュを削除します。--type で特定のタイプのみ削除できます。
+    """
+    try:
+        from teto_core.cache import get_cache_manager
+
+        manager = get_cache_manager()
+        all_info = manager.get_info()
+
+        # 対象のキャッシュ情報を取得
+        if cache_type == "all":
+            total_files = all_info.total_files
+            total_size = all_info.total_size_mb
+            type_name = "全アセット"
+        elif cache_type == "tts":
+            total_files = all_info.tts.total_files
+            total_size = all_info.tts.total_size_mb
+            type_name = "TTS"
+        elif cache_type == "image":
+            total_files = all_info.image.total_files
+            total_size = all_info.image.total_size_mb
+            type_name = "画像"
+        else:
+            total_files = all_info.video.total_files
+            total_size = all_info.video.total_size_mb
+            type_name = "動画"
+
+        if total_files == 0:
+            console.print(f"[yellow]{type_name} キャッシュは空です[/yellow]")
+            return
+
+        console.print(f"[cyan]{type_name} キャッシュ情報[/cyan]\n")
+        console.print(f"  ファイル数: {total_files}")
+        console.print(f"  合計サイズ: {total_size:.2f} MB")
+
+        if not yes:
+            if not click.confirm(f"\n{type_name} キャッシュを削除しますか？"):
+                console.print("[yellow]キャンセルしました[/yellow]")
+                return
+
+        # キャッシュをクリア
+        if cache_type == "all":
+            results = manager.clear_all()
+            total_deleted = sum(results.values())
+            console.print(f"\n[green]✓ {total_deleted} ファイルを削除しました[/green]")
+            console.print(f"  TTS: {results['tts']} ファイル")
+            console.print(f"  画像: {results['image']} ファイル")
+            console.print(f"  動画: {results['video']} ファイル")
+        elif cache_type == "tts":
+            deleted = manager.clear_tts()
+            console.print(
+                f"\n[green]✓ TTS キャッシュ {deleted} ファイルを削除しました[/green]"
+            )
+        elif cache_type == "image":
+            deleted = manager.clear_image()
+            console.print(
+                f"\n[green]✓ 画像キャッシュ {deleted} ファイルを削除しました[/green]"
+            )
+        else:
+            deleted = manager.clear_video()
+            console.print(
+                f"\n[green]✓ 動画キャッシュ {deleted} ファイルを削除しました[/green]"
+            )
+
+    except ImportError as e:
+        console.print("[red]エラー: teto-core がインストールされていません[/red]")
+        console.print(f"[red]{e}[/red]")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     main()

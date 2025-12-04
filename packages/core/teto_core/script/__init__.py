@@ -22,6 +22,13 @@ from .builders import (
     SceneBuilder,
     NarrationSegmentBuilder,
 )
+from .cache import (
+    TTSCacheManager,
+    CacheInfo,
+    get_cache_manager,
+    clear_cache,
+    get_cache_info,
+)
 
 __all__ = [
     # Models
@@ -43,4 +50,10 @@ __all__ = [
     "ScriptBuilder",
     "SceneBuilder",
     "NarrationSegmentBuilder",
+    # Cache
+    "TTSCacheManager",
+    "CacheInfo",
+    "get_cache_manager",
+    "clear_cache",
+    "get_cache_info",
 ]
