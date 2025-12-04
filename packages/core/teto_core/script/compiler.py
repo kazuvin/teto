@@ -170,6 +170,7 @@ class ScriptCompiler:
         scene_timings: list[SceneTiming] = []
         current_time = 0.0
         timing_config = script.timing
+        padding = timing_config.subtitle_padding
 
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations = all_narrations[scene_idx]
@@ -187,8 +188,9 @@ class ScriptCompiler:
                 for seg_idx, (segment, narration) in enumerate(
                     zip(scene.narrations, scene_narrations)
                 ):
-                    seg_start = current_time
-                    seg_end = current_time + narration.duration
+                    # padding 分遅らせて開始
+                    seg_start = current_time + padding
+                    seg_end = seg_start + narration.duration
 
                     segment_timings.append(
                         SegmentTiming(
@@ -200,7 +202,8 @@ class ScriptCompiler:
                         )
                     )
 
-                    current_time = seg_end
+                    # 音声終了後に padding を追加
+                    current_time = seg_end + padding
 
                     # セグメント後の間隔を追加
                     gap = segment.pause_after
@@ -236,12 +239,24 @@ class ScriptCompiler:
         """映像レイヤーを構築"""
         layers: list[Union[VideoLayer, ImageLayer]] = []
 
-        for scene, timing in zip(script.scenes, scene_timings):
+        for i, (scene, timing) in enumerate(zip(script.scenes, scene_timings)):
             # シーン毎にプリセットを取得
             preset = self._get_preset_for_scene(script, scene)
 
             asset_path = self._assets.resolve(scene.visual)
-            duration = timing.end_time - timing.start_time
+            transition = preset.get_transition()
+
+            # 次のシーンの開始時刻までを duration とする（gap を含める）
+            # トランジションの overlap 分も追加（VideoProcessor で引かれるため）
+            # 最後のシーンはそのままの duration を使用
+            if i < len(scene_timings) - 1:
+                next_timing = scene_timings[i + 1]
+                base_duration = next_timing.start_time - timing.start_time
+                # トランジションがある場合、overlap 分を追加
+                overlap = transition.duration if transition else 0
+                duration = base_duration + overlap
+            else:
+                duration = timing.end_time - timing.start_time
 
             if scene.visual.type == AssetType.VIDEO:
                 effects = preset.get_video_effects()
@@ -273,7 +288,7 @@ class ScriptCompiler:
         """音声レイヤーを構築"""
         layers: list[AudioLayer] = []
 
-        # ナレーション音声
+        # ナレーション音声（padding は _calculate_timings で考慮済み）
         for scene_timing in scene_timings:
             for segment in scene_timing.segments:
                 layers.append(
@@ -306,15 +321,15 @@ class ScriptCompiler:
     ) -> list[SubtitleLayer]:
         """字幕レイヤーを構築"""
         items: list[SubtitleItem] = []
-        padding = script.timing.subtitle_padding
 
+        # padding は _calculate_timings で考慮済み
         for scene_timing in scene_timings:
             for segment in scene_timing.segments:
                 items.append(
                     SubtitleItem(
                         text=segment.text,
-                        start_time=segment.start_time + padding,
-                        end_time=segment.end_time - padding,
+                        start_time=segment.start_time,
+                        end_time=segment.end_time,
                     )
                 )
 

@@ -30,6 +30,7 @@ class ProjectBuilder:
         codec: str = "libx264",
         audio_codec: str = "aac",
         bitrate: str | None = None,
+        preset: str = "fast",
         subtitle_mode: Literal["burn", "srt", "vtt", "none"] = "burn",
     ) -> "ProjectBuilder":
         """出力設定"""
@@ -41,6 +42,7 @@ class ProjectBuilder:
         self._output.codec = codec
         self._output.audio_codec = audio_codec
         self._output.bitrate = bitrate
+        self._output.preset = preset
         self._output.subtitle_mode = subtitle_mode
         return self
 

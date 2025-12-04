@@ -38,6 +38,10 @@ class VideoLayer(BaseLayer):
     type: Literal["video"] = "video"
     path: str = Field(..., description="動画ファイルパス")
     volume: float = Field(1.0, description="音量 (0.0-1.0)", ge=0, le=1.0)
+    loop: bool | None = Field(
+        None,
+        description="ナレーションより動画が短い場合にループ再生するか（None=True）",
+    )
     effects: list["AnimationEffect"] = Field(
         default_factory=list, description="アニメーション効果"
     )

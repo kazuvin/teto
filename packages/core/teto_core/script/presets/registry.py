@@ -56,14 +56,12 @@ LayerPresetRegistry = ScenePresetRegistry
 def _register_default_presets() -> None:
     """デフォルトプリセットを登録する"""
     from .default import DefaultScenePreset
-    from .bold_subtitle import BoldSubtitleScenePreset
-    from .minimal import MinimalScenePreset
-    from .vertical import VerticalScenePreset
+    from .dramatic import DramaticScenePreset
+    from .slideshow import SlideshowScenePreset
 
     ScenePresetRegistry.register(DefaultScenePreset())
-    ScenePresetRegistry.register(BoldSubtitleScenePreset())
-    ScenePresetRegistry.register(MinimalScenePreset())
-    ScenePresetRegistry.register(VerticalScenePreset())
+    ScenePresetRegistry.register(DramaticScenePreset())
+    ScenePresetRegistry.register(SlideshowScenePreset())
 
 
 # モジュールロード時にデフォルトプリセットを登録

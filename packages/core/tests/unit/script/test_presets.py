@@ -5,15 +5,13 @@ import pytest
 from teto_core.script.presets import (
     ScenePresetRegistry,
     DefaultScenePreset,
-    BoldSubtitleScenePreset,
-    MinimalScenePreset,
-    VerticalScenePreset,
+    DramaticScenePreset,
+    SlideshowScenePreset,
     # 後方互換性のエイリアス
     LayerPresetRegistry,
     DefaultLayerPreset,
-    BoldSubtitlePreset,
-    MinimalPreset,
-    VerticalPreset,
+    DramaticPreset,
+    SlideshowPreset,
 )
 
 
@@ -26,11 +24,10 @@ class TestDefaultScenePreset:
         assert preset.name == "default"
 
     def test_image_effects(self):
-        """画像エフェクトが設定されていること"""
+        """画像エフェクトが空であること"""
         preset = DefaultScenePreset()
         effects = preset.get_image_effects()
-        assert len(effects) == 1
-        assert effects[0].type == "kenBurns"
+        assert len(effects) == 0
 
     def test_video_effects(self):
         """動画エフェクトが空であること"""
@@ -47,71 +44,68 @@ class TestDefaultScenePreset:
         assert transition.duration == 0.5
 
 
-class TestBoldSubtitleScenePreset:
-    """BoldSubtitleScenePreset tests"""
+class TestDramaticScenePreset:
+    """DramaticScenePreset tests"""
 
     def test_name(self):
         """プリセット名が正しいこと"""
-        preset = BoldSubtitleScenePreset()
-        assert preset.name == "bold_subtitle"
+        preset = DramaticScenePreset()
+        assert preset.name == "dramatic"
 
     def test_image_effects(self):
-        """画像エフェクト（zoom）が設定されていること"""
-        preset = BoldSubtitleScenePreset()
+        """画像エフェクト（glitch + colorGrade）が設定されていること"""
+        preset = DramaticScenePreset()
         effects = preset.get_image_effects()
-        assert len(effects) == 1
-        assert effects[0].type == "zoom"
+        assert len(effects) == 2
+        assert effects[0].type == "glitch"
+        assert effects[1].type == "colorGrade"
+
+    def test_video_effects(self):
+        """動画エフェクト（glitch + colorGrade）が設定されていること"""
+        preset = DramaticScenePreset()
+        effects = preset.get_video_effects()
+        assert len(effects) == 2
+        assert effects[0].type == "glitch"
+        assert effects[1].type == "colorGrade"
 
     def test_transition(self):
         """トランジションが設定されていること"""
-        preset = BoldSubtitleScenePreset()
+        preset = DramaticScenePreset()
         transition = preset.get_transition()
         assert transition is not None
         assert transition.type == "crossfade"
-        assert transition.duration == 0.3
+        assert transition.duration == 0.15
 
 
-class TestMinimalScenePreset:
-    """MinimalScenePreset tests"""
-
-    def test_name(self):
-        """プリセット名が正しいこと"""
-        preset = MinimalScenePreset()
-        assert preset.name == "minimal"
-
-    def test_no_effects(self):
-        """エフェクトがないこと"""
-        preset = MinimalScenePreset()
-        assert len(preset.get_image_effects()) == 0
-        assert len(preset.get_video_effects()) == 0
-
-    def test_no_transition(self):
-        """トランジションがないこと"""
-        preset = MinimalScenePreset()
-        assert preset.get_transition() is None
-
-
-class TestVerticalScenePreset:
-    """VerticalScenePreset tests"""
+class TestSlideshowScenePreset:
+    """SlideshowScenePreset tests"""
 
     def test_name(self):
         """プリセット名が正しいこと"""
-        preset = VerticalScenePreset()
-        assert preset.name == "vertical"
+        preset = SlideshowScenePreset()
+        assert preset.name == "slideshow"
 
     def test_image_effects(self):
-        """画像エフェクトが設定されていること"""
-        preset = VerticalScenePreset()
+        """画像エフェクト（slideIn）が設定されていること"""
+        preset = SlideshowScenePreset()
         effects = preset.get_image_effects()
         assert len(effects) == 1
-        assert effects[0].type == "kenBurns"
+        assert effects[0].type == "slideIn"
+
+    def test_video_effects(self):
+        """動画エフェクト（slideIn）が設定されていること"""
+        preset = SlideshowScenePreset()
+        effects = preset.get_video_effects()
+        assert len(effects) == 1
+        assert effects[0].type == "slideIn"
 
     def test_transition(self):
         """トランジションが設定されていること"""
-        preset = VerticalScenePreset()
+        preset = SlideshowScenePreset()
         transition = preset.get_transition()
         assert transition is not None
         assert transition.type == "crossfade"
+        assert transition.duration == 0.4
 
 
 class TestScenePresetRegistry:
@@ -122,20 +116,15 @@ class TestScenePresetRegistry:
         preset = ScenePresetRegistry.get("default")
         assert preset.name == "default"
 
-    def test_get_bold_subtitle(self):
-        """bold_subtitleプリセットを取得できること"""
-        preset = ScenePresetRegistry.get("bold_subtitle")
-        assert preset.name == "bold_subtitle"
+    def test_get_dramatic(self):
+        """dramaticプリセットを取得できること"""
+        preset = ScenePresetRegistry.get("dramatic")
+        assert preset.name == "dramatic"
 
-    def test_get_minimal(self):
-        """minimalプリセットを取得できること"""
-        preset = ScenePresetRegistry.get("minimal")
-        assert preset.name == "minimal"
-
-    def test_get_vertical(self):
-        """verticalプリセットを取得できること"""
-        preset = ScenePresetRegistry.get("vertical")
-        assert preset.name == "vertical"
+    def test_get_slideshow(self):
+        """slideshowプリセットを取得できること"""
+        preset = ScenePresetRegistry.get("slideshow")
+        assert preset.name == "slideshow"
 
     def test_get_unknown_raises(self):
         """存在しないプリセットを取得するとエラーになること"""
@@ -147,9 +136,8 @@ class TestScenePresetRegistry:
         """プリセット名のリストを取得できること"""
         names = ScenePresetRegistry.list_names()
         assert "default" in names
-        assert "bold_subtitle" in names
-        assert "minimal" in names
-        assert "vertical" in names
+        assert "dramatic" in names
+        assert "slideshow" in names
 
 
 class TestBackwardCompatibilityAliases:
@@ -165,17 +153,12 @@ class TestBackwardCompatibilityAliases:
         preset = DefaultLayerPreset()
         assert preset.name == "default"
 
-    def test_bold_subtitle_preset_alias(self):
-        """BoldSubtitlePreset エイリアスが動作すること"""
-        preset = BoldSubtitlePreset()
-        assert preset.name == "bold_subtitle"
+    def test_dramatic_preset_alias(self):
+        """DramaticPreset エイリアスが動作すること"""
+        preset = DramaticPreset()
+        assert preset.name == "dramatic"
 
-    def test_minimal_preset_alias(self):
-        """MinimalPreset エイリアスが動作すること"""
-        preset = MinimalPreset()
-        assert preset.name == "minimal"
-
-    def test_vertical_preset_alias(self):
-        """VerticalPreset エイリアスが動作すること"""
-        preset = VerticalPreset()
-        assert preset.name == "vertical"
+    def test_slideshow_preset_alias(self):
+        """SlideshowPreset エイリアスが動作すること"""
+        preset = SlideshowPreset()
+        assert preset.name == "slideshow"

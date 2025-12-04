@@ -20,6 +20,23 @@ class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
     def __init__(self, effect_processor: EffectProcessor = None):
         self.effect_processor = effect_processor or EffectProcessor()
 
+    def _loop_clip(self, clip: VideoFileClip, target_duration: float) -> VideoFileClip:
+        """動画をループして指定時間まで延長する"""
+        clips = []
+        total_duration = 0.0
+
+        while total_duration < target_duration:
+            remaining = target_duration - total_duration
+            if remaining >= clip.duration:
+                clips.append(clip)
+                total_duration += clip.duration
+            else:
+                # 最後の部分は必要な長さだけカット
+                clips.append(clip.subclipped(0, remaining))
+                total_duration += remaining
+
+        return concatenate_videoclips(clips, method="compose")
+
     def validate(self, layer: VideoLayer, **kwargs) -> bool:
         """動画ファイルの存在チェック"""
         if not Path(layer.path).exists():
@@ -40,7 +57,13 @@ class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
 
         # 継続時間の調整
         if layer.duration is not None:
-            clip = clip.subclipped(0, min(layer.duration, clip.duration))
+            # loop が None または True の場合はループ有効
+            should_loop = layer.loop is not False
+            if should_loop and layer.duration > clip.duration:
+                # ループ再生: 動画が短い場合は繰り返す
+                clip = self._loop_clip(clip, layer.duration)
+            else:
+                clip = clip.subclipped(0, min(layer.duration, clip.duration))
 
         # エフェクトを適用
         if layer.effects and output_size:
