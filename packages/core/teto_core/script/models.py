@@ -16,16 +16,66 @@ class AssetType(str, Enum):
     IMAGE = "image"
 
 
+class ImageStylePreset(str, Enum):
+    """Stability AI スタイルプリセット"""
+
+    PHOTOGRAPHIC = "photographic"
+    CINEMATIC = "cinematic"
+    ANIME = "anime"
+    DIGITAL_ART = "digital-art"
+    COMIC_BOOK = "comic-book"
+    FANTASY_ART = "fantasy-art"
+    NEON_PUNK = "neon-punk"
+    NONE = "none"
+
+
+class ImageAspectRatio(str, Enum):
+    """画像アスペクト比（SDXL 推奨サイズ）"""
+
+    SQUARE = "1:1"  # 1024x1024
+    LANDSCAPE = "16:9"  # 1344x768
+    PORTRAIT = "9:16"  # 768x1344
+    WIDE = "21:9"  # 1536x640
+    STANDARD = "4:3"  # 1152x896
+
+
+class StabilityImageConfig(BaseModel):
+    """Stability AI 画像生成設定
+
+    Discriminated Union パターンで他プロバイダーと区別。
+    将来的に OpenAIImageConfig, GeminiImageConfig などを追加可能。
+    """
+
+    provider: Literal["stability"] = Field(
+        "stability", description="プロバイダー識別子"
+    )
+    style_preset: ImageStylePreset = Field(
+        ImageStylePreset.PHOTOGRAPHIC, description="スタイルプリセット"
+    )
+    aspect_ratio: ImageAspectRatio = Field(
+        ImageAspectRatio.LANDSCAPE, description="アスペクト比"
+    )
+    negative_prompt: str | None = Field(None, description="除外したい要素")
+    seed: int | None = Field(None, description="再現性のためのシード値")
+
+
+# 将来的に他プロバイダーを追加する場合:
+# ImageGenerationConfig = StabilityImageConfig | OpenAIImageConfig | GeminiImageConfig
+ImageGenerationConfig = StabilityImageConfig
+
+
 class Visual(BaseModel):
     """映像指定
 
-    NOTE: 将来的にはAI画像/動画生成と連携予定。
-    現時点では path を直接指定するか、description を使った
-    ローカルアセット検索のみサポート。
+    ローカルファイル指定:
+        path を指定して既存のファイルを使用。
+
+    AI画像生成:
+        description（プロンプト）と generate（生成設定）を指定。
+        generate が指定されている場合、description から画像を生成。
 
     将来対応予定:
-    - description からの AI 画像生成（DALL-E, Stable Diffusion 等）
-    - description からの AI 動画生成（Runway, Pika 等）
+    - AI 動画生成（Runway, Pika 等）
     - アセットライブラリからの自動選択
     """
 
@@ -33,15 +83,23 @@ class Visual(BaseModel):
         None, description="アセットタイプ（省略時は拡張子から自動判定）"
     )
     description: str | None = Field(
-        None, description="映像の説明（将来のAI生成/検索用）"
+        None, description="映像の説明（AI生成時はプロンプトとして使用）"
     )
     path: str | None = Field(None, description="直接パス指定")
+    generate: ImageGenerationConfig | None = Field(
+        None, description="AI画像生成設定（指定時は description から画像生成）"
+    )
 
     # 動画ファイルの拡張子
     _VIDEO_EXTENSIONS: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
 
     @model_validator(mode="after")
     def validate_and_infer_type(self) -> "Visual":
+        # AI生成の場合は description が必須
+        if self.generate is not None and self.description is None:
+            raise ValueError("AI画像生成には description（プロンプト）が必須です")
+
+        # path も description もない場合はエラー
         if self.path is None and self.description is None:
             raise ValueError("path または description のいずれかは必須です")
 
@@ -173,6 +231,10 @@ class Script(BaseModel):
         default_factory=TimingConfig, description="タイミング設定"
     )
     bgm: BGMConfig | None = Field(None, description="BGM設定")
+    image_generation: ImageGenerationConfig = Field(
+        default_factory=StabilityImageConfig,
+        description="AI画像生成のデフォルト設定",
+    )
 
     # 出力設定（解像度、FPS など）
     output: OutputSettings = Field(
