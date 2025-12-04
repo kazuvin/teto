@@ -216,7 +216,7 @@ def _generate_from_script(
         ElevenLabsTTSProvider,
         GeminiTTSProvider,
         MockTTSProvider,
-        LocalAssetResolver,
+        CompositeAssetResolver,
     )
     from teto_core import VideoGenerator
 
@@ -279,10 +279,12 @@ def _generate_from_script(
             console.print("  --dry-run オプションでTTSなしでテストできます")
             sys.exit(1)
 
-    # Compilerを作成
+    # Compilerを作成（CompositeAssetResolver で AI 画像生成にも対応）
     compiler = ScriptCompiler(
         tts_provider=tts_provider,
-        asset_resolver=LocalAssetResolver(),
+        asset_resolver=CompositeAssetResolver(
+            default_config=script_data.image_generation,
+        ),
         output_dir=output_dir,
     )
 

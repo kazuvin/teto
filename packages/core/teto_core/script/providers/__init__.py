@@ -8,7 +8,12 @@ from .tts import (
     GeminiTTSProvider,
     MockTTSProvider,
 )
-from .assets import AssetResolver, LocalAssetResolver
+from .assets import (
+    AssetResolver,
+    LocalAssetResolver,
+    AIImageResolver,
+    CompositeAssetResolver,
+)
 
 __all__ = [
     "TTSProvider",
@@ -19,4 +24,6 @@ __all__ = [
     "MockTTSProvider",
     "AssetResolver",
     "LocalAssetResolver",
+    "AIImageResolver",
+    "CompositeAssetResolver",
 ]

@@ -1,0 +1,102 @@
+{
+  "title": "Scriptサンプル - AI画像生成（紙芝居風）",
+  "description": "Stability AI (SDXL) による紙芝居風イラスト生成と Gemini TTS を組み合わせたサンプル",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "description": "Japanese kamishibai style title card, hand-painted watercolor illustration with text area, wooden frame border, warm paper texture, traditional Japanese art style, soft colors",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      },
+      "duration": 3.0,
+      "note": "タイトル画面（紙芝居風）"
+    },
+    {
+      "narrations": [
+        { "text": "日本の四季をご紹介します。" },
+        { "text": "まずは春から始めましょう。" }
+      ],
+      "visual": {
+        "description": "Kamishibai paper theater style illustration of Mount Fuji in spring, cherry blossoms in full bloom, hand-painted watercolor aesthetic, soft pink and blue colors, traditional Japanese illustration, gentle brushstrokes, nostalgic warm atmosphere",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      }
+    },
+    {
+      "narrations": [
+        { "text": "夏は緑が美しい季節です。" },
+        { "text": "入道雲が空高くそびえます。" }
+      ],
+      "visual": {
+        "description": "Kamishibai paper theater style illustration of Mount Fuji in summer, lush green rice fields, big white cumulus clouds, hand-painted watercolor style, vibrant greens and blues, traditional Japanese children's book illustration, warm nostalgic feeling",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      }
+    },
+    {
+      "narrations": [
+        { "text": "秋は紅葉の季節。" },
+        { "text": "山々が赤や黄色に染まります。" }
+      ],
+      "visual": {
+        "description": "Kamishibai paper theater style illustration of Mount Fuji in autumn, vibrant red and orange maple leaves, golden sunset, hand-painted watercolor aesthetic, warm earth tones, traditional Japanese illustration style, cozy autumn atmosphere",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      }
+    },
+    {
+      "narrations": [
+        { "text": "冬は雪化粧の富士山が見られます。" },
+        { "text": "静寂に包まれた美しい景色です。" }
+      ],
+      "visual": {
+        "description": "Kamishibai paper theater style illustration of Mount Fuji in winter, snow-covered landscape, peaceful frozen lake, soft snowfall, hand-painted watercolor style, cool blue and white tones, traditional Japanese illustration, serene quiet atmosphere",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      }
+    },
+    {
+      "narrations": [{ "text": "ご視聴ありがとうございました。" }],
+      "visual": {
+        "description": "Kamishibai paper theater style ending card, cherry blossom petals gently falling, soft warm paper texture background, hand-painted watercolor aesthetic, traditional Japanese illustration, thank you message area, nostalgic warm feeling",
+        "generate": {
+          "provider": "stability",
+          "style_preset": "anime",
+          "aspect_ratio": "16:9"
+        }
+      },
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "image_generation": {
+    "provider": "stability",
+    "style_preset": "anime",
+    "aspect_ratio": "16:9"
+  },
+  "timing": {
+    "default_segment_gap": 0.4,
+    "default_scene_gap": 0.8,
+    "subtitle_padding": 0.15
+  }
+}
