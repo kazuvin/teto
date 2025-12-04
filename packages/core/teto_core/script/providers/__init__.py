@@ -5,6 +5,7 @@ from .tts import (
     TTSResult,
     GoogleTTSProvider,
     ElevenLabsTTSProvider,
+    GeminiTTSProvider,
     MockTTSProvider,
 )
 from .assets import AssetResolver, LocalAssetResolver
@@ -14,6 +15,7 @@ __all__ = [
     "TTSResult",
     "GoogleTTSProvider",
     "ElevenLabsTTSProvider",
+    "GeminiTTSProvider",
     "MockTTSProvider",
     "AssetResolver",
     "LocalAssetResolver",

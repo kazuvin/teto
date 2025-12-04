@@ -188,6 +188,70 @@ class ElevenLabsTTSProvider(TTSProvider):
         return self._client.estimate_duration(text, voice_config)
 
 
+class GeminiTTSProvider(TTSProvider):
+    """Google Gemini TTS プロバイダー"""
+
+    def __init__(self, api_key: str | None = None):
+        """GeminiTTSProviderを初期化する
+
+        Args:
+            api_key: Google API キー（Noneの場合は環境変数から取得）
+        """
+        from ...tts.gemini_tts import GeminiTTSClient
+        from ...tts.models import GeminiTTSVoiceConfig
+
+        self._client = GeminiTTSClient(api_key=api_key)
+        self._voice_config_cls = GeminiTTSVoiceConfig
+
+    def generate(self, text: str, config: VoiceConfig) -> TTSResult:
+        """テキストから音声を生成する
+
+        Args:
+            text: 変換するテキスト
+            config: 音声設定
+
+        Returns:
+            TTSResult: 生成された音声データと情報
+        """
+        voice_config = self._voice_config_cls(
+            voice_name=config.voice_name,
+            model_id=config.gemini_model_id,
+            style_prompt=config.style_prompt,
+        )
+
+        # 音声データを生成（PCM形式）
+        audio_content = self._client.synthesize(
+            text=text,
+            voice_config=voice_config,
+        )
+
+        # 音声の長さを推定
+        duration = self._client.estimate_duration(text, voice_config)
+
+        return TTSResult(
+            audio_content=audio_content,
+            duration=duration,
+            text=text,
+        )
+
+    def estimate_duration(self, text: str, config: VoiceConfig) -> float:
+        """音声の長さを推定する（秒）
+
+        Args:
+            text: テキスト
+            config: 音声設定
+
+        Returns:
+            float: 推定される音声の長さ（秒）
+        """
+        voice_config = self._voice_config_cls(
+            voice_name=config.voice_name,
+            model_id=config.gemini_model_id,
+            style_prompt=config.style_prompt,
+        )
+        return self._client.estimate_duration(text, voice_config)
+
+
 class MockTTSProvider(TTSProvider):
     """テスト用モックTTSプロバイダー
 

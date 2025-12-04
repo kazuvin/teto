@@ -18,6 +18,19 @@ class ElevenLabsVoiceConfig(BaseModel):
     """出力フォーマット (例: "mp3_44100_128", "pcm_16000", "pcm_22050")"""
 
 
+class GeminiTTSVoiceConfig(BaseModel):
+    """Google Gemini TTS 音声設定"""
+
+    voice_name: str = Field(default="Kore")
+    """音声名 (例: "Kore", "Puck", "Charon", "Fenrir", "Aoede")"""
+
+    model_id: str = Field(default="gemini-2.5-flash-preview-tts")
+    """モデルID (例: "gemini-2.5-flash-preview-tts")"""
+
+    style_prompt: str | None = Field(default=None)
+    """音声スタイルの指示プロンプト (例: "Say cheerfully:", "Read with calm voice:")"""
+
+
 class GoogleTTSVoiceConfig(BaseModel):
     """Google Cloud TTS 音声設定"""
 
