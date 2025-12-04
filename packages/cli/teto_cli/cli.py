@@ -213,6 +213,7 @@ def _generate_from_script(
     from teto_core.script import Script, ScriptCompiler
     from teto_core.script.providers import (
         GoogleTTSProvider,
+        ElevenLabsTTSProvider,
         MockTTSProvider,
         LocalAssetResolver,
     )
@@ -259,11 +260,16 @@ def _generate_from_script(
         console.print("[yellow]ドライラン: MockTTSProviderを使用[/yellow]")
         tts_provider = MockTTSProvider()
     else:
-        console.print("[cyan]Google Cloud TTSを使用[/cyan]")
+        provider_name = script_data.voice.provider
         try:
-            tts_provider = GoogleTTSProvider()
+            if provider_name == "elevenlabs":
+                console.print("[cyan]ElevenLabs TTSを使用[/cyan]")
+                tts_provider = ElevenLabsTTSProvider()
+            else:
+                console.print("[cyan]Google Cloud TTSを使用[/cyan]")
+                tts_provider = GoogleTTSProvider()
         except Exception as e:
-            console.print("[red]エラー: Google Cloud TTSの初期化に失敗[/red]")
+            console.print(f"[red]エラー: {provider_name} TTSの初期化に失敗[/red]")
             console.print(f"[red]{e}[/red]")
             console.print("\n[yellow]ヒント:[/yellow]")
             console.print("  --dry-run オプションでTTSなしでテストできます")

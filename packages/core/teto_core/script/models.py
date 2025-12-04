@@ -137,13 +137,19 @@ class BGMConfig(BaseModel):
 class VoiceConfig(BaseModel):
     """ナレーション音声設定"""
 
-    provider: Literal["google", "openai", "voicevox"] = Field(
+    provider: Literal["google", "openai", "voicevox", "elevenlabs"] = Field(
         "google", description="TTSプロバイダー"
     )
     voice_id: str | None = Field(None, description="声の指定（プロバイダー依存）")
     language_code: str = Field("ja-JP", description="言語コード")
     speed: float = Field(1.0, description="話速", ge=0.5, le=2.0)
     pitch: float = Field(0.0, description="ピッチ", ge=-20, le=20)
+
+    # ElevenLabs 固有設定
+    model_id: str = Field("eleven_multilingual_v2", description="ElevenLabsモデルID")
+    output_format: str = Field(
+        "mp3_44100_128", description="ElevenLabs出力フォーマット"
+    )
 
 
 class Script(BaseModel):

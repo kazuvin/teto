@@ -5,6 +5,19 @@ from typing import Literal, Optional
 from pathlib import Path
 
 
+class ElevenLabsVoiceConfig(BaseModel):
+    """ElevenLabs TTS 音声設定"""
+
+    voice_id: str = Field(default="JBFqnCBsd6RMkjVDRZzb")
+    """音声ID (例: "JBFqnCBsd6RMkjVDRZzb" - George)"""
+
+    model_id: str = Field(default="eleven_multilingual_v2")
+    """モデルID (例: "eleven_multilingual_v2", "eleven_turbo_v2_5")"""
+
+    output_format: str = Field(default="mp3_44100_128")
+    """出力フォーマット (例: "mp3_44100_128", "pcm_16000", "pcm_22050")"""
+
+
 class GoogleTTSVoiceConfig(BaseModel):
     """Google Cloud TTS 音声設定"""
 

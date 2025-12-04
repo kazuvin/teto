@@ -124,6 +124,70 @@ class GoogleTTSProvider(TTSProvider):
         return self._client.estimate_duration(text, audio_config)
 
 
+class ElevenLabsTTSProvider(TTSProvider):
+    """ElevenLabs TTS プロバイダー"""
+
+    def __init__(self, api_key: str | None = None):
+        """ElevenLabsTTSProviderを初期化する
+
+        Args:
+            api_key: ElevenLabs API キー（Noneの場合は環境変数から取得）
+        """
+        from ...tts.elevenlabs_tts import ElevenLabsTTSClient
+        from ...tts.models import ElevenLabsVoiceConfig
+
+        self._client = ElevenLabsTTSClient(api_key=api_key)
+        self._voice_config_cls = ElevenLabsVoiceConfig
+
+    def generate(self, text: str, config: VoiceConfig) -> TTSResult:
+        """テキストから音声を生成する
+
+        Args:
+            text: 変換するテキスト
+            config: 音声設定
+
+        Returns:
+            TTSResult: 生成された音声データと情報
+        """
+        voice_config = self._voice_config_cls(
+            voice_id=config.voice_id or "JBFqnCBsd6RMkjVDRZzb",
+            model_id=config.model_id,
+            output_format=config.output_format,
+        )
+
+        # 音声データを生成
+        audio_content = self._client.synthesize(
+            text=text,
+            voice_config=voice_config,
+        )
+
+        # 音声の長さを推定
+        duration = self._client.estimate_duration(text, voice_config)
+
+        return TTSResult(
+            audio_content=audio_content,
+            duration=duration,
+            text=text,
+        )
+
+    def estimate_duration(self, text: str, config: VoiceConfig) -> float:
+        """音声の長さを推定する（秒）
+
+        Args:
+            text: テキスト
+            config: 音声設定
+
+        Returns:
+            float: 推定される音声の長さ（秒）
+        """
+        voice_config = self._voice_config_cls(
+            voice_id=config.voice_id or "JBFqnCBsd6RMkjVDRZzb",
+            model_id=config.model_id,
+            output_format=config.output_format,
+        )
+        return self._client.estimate_duration(text, voice_config)
+
+
 class MockTTSProvider(TTSProvider):
     """テスト用モックTTSプロバイダー
 
