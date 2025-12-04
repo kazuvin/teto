@@ -29,16 +29,35 @@ class Visual(BaseModel):
     - アセットライブラリからの自動選択
     """
 
-    type: AssetType = Field(AssetType.IMAGE, description="アセットタイプ")
+    type: AssetType | None = Field(
+        None, description="アセットタイプ（省略時は拡張子から自動判定）"
+    )
     description: str | None = Field(
         None, description="映像の説明（将来のAI生成/検索用）"
     )
     path: str | None = Field(None, description="直接パス指定")
 
+    # 動画ファイルの拡張子
+    _VIDEO_EXTENSIONS: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".m4v"}
+
     @model_validator(mode="after")
-    def validate_path_or_description(self) -> "Visual":
+    def validate_and_infer_type(self) -> "Visual":
         if self.path is None and self.description is None:
             raise ValueError("path または description のいずれかは必須です")
+
+        # type が指定されていない場合、拡張子から自動判定
+        if self.type is None and self.path:
+            from pathlib import Path
+
+            ext = Path(self.path).suffix.lower()
+            if ext in self._VIDEO_EXTENSIONS:
+                object.__setattr__(self, "type", AssetType.VIDEO)
+            else:
+                object.__setattr__(self, "type", AssetType.IMAGE)
+        elif self.type is None:
+            # path がなく description のみの場合はデフォルトで IMAGE
+            object.__setattr__(self, "type", AssetType.IMAGE)
+
         return self
 
 

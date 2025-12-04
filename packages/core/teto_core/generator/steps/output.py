@@ -31,6 +31,7 @@ class VideoOutputStep(ProcessingStep):
             codec=output_config.codec,
             audio_codec=output_config.audio_codec,
             bitrate=output_config.bitrate,
+            preset=output_config.preset,
         )
 
         return context

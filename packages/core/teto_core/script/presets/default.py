@@ -12,8 +12,7 @@ class DefaultScenePreset(ScenePreset):
         return "default"
 
     def get_image_effects(self) -> list[AnimationEffect]:
-        # 画像には軽い Ken Burns エフェクト
-        return [AnimationEffect(type="kenBurns", duration=1.0)]
+        return []  # 静止画
 
     def get_video_effects(self) -> list[AnimationEffect]:
         return []
