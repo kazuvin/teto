@@ -105,3 +105,9 @@ output/
 
 # Font cache
 .teto/
+
+# Output Video
+output.mp4
+
+# 検証用データ
+test.json
