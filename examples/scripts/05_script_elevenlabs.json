@@ -1,0 +1,53 @@
+{
+  "title": "Scriptサンプル - ElevenLabs TTS",
+  "description": "ElevenLabs Text-to-Speechを使用したサンプル",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "note": "タイトル画面（ナレーションなし）"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "ElevenLabsの音声合成を使ったサンプルです。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "ElevenLabsは、高品質な多言語音声合成を提供します。" },
+        {
+          "text": "日本語にも対応しています。",
+          "pause_after": 0.5
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [{ "text": "ご視聴ありがとうございました！" }],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_id": "hMK7c1GPJmptCzI4bQIu",
+    "model_id": "eleven_multilingual_v2",
+    "output_format": "mp3_44100_128"
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}
