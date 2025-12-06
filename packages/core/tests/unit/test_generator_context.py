@@ -59,9 +59,7 @@ class TestProcessingContext:
     def test_report_progress_with_callback(self, mock_project):
         """Test report_progress calls callback."""
         callback = Mock()
-        context = ProcessingContext(
-            project=mock_project, progress_callback=callback
-        )
+        context = ProcessingContext(project=mock_project, progress_callback=callback)
 
         context.report_progress("Processing step 1...")
 
@@ -77,9 +75,7 @@ class TestProcessingContext:
     def test_report_progress_multiple_calls(self, mock_project):
         """Test report_progress can be called multiple times."""
         callback = Mock()
-        context = ProcessingContext(
-            project=mock_project, progress_callback=callback
-        )
+        context = ProcessingContext(project=mock_project, progress_callback=callback)
 
         context.report_progress("Step 1")
         context.report_progress("Step 2")

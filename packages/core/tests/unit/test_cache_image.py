@@ -1,13 +1,11 @@
 """Tests for image cache module."""
 
 import pytest
-from pathlib import Path
 
 from teto_core.cache.image import (
     ImageGenerationConfig,
     ImageCacheManager,
     get_image_cache_manager,
-    clear_image_cache,
     get_image_cache_info,
 )
 

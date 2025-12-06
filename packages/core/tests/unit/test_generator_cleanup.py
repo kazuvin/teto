@@ -36,9 +36,7 @@ class TestCleanupStep:
 
     def test_cleanup_closes_video_clip(self, mock_project, mock_video_clip):
         """Test that cleanup closes video clip."""
-        context = ProcessingContext(
-            project=mock_project, video_clip=mock_video_clip
-        )
+        context = ProcessingContext(project=mock_project, video_clip=mock_video_clip)
         step = CleanupStep()
 
         step.process(context)
@@ -47,9 +45,7 @@ class TestCleanupStep:
 
     def test_cleanup_closes_audio_clip(self, mock_project, mock_audio_clip):
         """Test that cleanup closes audio clip."""
-        context = ProcessingContext(
-            project=mock_project, audio_clip=mock_audio_clip
-        )
+        context = ProcessingContext(project=mock_project, audio_clip=mock_audio_clip)
         step = CleanupStep()
 
         step.process(context)
@@ -100,9 +96,7 @@ class TestCleanupStep:
     def test_cleanup_reports_progress(self, mock_project):
         """Test that cleanup reports progress."""
         callback = Mock()
-        context = ProcessingContext(
-            project=mock_project, progress_callback=callback
-        )
+        context = ProcessingContext(project=mock_project, progress_callback=callback)
         step = CleanupStep()
 
         step.process(context)
@@ -111,9 +105,7 @@ class TestCleanupStep:
 
     def test_cleanup_with_only_video(self, mock_project, mock_video_clip):
         """Test cleanup with only video clip."""
-        context = ProcessingContext(
-            project=mock_project, video_clip=mock_video_clip
-        )
+        context = ProcessingContext(project=mock_project, video_clip=mock_video_clip)
         step = CleanupStep()
 
         step.process(context)
@@ -122,9 +114,7 @@ class TestCleanupStep:
 
     def test_cleanup_with_only_audio(self, mock_project, mock_audio_clip):
         """Test cleanup with only audio clip."""
-        context = ProcessingContext(
-            project=mock_project, audio_clip=mock_audio_clip
-        )
+        context = ProcessingContext(project=mock_project, audio_clip=mock_audio_clip)
         step = CleanupStep()
 
         step.process(context)

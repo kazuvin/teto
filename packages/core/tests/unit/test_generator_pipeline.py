@@ -151,9 +151,7 @@ class TestProcessingStep:
     def test_progress_callback_called(self, mock_project):
         """Test that progress callback is called."""
         callback = Mock()
-        context = ProcessingContext(
-            project=mock_project, progress_callback=callback
-        )
+        context = ProcessingContext(project=mock_project, progress_callback=callback)
         step = ConcreteStep("test_step")
 
         step.execute(context)

@@ -5,7 +5,6 @@ import pytest
 from teto_core.cache.tts import (
     TTSCacheManager,
     get_tts_cache_manager,
-    clear_tts_cache,
     get_tts_cache_info,
 )
 from teto_core.script.models import VoiceConfig

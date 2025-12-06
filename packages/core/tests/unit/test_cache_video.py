@@ -1,13 +1,11 @@
 """Tests for video cache module."""
 
 import pytest
-from pathlib import Path
 
 from teto_core.cache.video import (
     VideoGenerationConfig,
     VideoCacheManager,
     get_video_cache_manager,
-    clear_video_cache,
     get_video_cache_info,
 )
 
@@ -175,7 +173,9 @@ class TestVideoCacheManager:
             model="test",
             prompt="test video",
         )
-        video_data = b"\x00\x00\x00\x1c\x66\x74\x79\x70" + b"\x00" * 100  # Fake MP4 data
+        video_data = (
+            b"\x00\x00\x00\x1c\x66\x74\x79\x70" + b"\x00" * 100
+        )  # Fake MP4 data
 
         # Put video
         cache_path = manager.put(config, video_data)

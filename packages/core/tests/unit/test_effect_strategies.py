@@ -2,7 +2,6 @@
 
 import pytest
 import numpy as np
-from unittest.mock import Mock, MagicMock
 
 from teto_core.effect.models import AnimationEffect
 from teto_core.effect.strategies.fade import FadeInEffect, FadeOutEffect
