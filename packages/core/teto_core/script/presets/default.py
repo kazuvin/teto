@@ -1,11 +1,11 @@
 """Default scene preset"""
 
-from ...effect.models import AnimationEffect, TransitionConfig
+from ...effect.models import AnimationEffect
 from .base import ScenePreset
 
 
 class DefaultScenePreset(ScenePreset):
-    """デフォルトプリセット（Ken Burns + crossfade）"""
+    """デフォルトプリセット（静止画）"""
 
     @property
     def name(self) -> str:
@@ -16,9 +16,6 @@ class DefaultScenePreset(ScenePreset):
 
     def get_video_effects(self) -> list[AnimationEffect]:
         return []
-
-    def get_transition(self) -> TransitionConfig | None:
-        return TransitionConfig(type="crossfade", duration=0.5)
 
 
 # 後方互換性のためのエイリアス

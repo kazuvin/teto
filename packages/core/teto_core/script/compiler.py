@@ -289,7 +289,8 @@ class ScriptCompiler:
             preset = self._get_preset_for_scene(script, scene)
 
             asset_path = self._assets.resolve(scene.visual)
-            transition = preset.get_transition()
+            # トランジションはシーンから直接取得
+            transition = scene.transition
 
             # 次のシーンの開始時刻までを duration とする（gap を含める）
             # トランジションの overlap 分も追加（VideoProcessor で引かれるため）
@@ -309,7 +310,7 @@ class ScriptCompiler:
                     path=asset_path,
                     duration=duration,
                     effects=effects,
-                    transition=preset.get_transition(),
+                    transition=transition,
                 )
             else:
                 effects = preset.get_image_effects()
@@ -317,7 +318,7 @@ class ScriptCompiler:
                     path=asset_path,
                     duration=duration,
                     effects=effects,
-                    transition=preset.get_transition(),
+                    transition=transition,
                 )
 
             layers.append(layer)
