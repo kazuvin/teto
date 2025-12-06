@@ -1,11 +1,11 @@
 """Slideshow scene preset"""
 
-from ...effect.models import AnimationEffect, TransitionConfig
+from ...effect.models import AnimationEffect
 from .base import ScenePreset
 
 
 class SlideshowScenePreset(ScenePreset):
-    """スライドショープリセット（slideIn + fadeout）
+    """スライドショープリセット（slideIn）
 
     スライドショー形式の演出向けプリセット。
     プレゼンテーションや写真スライドショーに適しています。
@@ -34,9 +34,6 @@ class SlideshowScenePreset(ScenePreset):
                 easing="easeOut",
             ),
         ]
-
-    def get_transition(self) -> TransitionConfig | None:
-        return TransitionConfig(type="crossfade", duration=0.4)
 
 
 # 後方互換性のためのエイリアス

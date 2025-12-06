@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Union, Literal
 from pydantic import BaseModel, Field
 
-from ...effect.models import AnimationEffect, TransitionConfig
+from ...effect.models import AnimationEffect
 from ...core.types import ResponsiveSize
 from ...layer.models import PartialStyle
 
@@ -46,10 +46,11 @@ class SubtitleStyleConfig(BaseModel):
 class ScenePreset(ABC):
     """シーンプリセット（Strategy）
 
-    シーン毎のエフェクト・トランジション設定を定型化するインターフェース。
+    シーン毎のエフェクト設定を定型化するインターフェース。
 
     Note:
         出力設定と字幕スタイルは Script モデルで直接指定する。
+        トランジションは Scene モデルで直接指定する。
     """
 
     @property
@@ -73,15 +74,6 @@ class ScenePreset(ABC):
 
         Returns:
             list[AnimationEffect]: エフェクトリスト
-        """
-        ...
-
-    @abstractmethod
-    def get_transition(self) -> TransitionConfig | None:
-        """トランジション設定を取得
-
-        Returns:
-            TransitionConfig | None: トランジション設定（Noneの場合はカット）
         """
         ...
 

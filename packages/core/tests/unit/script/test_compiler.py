@@ -181,21 +181,21 @@ class TestScriptCompiler:
 
             result = compiler.compile(simple_script)
 
-            # トランジションが適用されていること（DefaultScenePreset）
+            # トランジションはシーンに設定がないためNone
             for layer in result.project.timeline.video_layers:
-                assert layer.transition is not None
-                assert layer.transition.type == "crossfade"
+                assert layer.transition is None
 
             # 字幕スタイルはScript.subtitle_styleから取得（デフォルト値）
             subtitle_layer = result.project.timeline.subtitle_layers[0]
             assert subtitle_layer.font_size == "base"
             assert subtitle_layer.appearance == "background"
 
-    def test_dramatic_preset_transition(self):
-        """DramaticPresetではトランジション時間が短いこと"""
+    def test_scene_transition(self):
+        """シーン毎にトランジションを設定できること"""
+        from teto_core.effect.models import TransitionConfig
+
         script = Script(
             title="テスト動画",
-            default_preset="dramatic",
             scenes=[
                 Scene(
                     narrations=[
@@ -203,10 +203,12 @@ class TestScriptCompiler:
                         NarrationSegment(text="今日は良い天気ですね"),
                     ],
                     visual=Visual(path="./image1.png"),
+                    transition=TransitionConfig(type="crossfade", duration=0.5),
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="さようなら")],
                     visual=Visual(path="./image2.png"),
+                    transition=TransitionConfig(type="crossfade", duration=0.15),
                 ),
             ],
         )
@@ -220,11 +222,17 @@ class TestScriptCompiler:
 
             result = compiler.compile(script)
 
-            # DramaticPresetのトランジション時間は0.15
-            for layer in result.project.timeline.video_layers:
-                assert layer.transition is not None
-                assert layer.transition.type == "crossfade"
-                assert layer.transition.duration == 0.15
+            # シーン1: crossfade 0.5秒
+            layer1 = result.project.timeline.video_layers[0]
+            assert layer1.transition is not None
+            assert layer1.transition.type == "crossfade"
+            assert layer1.transition.duration == 0.5
+
+            # シーン2: crossfade 0.15秒
+            layer2 = result.project.timeline.video_layers[1]
+            assert layer2.transition is not None
+            assert layer2.transition.type == "crossfade"
+            assert layer2.transition.duration == 0.15
 
     def test_output_config_from_preset(self, simple_script: Script):
         """出力設定がdefault_presetから取得されること"""
@@ -243,8 +251,10 @@ class TestScriptCompiler:
             assert result.project.output.height == 1080
             assert result.project.output.fps == 30
 
-    def test_scene_level_preset(self):
-        """シーン毎に異なるプリセットを適用できること"""
+    def test_scene_level_preset_with_transition(self):
+        """シーン毎に異なるプリセットとトランジションを適用できること"""
+        from teto_core.effect.models import TransitionConfig
+
         script = Script(
             title="シーン毎プリセットテスト",
             default_preset="default",
@@ -252,16 +262,19 @@ class TestScriptCompiler:
                 Scene(
                     narrations=[NarrationSegment(text="デフォルト")],
                     visual=Visual(path="./image1.png"),
+                    transition=TransitionConfig(type="crossfade", duration=0.5),
                     # preset未指定 → default_preset ("default") を使用
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="ドラマティック")],
                     visual=Visual(path="./image2.png"),
                     preset="dramatic",  # dramatic プリセットを使用
+                    transition=TransitionConfig(type="crossfade", duration=0.15),
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="またデフォルト")],
                     visual=Visual(path="./image3.png"),
+                    transition=TransitionConfig(type="crossfade", duration=0.5),
                     # preset未指定 → default_preset を使用
                 ),
             ],
@@ -279,19 +292,19 @@ class TestScriptCompiler:
             # 3つのビデオレイヤーが生成されること
             assert len(result.project.timeline.video_layers) == 3
 
-            # シーン1: default プリセット → crossfade トランジション (0.5秒)
+            # シーン1: crossfade トランジション (0.5秒)
             layer1 = result.project.timeline.video_layers[0]
             assert layer1.transition is not None
             assert layer1.transition.type == "crossfade"
             assert layer1.transition.duration == 0.5
 
-            # シーン2: dramatic プリセット → crossfade トランジション (0.15秒)
+            # シーン2: crossfade トランジション (0.15秒)
             layer2 = result.project.timeline.video_layers[1]
             assert layer2.transition is not None
             assert layer2.transition.type == "crossfade"
             assert layer2.transition.duration == 0.15
 
-            # シーン3: default プリセット → crossfade トランジション (0.5秒)
+            # シーン3: crossfade トランジション (0.5秒)
             layer3 = result.project.timeline.video_layers[2]
             assert layer3.transition is not None
             assert layer3.transition.type == "crossfade"

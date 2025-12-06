@@ -6,6 +6,7 @@ from enum import Enum
 
 from ..layer.models import PartialStyle
 from ..output_config.models import OutputSettings
+from ..effect.models import TransitionConfig
 from .presets.base import SubtitleStyleConfig
 
 
@@ -153,6 +154,12 @@ class Scene(BaseModel):
         gt=0,
     )
     pause_after: float = Field(0.0, description="このシーン後の間隔（秒）", ge=0)
+
+    # トランジション設定
+    transition: TransitionConfig | None = Field(
+        None,
+        description="このシーンへのトランジション設定（Noneの場合はカット）",
+    )
 
     # オプション
     note: str | None = Field(

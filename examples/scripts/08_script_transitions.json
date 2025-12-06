@@ -1,0 +1,117 @@
+{
+  "title": "シーン毎トランジションのサンプル",
+  "description": "シーン毎に異なるトランジションを設定するデモ",
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "subtitle_style": {
+    "font_size": "lg",
+    "font_color": "white",
+    "google_font": "Noto Sans JP",
+    "font_weight": "normal",
+    "appearance": "shadow",
+    "position": "bottom"
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/intro.png"
+      },
+      "duration": 3.0,
+      "transition": null,
+      "note": "タイトル画面（トランジションなし = カット）"
+    },
+    {
+      "narrations": [
+        { "text": "こんにちは！" },
+        { "text": "今日はシーン毎のトランジション設定を紹介します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/main.png"
+      },
+      "transition": {
+        "type": "crossfade",
+        "duration": 0.5
+      },
+      "note": "イントロ（crossfade 0.5秒）"
+    },
+    {
+      "narrations": [
+        { "text": "各シーンに transition フィールドを設定できます。" },
+        { "text": "トランジションの種類と時間を指定します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "transition": {
+        "type": "crossfade",
+        "duration": 1.0
+      },
+      "note": "説明シーン（crossfade 1.0秒 - ゆっくり）"
+    },
+    {
+      "narrations": [
+        { "text": "transition を null または省略すると" },
+        { "text": "カット（即座に切り替え）になります。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/intro.png"
+      },
+      "transition": null,
+      "note": "カット（トランジションなし）"
+    },
+    {
+      "narrations": [
+        { "text": "短いトランジションでテンポよく切り替えたり" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/main.png"
+      },
+      "transition": {
+        "type": "crossfade",
+        "duration": 0.2
+      },
+      "note": "短いトランジション（crossfade 0.2秒）"
+    },
+    {
+      "narrations": [
+        { "text": "長いトランジションでゆったり見せたりできます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "transition": {
+        "type": "crossfade",
+        "duration": 1.5
+      },
+      "note": "長いトランジション（crossfade 1.5秒）"
+    },
+    {
+      "narrations": [
+        { "text": "ご視聴ありがとうございました！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/outro.png"
+      },
+      "transition": {
+        "type": "crossfade",
+        "duration": 0.5
+      },
+      "pause_after": 1.0,
+      "note": "エンディング（crossfade 0.5秒）"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  }
+}

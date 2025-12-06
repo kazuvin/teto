@@ -1,6 +1,6 @@
 """Dramatic scene preset"""
 
-from ...effect.models import AnimationEffect, TransitionConfig
+from ...effect.models import AnimationEffect
 from .base import ScenePreset
 
 
@@ -38,9 +38,6 @@ class DramaticScenePreset(ScenePreset):
                 duration=0.5,
             ),
         ]
-
-    def get_transition(self) -> TransitionConfig | None:
-        return TransitionConfig(type="crossfade", duration=0.15)
 
 
 # 後方互換性のためのエイリアス

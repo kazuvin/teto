@@ -35,14 +35,6 @@ class TestDefaultScenePreset:
         effects = preset.get_video_effects()
         assert len(effects) == 0
 
-    def test_transition(self):
-        """トランジションが設定されていること"""
-        preset = DefaultScenePreset()
-        transition = preset.get_transition()
-        assert transition is not None
-        assert transition.type == "crossfade"
-        assert transition.duration == 0.5
-
 
 class TestDramaticScenePreset:
     """DramaticScenePreset tests"""
@@ -68,14 +60,6 @@ class TestDramaticScenePreset:
         assert effects[0].type == "glitch"
         assert effects[1].type == "colorGrade"
 
-    def test_transition(self):
-        """トランジションが設定されていること"""
-        preset = DramaticScenePreset()
-        transition = preset.get_transition()
-        assert transition is not None
-        assert transition.type == "crossfade"
-        assert transition.duration == 0.15
-
 
 class TestSlideshowScenePreset:
     """SlideshowScenePreset tests"""
@@ -98,14 +82,6 @@ class TestSlideshowScenePreset:
         effects = preset.get_video_effects()
         assert len(effects) == 1
         assert effects[0].type == "slideIn"
-
-    def test_transition(self):
-        """トランジションが設定されていること"""
-        preset = SlideshowScenePreset()
-        transition = preset.get_transition()
-        assert transition is not None
-        assert transition.type == "crossfade"
-        assert transition.duration == 0.4
 
 
 class TestScenePresetRegistry:
