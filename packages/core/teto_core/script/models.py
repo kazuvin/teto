@@ -120,6 +120,18 @@ class Visual(BaseModel):
         return self
 
 
+class SoundEffect(BaseModel):
+    """効果音設定
+
+    シーン内で再生する効果音を定義。
+    複数の効果音を同時または連続で再生可能。
+    """
+
+    path: str = Field(..., description="効果音ファイルパス")
+    offset: float = Field(0.0, description="シーン開始からのオフセット（秒）", ge=0)
+    volume: float = Field(1.0, description="音量 (0.0〜1.0)", ge=0, le=1.0)
+
+
 class NarrationSegment(BaseModel):
     """ナレーションセグメント（字幕1つ分）
 
@@ -159,6 +171,12 @@ class Scene(BaseModel):
     transition: TransitionConfig | None = Field(
         None,
         description="このシーンへのトランジション設定（Noneの場合はカット）",
+    )
+
+    # 効果音
+    sound_effects: list[SoundEffect] = Field(
+        default_factory=list,
+        description="効果音のリスト（シーン開始からのオフセットで再生タイミングを指定）",
     )
 
     # オプション

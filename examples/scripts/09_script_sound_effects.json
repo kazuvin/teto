@@ -1,0 +1,89 @@
+{
+  "title": "Scriptサンプル - 効果音",
+  "description": "シーンに効果音（SE）を設定するサンプル",
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 3.0,
+      "sound_effects": [
+        {
+          "path": "examples/assets/sounds/se1.mp3",
+          "offset": 0.0,
+          "volume": 0.8
+        }
+      ],
+      "note": "タイトル画面 - シーン開始時にSE1を再生"
+    },
+    {
+      "narrations": [
+        { "text": "効果音を使うと、動画に臨場感が出ます。" },
+        { "text": "シーンの開始時や、強調したいタイミングで効果音を入れましょう。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "sound_effects": [
+        {
+          "path": "examples/assets/sounds/se2.mp3",
+          "offset": 0.0
+        }
+      ],
+      "note": "シーン開始時にSE2を再生"
+    },
+    {
+      "narrations": [
+        { "text": "1つのシーンに複数の効果音を設定することもできます。" },
+        { "text": "オフセットを指定すると、再生タイミングを調整できます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "sound_effects": [
+        {
+          "path": "examples/assets/sounds/se1.mp3",
+          "offset": 0.0,
+          "volume": 0.6
+        },
+        {
+          "path": "examples/assets/sounds/se2.mp3",
+          "offset": 2.0,
+          "volume": 0.7
+        }
+      ],
+      "note": "複数SEの例 - 0秒でSE1、2秒後にSE2を再生"
+    },
+    {
+      "narrations": [{ "text": "ご視聴ありがとうございました！" }],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "sound_effects": [
+        {
+          "path": "examples/assets/sounds/se1.mp3",
+          "offset": 0.0,
+          "volume": 0.5
+        }
+      ],
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm.mp3",
+    "volume": 0.2,
+    "fade_in": 1.0,
+    "fade_out": 2.0
+  }
+}
