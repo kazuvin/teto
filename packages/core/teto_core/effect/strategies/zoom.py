@@ -1,7 +1,7 @@
 """ズームエフェクト"""
 
 import numpy as np
-from scipy.ndimage import zoom as scipy_zoom
+from scipy.ndimage import zoom as scipy_zoom, shift as scipy_shift
 from moviepy import VideoClip, ImageClip
 from .base import EffectStrategy
 from ..utils import get_easing_function
@@ -100,12 +100,42 @@ class KenBurnsEffect(EffectStrategy):
                 zoomed = scipy_zoom(frame, (current_scale, current_scale), order=1)
 
             zh, zw = zoomed.shape[:2]
-            x_offset = int((zw - w) * (0.5 + pan_x))
-            y_offset = int((zh - h) * (0.5 + pan_y))
 
-            x_offset = max(0, min(x_offset, zw - w))
-            y_offset = max(0, min(y_offset, zh - h))
+            # サブピクセル補間を使用してスムーズなパンを実現
+            x_offset_float = (zw - w) * (0.5 + pan_x)
+            y_offset_float = (zh - h) * (0.5 + pan_y)
 
-            return zoomed[y_offset : y_offset + h, x_offset : x_offset + w]
+            # 整数部分で切り出し範囲を決定
+            x_offset_int = int(x_offset_float)
+            y_offset_int = int(y_offset_float)
+
+            # 小数部分（サブピクセルシフト量）
+            x_subpixel = x_offset_float - x_offset_int
+            y_subpixel = y_offset_float - y_offset_int
+
+            # 境界チェック（サブピクセルシフト用に1ピクセル余裕を持たせる）
+            x_offset_int = max(0, min(x_offset_int, zw - w - 1))
+            y_offset_int = max(0, min(y_offset_int, zh - h - 1))
+
+            # 少し大きめに切り出し（サブピクセルシフト用）
+            crop_h = min(h + 1, zh - y_offset_int)
+            crop_w = min(w + 1, zw - x_offset_int)
+            cropped = zoomed[
+                y_offset_int : y_offset_int + crop_h,
+                x_offset_int : x_offset_int + crop_w,
+            ]
+
+            # サブピクセルシフトを適用
+            if len(frame.shape) == 3:
+                shifted = scipy_shift(
+                    cropped, (-y_subpixel, -x_subpixel, 0), order=1, mode="nearest"
+                )
+            else:
+                shifted = scipy_shift(
+                    cropped, (-y_subpixel, -x_subpixel), order=1, mode="nearest"
+                )
+
+            # 最終サイズに切り出し
+            return shifted[:h, :w]
 
         return clip.transform(ken_burns_frame)

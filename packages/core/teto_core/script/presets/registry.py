@@ -58,10 +58,29 @@ def _register_default_presets() -> None:
     from .default import DefaultScenePreset
     from .dramatic import DramaticScenePreset
     from .slideshow import SlideshowScenePreset
+    from .kenburns import (
+        KenBurnsLeftToRightPreset,
+        KenBurnsRightToLeftPreset,
+        KenBurnsTopToBottomPreset,
+        KenBurnsBottomToTopPreset,
+        KenBurnsZoomInPreset,
+        KenBurnsZoomOutPreset,
+        KenBurnsDiagonalLeftTopPreset,
+        KenBurnsDiagonalRightTopPreset,
+    )
 
     ScenePresetRegistry.register(DefaultScenePreset())
     ScenePresetRegistry.register(DramaticScenePreset())
     ScenePresetRegistry.register(SlideshowScenePreset())
+    # Ken Burns プリセット
+    ScenePresetRegistry.register(KenBurnsLeftToRightPreset())
+    ScenePresetRegistry.register(KenBurnsRightToLeftPreset())
+    ScenePresetRegistry.register(KenBurnsTopToBottomPreset())
+    ScenePresetRegistry.register(KenBurnsBottomToTopPreset())
+    ScenePresetRegistry.register(KenBurnsZoomInPreset())
+    ScenePresetRegistry.register(KenBurnsZoomOutPreset())
+    ScenePresetRegistry.register(KenBurnsDiagonalLeftTopPreset())
+    ScenePresetRegistry.register(KenBurnsDiagonalRightTopPreset())
 
 
 # モジュールロード時にデフォルトプリセットを登録
