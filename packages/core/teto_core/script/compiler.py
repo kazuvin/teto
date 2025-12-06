@@ -345,6 +345,19 @@ class ScriptCompiler:
                     )
                 )
 
+        # 効果音（シーン毎に処理）
+        for scene, scene_timing in zip(script.scenes, scene_timings):
+            for se in scene.sound_effects:
+                # シーン開始時刻 + オフセット で再生タイミングを計算
+                start_time = scene_timing.start_time + se.offset
+                layers.append(
+                    AudioLayer(
+                        path=se.path,
+                        start_time=start_time,
+                        volume=se.volume,
+                    )
+                )
+
         # BGM
         if script.bgm:
             total_duration = scene_timings[-1].end_time

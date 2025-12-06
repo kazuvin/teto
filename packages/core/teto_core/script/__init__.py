@@ -9,6 +9,7 @@ from .models import (
     TimingConfig,
     BGMConfig,
     VoiceConfig,
+    SoundEffect,
 )
 from .compiler import (
     ScriptCompiler,
@@ -40,6 +41,7 @@ __all__ = [
     "TimingConfig",
     "BGMConfig",
     "VoiceConfig",
+    "SoundEffect",
     # Compiler
     "ScriptCompiler",
     "CompileResult",

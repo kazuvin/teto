@@ -9,6 +9,7 @@ from .models import (
     TimingConfig,
     BGMConfig,
     VoiceConfig,
+    SoundEffect,
 )
 
 
@@ -58,6 +59,7 @@ class SceneBuilder:
         self._duration: float | None = None
         self._pause_after = 0.0
         self._note: str | None = None
+        self._sound_effects: list[SoundEffect] = []
 
     def add_narration(self, text: str, pause_after: float = 0.0) -> "SceneBuilder":
         """ナレーションを追加する
@@ -138,6 +140,22 @@ class SceneBuilder:
         self._note = text
         return self
 
+    def add_sound_effect(
+        self, path: str, offset: float = 0.0, volume: float = 1.0
+    ) -> "SceneBuilder":
+        """効果音を追加する
+
+        Args:
+            path: 効果音ファイルパス
+            offset: シーン開始からのオフセット（秒）
+            volume: 音量 (0.0〜1.0)
+
+        Returns:
+            SceneBuilder: 自身のインスタンス（チェーン呼び出し用）
+        """
+        self._sound_effects.append(SoundEffect(path=path, offset=offset, volume=volume))
+        return self
+
     def build(self) -> Scene:
         """Sceneを構築する
 
@@ -158,6 +176,7 @@ class SceneBuilder:
             duration=self._duration,
             pause_after=self._pause_after,
             note=self._note,
+            sound_effects=self._sound_effects,
         )
 
 
