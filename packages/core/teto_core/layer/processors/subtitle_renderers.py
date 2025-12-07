@@ -55,15 +55,15 @@ class SubtitleStyleRenderer(ABC):
         Returns:
             レンダリングパラメータの辞書
         """
-        # レスポンシブな定数を取得
-        constants = get_responsive_constants(video_size[1])
+        # レスポンシブな定数を取得（幅ベース）
+        constants = get_responsive_constants(video_size[0])
         max_width = video_size[0] - constants["MAX_TEXT_WIDTH_OFFSET"]
 
-        # レスポンシブサイズを計算
-        font_size = calculate_font_size(layer.font_size, video_size[1])
-        stroke_width = calculate_stroke_width(layer.stroke_width, video_size[1])
+        # レスポンシブサイズを計算（幅ベース）
+        font_size = calculate_font_size(layer.font_size, video_size[0])
+        stroke_width = calculate_stroke_width(layer.stroke_width, video_size[0])
         outer_stroke_width = calculate_stroke_width(
-            layer.outer_stroke_width, video_size[1]
+            layer.outer_stroke_width, video_size[0]
         )
 
         return {
@@ -109,7 +109,7 @@ class SubtitleStyleRenderer(ABC):
                 stroke_color=layer.stroke_color,
                 outer_stroke_width=params["outer_stroke_width"],
                 outer_stroke_color=layer.outer_stroke_color,
-                video_height=video_size[1],
+                video_width=video_size[0],
             )
 
         # 従来の単一スタイルレンダリング
@@ -124,7 +124,7 @@ class SubtitleStyleRenderer(ABC):
             stroke_color=layer.stroke_color,
             outer_stroke_width=params["outer_stroke_width"],
             outer_stroke_color=layer.outer_stroke_color,
-            video_height=video_size[1],
+            video_width=video_size[0],
         )
 
 

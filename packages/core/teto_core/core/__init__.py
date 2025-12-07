@@ -3,6 +3,7 @@
 from .types import ResponsiveSize
 from .base import ProcessorBase
 from .constants import (
+    BASE_WIDTH,
     BASE_HEIGHT,
     SIZE_SCALE_MAP,
     COLOR_MAP,
@@ -25,6 +26,7 @@ from .constants import (
 __all__ = [
     "ResponsiveSize",
     "ProcessorBase",
+    "BASE_WIDTH",
     "BASE_HEIGHT",
     "SIZE_SCALE_MAP",
     "COLOR_MAP",

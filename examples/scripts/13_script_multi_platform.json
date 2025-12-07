@@ -21,15 +21,10 @@
   ],
   "scenes": [
     {
-      "narrations": [
-        { "text": "マルチフォーマット" },
-        { "text": "テスト動画です。" }
-      ],
+      "narrations": [{ "text": "マルチフォーマットのデモをはじめます。" }],
       "visual": {
         "path": "examples/assets/images/sample_image.png"
-      },
-      "preset": "kenburns-left-to-right",
-      "note": "左から右へゆっくりパン"
+      }
     }
   ],
   "voice": {
