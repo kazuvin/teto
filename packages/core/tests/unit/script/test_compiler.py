@@ -423,6 +423,42 @@ class TestScriptCompiler:
             assert result.project.output.height == 1920
             assert result.project.output.fps == 60
 
+    def test_mute_video_option(self):
+        """mute_video オプションで動画の音声をミュートできること"""
+        script = Script(
+            title="ミュートテスト",
+            default_preset="default",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="シーン1")],
+                    visual=Visual(path="./video1.mp4"),
+                    mute_video=True,  # 動画の音声をミュート
+                ),
+                Scene(
+                    narrations=[NarrationSegment(text="シーン2")],
+                    visual=Visual(path="./video2.mp4"),
+                    # mute_video=False がデフォルト
+                ),
+            ],
+        )
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            compiler = ScriptCompiler(
+                tts_provider=MockTTSProvider(),
+                asset_resolver=LocalAssetResolver(),
+                output_dir=tmpdir,
+            )
+
+            result = compiler.compile(script)
+
+            # シーン1: mute_video=True → volume=0.0
+            layer1 = result.project.timeline.video_layers[0]
+            assert layer1.volume == 0.0
+
+            # シーン2: mute_video=False（デフォルト） → volume=1.0
+            layer2 = result.project.timeline.video_layers[1]
+            assert layer2.volume == 1.0
+
 
 class TestLocalAssetResolver:
     """LocalAssetResolver tests"""

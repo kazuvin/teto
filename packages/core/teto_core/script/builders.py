@@ -60,6 +60,7 @@ class SceneBuilder:
         self._pause_after = 0.0
         self._note: str | None = None
         self._sound_effects: list[SoundEffect] = []
+        self._mute_video = False
 
     def add_narration(self, text: str, pause_after: float = 0.0) -> "SceneBuilder":
         """ナレーションを追加する
@@ -156,6 +157,18 @@ class SceneBuilder:
         self._sound_effects.append(SoundEffect(path=path, offset=offset, volume=volume))
         return self
 
+    def mute_video(self, mute: bool = True) -> "SceneBuilder":
+        """動画の音声をミュートにするか設定する
+
+        Args:
+            mute: True の場合、動画ファイルの音声を無音にする
+
+        Returns:
+            SceneBuilder: 自身のインスタンス（チェーン呼び出し用）
+        """
+        self._mute_video = mute
+        return self
+
     def build(self) -> Scene:
         """Sceneを構築する
 
@@ -177,6 +190,7 @@ class SceneBuilder:
             pause_after=self._pause_after,
             note=self._note,
             sound_effects=self._sound_effects,
+            mute_video=self._mute_video,
         )
 
 
