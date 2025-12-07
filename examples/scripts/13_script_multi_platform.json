@@ -1,0 +1,54 @@
+{
+  "title": "マルチプラットフォーム対応サンプル",
+  "description": "複数のアスペクト比で出力する例 - YouTube（16:9）、TikTok（9:16）、Instagram（1:1）を同時生成",
+  "output_dir": "output/multi_platform",
+  "output": [
+    {
+      "name": "youtube",
+      "aspect_ratio": "16:9"
+    },
+    {
+      "name": "tiktok",
+      "aspect_ratio": "9:16"
+    },
+    {
+      "name": "instagram",
+      "aspect_ratio": "1:1"
+    }
+  ],
+  "scenes": [
+    {
+      "narrations": [
+        { "text": "マルチフォーマット" },
+        { "text": "テスト動画です。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm.mp3",
+    "volume": 0.15,
+    "fade_in": 2.0,
+    "fade_out": 3.0
+  },
+  "subtitle": {
+    "enabled": true,
+    "font_size": "medium",
+    "color": "white",
+    "background_color": "black",
+    "background_opacity": 0.7,
+    "position": "bottom"
+  }
+}

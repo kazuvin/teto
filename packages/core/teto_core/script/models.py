@@ -266,8 +266,17 @@ class Script(BaseModel):
     )
 
     # 出力設定（解像度、FPS など）
-    output: OutputSettings = Field(
-        default_factory=OutputSettings, description="出力設定（解像度、FPSなど）"
+    # 単一出力: OutputSettings オブジェクト
+    # 複数出力: OutputSettings のリスト（各要素に name フィールドを指定）
+    output: OutputSettings | list[OutputSettings] = Field(
+        default_factory=OutputSettings,
+        description="出力設定（単一出力: オブジェクト、複数出力: 配列）",
+    )
+
+    # 出力ディレクトリ
+    output_dir: str | None = Field(
+        None,
+        description="出力ディレクトリ（指定時は全ての出力をこのディレクトリに配置、未指定時はデフォルトまたはCLIの設定を使用）",
     )
 
     # 字幕スタイル設定

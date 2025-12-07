@@ -6,12 +6,62 @@ from moviepy import (
     ImageClip,
     CompositeVideoClip,
     concatenate_videoclips,
+    ColorClip,
 )
 from moviepy.video.fx import CrossFadeIn, CrossFadeOut
 from ..models import VideoLayer, ImageLayer, StampLayer, PositionPreset
 from ...effect.processors import EffectProcessor
 from ...core import ProcessorBase
 from typing import Union
+
+
+def resize_with_padding(clip, target_size: tuple[int, int], bg_color=(0, 0, 0)):
+    """
+    アスペクト比を保ったままクリップをリサイズし、余白を追加（object-fit: contain）
+
+    Args:
+        clip: リサイズするクリップ
+        target_size: 目標サイズ (width, height)
+        bg_color: 背景色 (R, G, B)
+
+    Returns:
+        リサイズされたクリップ
+    """
+    target_width, target_height = target_size
+    clip_width, clip_height = clip.size
+
+    # アスペクト比を計算
+    target_aspect = target_width / target_height
+    clip_aspect = clip_width / clip_height
+
+    # アスペクト比を保ったままリサイズ
+    if clip_aspect > target_aspect:
+        # クリップが横長 -> 幅を基準にリサイズ
+        new_width = target_width
+        new_height = int(target_width / clip_aspect)
+    else:
+        # クリップが縦長 -> 高さを基準にリサイズ
+        new_height = target_height
+        new_width = int(target_height * clip_aspect)
+
+    # リサイズ
+    resized_clip = clip.resized((new_width, new_height))
+
+    # 背景クリップを作成
+    bg_clip = ColorClip(
+        size=target_size, color=bg_color, duration=resized_clip.duration
+    )
+
+    # 中央配置
+    x_center = (target_width - new_width) // 2
+    y_center = (target_height - new_height) // 2
+
+    # 合成
+    final_clip = CompositeVideoClip(
+        [bg_clip, resized_clip.with_position((x_center, y_center))], size=target_size
+    )
+
+    return final_clip
 
 
 class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
@@ -97,10 +147,8 @@ class ImageLayerProcessor(ProcessorBase[ImageLayer, ImageClip]):
 
         clip = ImageClip(layer.path, duration=layer.duration)
 
-        # リサイズして中央配置
-        clip = clip.resized(height=target_size[1])
-        if clip.w > target_size[0]:
-            clip = clip.resized(width=target_size[0])
+        # アスペクト比を保ったままリサイズ (object-fit: contain)
+        clip = resize_with_padding(clip, target_size)
 
         # エフェクトを適用
         if layer.effects:
@@ -244,7 +292,8 @@ class VideoProcessor(ProcessorBase[list[Union[VideoLayer, ImageLayer]], VideoFil
         if not any(layer.transition for layer, _ in layer_clips[:-1]):
             clips = [clip for _, clip in layer_clips]
             final_clip = concatenate_videoclips(clips, method="compose")
-            return final_clip.resized(output_size)
+            # アスペクト比を保ったままリサイズ (object-fit: contain)
+            return resize_with_padding(final_clip, output_size)
 
         # トランジションがある場合は CompositeVideoClip で合成
         composite_clips = []

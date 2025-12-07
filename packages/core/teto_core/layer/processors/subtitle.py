@@ -53,25 +53,37 @@ class SubtitleBurnProcessor(
     def process(
         self, data: tuple[VideoClip, list[SubtitleLayer]], **kwargs
     ) -> VideoClip:
-        """動画に字幕を焼き込む"""
+        """動画に字幕を焼き込む
+
+        Args:
+            data: (video, subtitle_layers) のタプル
+            **kwargs:
+                output_size: 出力サイズ（指定時はこのサイズで字幕を配置）
+        """
         video, subtitle_layers = data
+        output_size = kwargs.get("output_size")
 
         if not subtitle_layers:
             return video
+
+        # 字幕配置の基準サイズ（指定がない場合は動画サイズ）
+        subtitle_base_size = output_size if output_size else (video.w, video.h)
 
         subtitle_clips = []
 
         for layer in subtitle_layers:
             for item in layer.items:
                 try:
-                    clip = self._create_subtitle_clip(item, layer, (video.w, video.h))
+                    clip = self._create_subtitle_clip(item, layer, subtitle_base_size)
                     subtitle_clips.append(clip)
                 except Exception as e:
                     print(f"Warning: Failed to create subtitle clip: {e}")
                     continue
 
         if subtitle_clips:
-            return CompositeVideoClip([video] + subtitle_clips, size=(video.w, video.h))
+            # 合成サイズも output_size を使用
+            composite_size = output_size if output_size else (video.w, video.h)
+            return CompositeVideoClip([video] + subtitle_clips, size=composite_size)
         else:
             return video
 

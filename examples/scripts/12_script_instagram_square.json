@@ -1,0 +1,87 @@
+{
+  "title": "Instagram 正方形サンプル",
+  "description": "正方形動画（1:1）の例 - Instagram投稿向け",
+  "output": {
+    "aspect_ratio": "1:1"
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.5,
+      "note": "オープニング（正方形フォーマット）"
+    },
+    {
+      "narrations": [
+        { "text": "今日のテーマは" },
+        { "text": "効率的な時間管理術です。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "1. 優先順位をつける" },
+        { "text": "最も重要なタスクから始めましょう。", "pause_after": 0.5 }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "2. 時間をブロックする" },
+        { "text": "集中時間を確保しましょう。", "pause_after": 0.5 }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "3. 休憩を取る" },
+        { "text": "定期的な休憩で生産性が上がります。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "詳しい情報は" },
+        { "text": "プロフィールのリンクから！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.25,
+    "default_scene_gap": 0.4,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm.mp3",
+    "volume": 0.2,
+    "fade_in": 1.5,
+    "fade_out": 2.0
+  },
+  "subtitle": {
+    "enabled": true,
+    "font_size": "medium",
+    "color": "white",
+    "background_color": "black",
+    "background_opacity": 0.6,
+    "position": "bottom"
+  }
+}

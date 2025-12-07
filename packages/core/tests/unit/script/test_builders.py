@@ -219,6 +219,47 @@ class TestScriptBuilder:
             ScriptBuilder("テスト動画").build()
         assert "At least one scene is required" in str(exc_info.value)
 
+    def test_output_with_aspect_ratio(self):
+        """アスペクト比で出力設定できること"""
+        script = (
+            ScriptBuilder("TikTok動画")
+            .add_scene_builder(
+                SceneBuilder().add_narration("テスト").visual_path("./image.png")
+            )
+            .output(aspect_ratio="9:16")
+            .build()
+        )
+        assert script.output.width == 1080
+        assert script.output.height == 1920
+
+    def test_output_with_custom_resolution(self):
+        """カスタム解像度で出力設定できること"""
+        script = (
+            ScriptBuilder("カスタム動画")
+            .add_scene_builder(
+                SceneBuilder().add_narration("テスト").visual_path("./image.png")
+            )
+            .output(width=1440, height=2560, fps=60)
+            .build()
+        )
+        assert script.output.width == 1440
+        assert script.output.height == 2560
+        assert script.output.fps == 60
+
+    def test_output_aspect_ratio_overrides_width_height(self):
+        """アスペクト比がwidth/heightを上書きすること"""
+        script = (
+            ScriptBuilder("テスト動画")
+            .add_scene_builder(
+                SceneBuilder().add_narration("テスト").visual_path("./image.png")
+            )
+            .output(aspect_ratio="1:1", width=9999, height=9999)
+            .build()
+        )
+        # aspect_ratioが優先される
+        assert script.output.width == 1080
+        assert script.output.height == 1080
+
     def test_full_example(self):
         """完全な例で構築できること"""
         script = (

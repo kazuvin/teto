@@ -219,3 +219,96 @@ class TestScript:
         """少なくとも1つのシーンが必要であること"""
         with pytest.raises(ValidationError):
             Script(title="テスト", scenes=[])
+
+    def test_output_as_list(self):
+        """output を配列で指定できること（複数フォーマット出力）"""
+        from teto_core.output_config.models import OutputSettings
+
+        script = Script(
+            title="マルチ出力テスト",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="テスト")],
+                    visual=Visual(path="./image.png"),
+                )
+            ],
+            output=[
+                OutputSettings(name="youtube", aspect_ratio="16:9"),
+                OutputSettings(name="tiktok", aspect_ratio="9:16"),
+            ],
+        )
+        assert isinstance(script.output, list)
+        assert len(script.output) == 2
+        assert script.output[0].name == "youtube"
+        assert script.output[0].width == 1920
+        assert script.output[0].height == 1080
+        assert script.output[1].name == "tiktok"
+        assert script.output[1].width == 1080
+        assert script.output[1].height == 1920
+
+    def test_output_as_single_object(self):
+        """output を単一オブジェクトで指定できること（単一出力）"""
+        from teto_core.output_config.models import OutputSettings
+
+        script = Script(
+            title="通常出力テスト",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="テスト")],
+                    visual=Visual(path="./image.png"),
+                )
+            ],
+            output=OutputSettings(aspect_ratio="16:9"),
+        )
+        assert isinstance(script.output, OutputSettings)
+        assert script.output.width == 1920
+        assert script.output.height == 1080
+
+    def test_output_dir_default(self):
+        """output_dir はデフォルトで None であること"""
+        script = Script(
+            title="テスト動画",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="テスト")],
+                    visual=Visual(path="./image.png"),
+                )
+            ],
+        )
+        assert script.output_dir is None
+
+    def test_output_dir_can_be_set(self):
+        """output_dir を指定できること"""
+        script = Script(
+            title="テスト動画",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="テスト")],
+                    visual=Visual(path="./image.png"),
+                )
+            ],
+            output_dir="./lp/2025/03/01",
+        )
+        assert script.output_dir == "./lp/2025/03/01"
+
+    def test_output_dir_with_multi_output(self):
+        """output_dir を複数出力設定と組み合わせて使用できること"""
+        from teto_core.output_config.models import OutputSettings
+
+        script = Script(
+            title="マルチ出力テスト",
+            scenes=[
+                Scene(
+                    narrations=[NarrationSegment(text="テスト")],
+                    visual=Visual(path="./image.png"),
+                )
+            ],
+            output=[
+                OutputSettings(name="youtube", aspect_ratio="16:9"),
+                OutputSettings(name="tiktok", aspect_ratio="9:16"),
+            ],
+            output_dir="output/multi_platform",
+        )
+        assert script.output_dir == "output/multi_platform"
+        assert isinstance(script.output, list)
+        assert len(script.output) == 2

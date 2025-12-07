@@ -1,0 +1,93 @@
+{
+  "title": "TikTok/YouTube Shorts サンプル",
+  "description": "縦型動画（9:16）の例 - TikTok、YouTube Shorts、Instagram Reels向け",
+  "output": {
+    "aspect_ratio": "9:16"
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "オープニング（縦型フォーマット）"
+    },
+    {
+      "narrations": [
+        { "text": "今日は、プログラミング初心者向けの" },
+        { "text": "簡単なヒントを紹介します！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "ヒント1：" },
+        {
+          "text": "小さく始めて、毎日少しずつ進めましょう。",
+          "pause_after": 0.5
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "ヒント2：" },
+        {
+          "text": "エラーを恐れずに、試行錯誤を楽しみましょう。",
+          "pause_after": 0.5
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "ヒント3：" },
+        { "text": "コミュニティに参加して、質問しましょう。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      }
+    },
+    {
+      "narrations": [
+        { "text": "この動画が役に立ったら、" },
+        { "text": "いいねとフォローをお願いします！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 0.5
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.1
+  },
+  "timing": {
+    "default_segment_gap": 0.2,
+    "default_scene_gap": 0.3,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm.mp3",
+    "volume": 0.15,
+    "fade_in": 1.0,
+    "fade_out": 2.0
+  },
+  "subtitle": {
+    "enabled": true,
+    "font_size": "large",
+    "color": "white",
+    "background_color": "black",
+    "background_opacity": 0.7,
+    "position": "top"
+  }
+}
