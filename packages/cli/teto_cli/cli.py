@@ -291,8 +291,23 @@ def _generate_from_script(
     # Script → Project に変換
     console.print("\n[bold yellow]Script → Project 変換を開始します...[/bold yellow]\n")
 
+    # 複数出力の場合は一時ディレクトリ内のoutput_pathを使用
+    is_multi_output = isinstance(script_data.output, list)
+    if is_multi_output:
+        import tempfile
+
+        temp_dir = tempfile.mkdtemp(prefix="teto_")
+        compile_output_path = str(Path(temp_dir) / "temp_output.mp4")
+    else:
+        # 単一出力の場合、output_dir があればそれを使用
+        if script_data.output_dir:
+            output_filename = Path(output).name
+            compile_output_path = str(Path(script_data.output_dir) / output_filename)
+        else:
+            compile_output_path = output
+
     try:
-        result = compiler.compile(script_data, output_path=output)
+        result = compiler.compile(script_data, output_path=compile_output_path)
     except Exception as e:
         console.print("[red]エラー: 変換に失敗しました[/red]")
         console.print(f"[red]{e}[/red]")
@@ -338,9 +353,73 @@ def _generate_from_script(
         console.print(f"[cyan]{message}[/cyan]")
 
     try:
-        output_path = generator.generate(progress_callback=progress_callback)
-        console.print("\n[bold green]✓ 動画生成が完了しました！[/bold green]")
-        console.print(f"[green]出力ファイル: {output_path}[/green]")
+        # output が配列の場合は複数フォーマット出力
+        if isinstance(script_data.output, list):
+            from teto_core.output_config.models import OutputConfig
+
+            # 出力ディレクトリを決定（優先順位: script.output_dir > CLI の output_dir）
+            if script_data.output_dir:
+                # Script で output_dir が指定されている場合
+                base_dir = Path(script_data.output_dir)
+            else:
+                # CLI のデフォルト (output_dir / output_base)
+                output_base = Path(output).stem
+                base_dir = Path(output_dir) / output_base
+
+            base_dir.mkdir(parents=True, exist_ok=True)
+            output_dir_path = base_dir
+
+            console.print(
+                f"[cyan]複数フォーマットで出力します: {len(script_data.output)}個[/cyan]"
+            )
+
+            # 出力設定を作成
+            output_configs = []
+            for output_settings in script_data.output:
+                name = output_settings.name or "output"
+
+                # ファイル名を生成
+                output_path_multi = output_dir_path / f"{name}.mp4"
+
+                config = OutputConfig(
+                    path=str(output_path_multi),
+                    aspect_ratio=output_settings.aspect_ratio,
+                    width=output_settings.width,
+                    height=output_settings.height,
+                    fps=output_settings.fps,
+                    codec=output_settings.codec,
+                    audio_codec=output_settings.audio_codec,
+                    bitrate=output_settings.bitrate,
+                    preset=output_settings.preset,
+                    subtitle_mode=output_settings.subtitle_mode,
+                )
+                output_configs.append(config)
+
+                console.print(
+                    f"  • {name}: {config.width}x{config.height} ({output_settings.aspect_ratio or 'custom'})"
+                )
+
+            # 複数フォーマットで生成
+            output_paths = generator.generate_multi(
+                output_configs, progress_callback=progress_callback
+            )
+
+            console.print("\n[bold green]✓ 全ての動画生成が完了しました！[/bold green]")
+            console.print(f"[green]出力ディレクトリ: {output_dir_path}[/green]")
+            for path in output_paths:
+                console.print(f"  • {path}")
+
+            # 一時ディレクトリをクリーンアップ
+            if is_multi_output:
+                import shutil
+
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+        else:
+            # 単一フォーマット出力
+            output_path = generator.generate(progress_callback=progress_callback)
+            console.print("\n[bold green]✓ 動画生成が完了しました！[/bold green]")
+            console.print(f"[green]出力ファイル: {output_path}[/green]")
 
     except Exception as e:
         console.print("\n[red]エラー: 動画生成に失敗しました[/red]")
@@ -348,6 +427,13 @@ def _generate_from_script(
         import traceback
 
         console.print(f"[dim]{traceback.format_exc()}[/dim]")
+
+        # エラー時も一時ディレクトリをクリーンアップ
+        if is_multi_output:
+            import shutil
+
+            shutil.rmtree(temp_dir, ignore_errors=True)
+
         sys.exit(1)
 
 

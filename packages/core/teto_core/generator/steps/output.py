@@ -23,7 +23,11 @@ class VideoOutputStep(ProcessingStep):
         output_config = context.project.output
         output_path = output_config.path
 
-        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        output_dir = Path(output_path).parent
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # 一時音声ファイルを出力ファイルと同じディレクトリに作成
+        temp_audio_file = str(output_dir / f"temp_audio_{Path(output_path).stem}.mp4")
 
         context.video_clip.write_videofile(
             output_path,
@@ -32,6 +36,7 @@ class VideoOutputStep(ProcessingStep):
             audio_codec=output_config.audio_codec,
             bitrate=output_config.bitrate,
             preset=output_config.preset,
+            temp_audiofile=temp_audio_file,
         )
 
         return context

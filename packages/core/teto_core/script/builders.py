@@ -11,6 +11,7 @@ from .models import (
     VoiceConfig,
     SoundEffect,
 )
+from ..output_config.models import OutputSettings, VideoAspectRatio
 
 
 class NarrationSegmentBuilder:
@@ -209,6 +210,7 @@ class ScriptBuilder:
         self._timing: TimingConfig = TimingConfig()
         self._bgm: BGMConfig | None = None
         self._description: str | None = None
+        self._output: OutputSettings = OutputSettings()
 
     def add_scene(self, scene: Scene) -> "ScriptBuilder":
         """シーンを追加する
@@ -324,6 +326,47 @@ class ScriptBuilder:
         self._description = text
         return self
 
+    def output(
+        self,
+        aspect_ratio: VideoAspectRatio | str | None = None,
+        width: int | None = None,
+        height: int | None = None,
+        fps: int | None = None,
+    ) -> "ScriptBuilder":
+        """出力設定を設定する
+
+        Args:
+            aspect_ratio: アスペクト比プリセット（"16:9", "9:16"など）
+            width: 出力幅（aspect_ratioが指定されている場合は無視される）
+            height: 出力高さ（aspect_ratioが指定されている場合は無視される）
+            fps: フレームレート
+
+        Returns:
+            ScriptBuilder: 自身のインスタンス（チェーン呼び出し用）
+
+        Examples:
+            >>> builder.output(aspect_ratio="9:16")  # TikTok/Shorts用
+            >>> builder.output(width=1440, height=2560, fps=60)  # カスタム
+        """
+        # aspect_ratioの処理
+        if aspect_ratio is not None:
+            if isinstance(aspect_ratio, str):
+                aspect_ratio = VideoAspectRatio(aspect_ratio)
+            self._output.aspect_ratio = aspect_ratio
+
+        # width/heightの処理（aspect_ratioが指定されていない場合のみ）
+        if aspect_ratio is None:
+            if width is not None:
+                self._output.width = width
+            if height is not None:
+                self._output.height = height
+
+        # fpsの処理
+        if fps is not None:
+            self._output.fps = fps
+
+        return self
+
     def build(self) -> Script:
         """Scriptを構築する
 
@@ -343,4 +386,5 @@ class ScriptBuilder:
             timing=self._timing,
             bgm=self._bgm,
             description=self._description,
+            output=self._output,
         )

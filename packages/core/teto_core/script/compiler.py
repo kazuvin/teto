@@ -433,7 +433,15 @@ class ScriptCompiler:
     ) -> Project:
         """Project を組み立て"""
         # 出力設定は Script から直接取得
-        output_config = OutputConfig.from_settings(script.output, output_path)
+        # 配列の場合は最初の要素を使用（複数出力は generate_multi で処理）
+        if isinstance(script.output, list):
+            output_settings = script.output[0] if script.output else None
+            if output_settings is None:
+                raise ValueError("output が空の配列です")
+        else:
+            output_settings = script.output
+
+        output_config = OutputConfig.from_settings(output_settings, output_path)
 
         return Project(
             output=output_config,
