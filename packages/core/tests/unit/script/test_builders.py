@@ -105,6 +105,28 @@ class TestSceneBuilder:
             SceneBuilder().add_narration("テスト").build()
         assert "Visual is required" in str(exc_info.value)
 
+    def test_mute_video(self):
+        """動画の音声をミュートに設定できること"""
+        scene = (
+            SceneBuilder()
+            .add_narration("テスト")
+            .visual_path("./video.mp4", AssetType.VIDEO)
+            .mute_video()
+            .build()
+        )
+        assert scene.mute_video is True
+
+    def test_mute_video_false(self):
+        """動画の音声ミュートを無効にできること"""
+        scene = (
+            SceneBuilder()
+            .add_narration("テスト")
+            .visual_path("./video.mp4", AssetType.VIDEO)
+            .mute_video(False)
+            .build()
+        )
+        assert scene.mute_video is False
+
 
 class TestScriptBuilder:
     """ScriptBuilder tests"""

@@ -306,11 +306,14 @@ class ScriptCompiler:
 
             if scene.visual.type == AssetType.VIDEO:
                 effects = preset.get_video_effects()
+                # mute_video が True の場合は音量を 0 に設定
+                volume = 0.0 if scene.mute_video else 1.0
                 layer: Union[VideoLayer, ImageLayer] = VideoLayer(
                     path=asset_path,
                     duration=duration,
                     effects=effects,
                     transition=transition,
+                    volume=volume,
                 )
             else:
                 effects = preset.get_image_effects()

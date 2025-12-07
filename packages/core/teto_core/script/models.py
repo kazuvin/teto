@@ -187,6 +187,10 @@ class Scene(BaseModel):
         None,
         description="このシーンに適用するプリセット名（未指定時はデフォルトプリセットを使用）",
     )
+    mute_video: bool = Field(
+        False,
+        description="動画の音声をミュートにするか（True の場合、動画ファイルの音声を無音にする）",
+    )
 
     @model_validator(mode="after")
     def validate_duration_for_no_narration(self) -> "Scene":
