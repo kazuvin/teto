@@ -23,8 +23,9 @@
     {
       "narrations": [{ "text": "マルチフォーマットのデモをはじめます。" }],
       "visual": {
-        "path": "examples/assets/images/sample_image.png"
-      }
+        "path": "examples/assets/images/sample1.jpg"
+      },
+      "preset": "kenburns-left-to-right"
     }
   ],
   "voice": {
