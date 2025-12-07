@@ -147,3 +147,24 @@ class TestOutputConfig:
         assert config.fps == 60
         assert config.codec == "libx265"
         assert config.preset == "slow"
+
+    def test_object_fit_default(self):
+        """object_fit のデフォルト値が cover であること"""
+        settings = OutputSettings()
+        assert settings.object_fit == "cover"
+
+    def test_object_fit_cover(self):
+        """object_fit を cover に設定できること"""
+        settings = OutputSettings(object_fit="cover")
+        assert settings.object_fit == "cover"
+
+    def test_object_fit_fill(self):
+        """object_fit を fill に設定できること"""
+        settings = OutputSettings(object_fit="fill")
+        assert settings.object_fit == "fill"
+
+    def test_from_settings_preserves_object_fit(self):
+        """from_settings が object_fit を保持すること"""
+        settings = OutputSettings(object_fit="cover")
+        config = OutputConfig.from_settings(settings, "test.mp4")
+        assert config.object_fit == "cover"

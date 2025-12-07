@@ -1,19 +1,22 @@
 {
   "title": "マルチプラットフォーム対応サンプル",
   "description": "複数のアスペクト比で出力する例 - YouTube（16:9）、TikTok（9:16）、Instagram（1:1）を同時生成",
-  "output_dir": "output/multi_platform",
+  "output_dir": "output/test",
   "output": [
     {
       "name": "youtube",
-      "aspect_ratio": "16:9"
+      "aspect_ratio": "16:9",
+      "object_fit": "cover"
     },
     {
       "name": "tiktok",
-      "aspect_ratio": "9:16"
+      "aspect_ratio": "9:16",
+      "object_fit": "cover"
     },
     {
       "name": "instagram",
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "object_fit": "cover"
     }
   ],
   "scenes": [
@@ -24,7 +27,9 @@
       ],
       "visual": {
         "path": "examples/assets/images/sample_image.png"
-      }
+      },
+      "preset": "kenburns-left-to-right",
+      "note": "左から右へゆっくりパン"
     }
   ],
   "voice": {

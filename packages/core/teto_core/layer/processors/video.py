@@ -64,6 +64,64 @@ def resize_with_padding(clip, target_size: tuple[int, int], bg_color=(0, 0, 0)):
     return final_clip
 
 
+def resize_with_cover(clip, target_size: tuple[int, int]):
+    """
+    アスペクト比を保ったままクリップをリサイズし、画面を埋める（object-fit: cover）
+    はみ出た部分は中央でトリミングされる
+
+    Args:
+        clip: リサイズするクリップ
+        target_size: 目標サイズ (width, height)
+
+    Returns:
+        リサイズ＆クロップされたクリップ
+    """
+    target_width, target_height = target_size
+    clip_width, clip_height = clip.size
+
+    # アスペクト比を計算
+    target_aspect = target_width / target_height
+    clip_aspect = clip_width / clip_height
+
+    # coverの場合は画面を埋めるように大きい方に合わせる
+    if clip_aspect > target_aspect:
+        # クリップが横長 -> 高さを基準にリサイズ
+        new_height = target_height
+        new_width = int(target_height * clip_aspect)
+    else:
+        # クリップが縦長 -> 幅を基準にリサイズ
+        new_width = target_width
+        new_height = int(target_width / clip_aspect)
+
+    # リサイズ
+    resized_clip = clip.resized((new_width, new_height))
+
+    # 中央でクロップ
+    x_center = (new_width - target_width) // 2
+    y_center = (new_height - target_height) // 2
+
+    cropped_clip = resized_clip.cropped(
+        x1=x_center, y1=y_center, width=target_width, height=target_height
+    )
+
+    return cropped_clip
+
+
+def resize_with_fill(clip, target_size: tuple[int, int]):
+    """
+    アスペクト比を無視してクリップをリサイズ（object-fit: fill）
+    引き伸ばしまたは圧縮される
+
+    Args:
+        clip: リサイズするクリップ
+        target_size: 目標サイズ (width, height)
+
+    Returns:
+        リサイズされたクリップ
+    """
+    return clip.resized(target_size)
+
+
 class VideoLayerProcessor(ProcessorBase[VideoLayer, VideoFileClip]):
     """動画レイヤー処理プロセッサー"""
 
