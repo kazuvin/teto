@@ -11,7 +11,7 @@
     {
       "name": "tiktok",
       "aspect_ratio": "9:16",
-      "object_fit": "cover"
+      "object_fit": "contain"
     },
     {
       "name": "instagram",

@@ -16,6 +16,7 @@ class ProcessingContext:
     audio_clip: AudioClip | None = None
     output_size: tuple[int, int] | None = None
     progress_callback: Callable[[str], None] | None = None
+    verbose: bool = True  # False にすると MoviePy のログを抑制
 
     def report_progress(self, message: str) -> None:
         """進捗を報告
