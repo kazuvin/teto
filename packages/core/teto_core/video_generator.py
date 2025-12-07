@@ -152,7 +152,8 @@ class VideoGenerator:
     def generate_multi(self, output_configs: list, progress_callback=None) -> list[str]:
         """複数のアスペクト比で動画を一度に生成
 
-        レイヤー処理は1回だけ実行し、出力のみ複数のアスペクト比で行うため効率的。
+        各出力設定に対して別々にレイヤー処理を行い、object_fit などの設定を
+        正しく適用します。
 
         Args:
             output_configs: 出力設定のリスト（OutputConfigまたはdict）
@@ -177,50 +178,8 @@ class VideoGenerator:
         for hook in self._pre_hooks:
             hook(self.project)
 
-        # 処理コンテキストを作成
-        context = ProcessingContext(
-            project=self.project,
-            progress_callback=progress_callback,
-        )
-
-        # パイプラインを実行（VideoOutputStep, SubtitleProcessingStep, CleanupStepを除外）
-        from .generator.steps import (
-            CleanupStep,
-            SubtitleProcessingStep,
-            VideoOutputStep,
-        )
-
-        # 除外するステップとその親を記録
-        excluded_steps = []
-        current_step = self._pipeline
-
-        # 除外対象のステップを探して記録
-        while current_step:
-            if current_step._next:
-                if isinstance(
-                    current_step._next,
-                    (CleanupStep, SubtitleProcessingStep, VideoOutputStep),
-                ):
-                    excluded_steps.append(
-                        {
-                            "parent": current_step,
-                            "step": current_step._next,
-                            "next": current_step._next._next,
-                        }
-                    )
-                    # 一時的にスキップ
-                    current_step._next = current_step._next._next
-            current_step = current_step._next
-
-        # パイプラインを実行（除外したステップはスキップ）
-        context = self._pipeline.execute(context)
-
-        # subtitle_step を後で使うために保持
-        subtitle_step = None
-        for excluded in excluded_steps:
-            if isinstance(excluded["step"], SubtitleProcessingStep):
-                subtitle_step = excluded["step"]
-                break
+        # 元の output 設定を保存
+        original_output = self.project.output
 
         # 複数の出力を生成
         output_paths = []
@@ -237,52 +196,17 @@ class VideoGenerator:
             # 出力ディレクトリを作成
             Path(output_config.path).parent.mkdir(parents=True, exist_ok=True)
 
-            # object_fit設定に応じてリサイズ
-            from .layer.processors.video import (
-                resize_with_padding,
-                resize_with_cover,
-                resize_with_fill,
+            # プロジェクトの output を一時的に変更
+            self.project.output = output_config
+
+            # 処理コンテキストを作成
+            context = ProcessingContext(
+                project=self.project,
+                progress_callback=progress_callback,
             )
 
-            if output_config.object_fit == "cover":
-                resized_clip = resize_with_cover(
-                    context.video_clip, (output_config.width, output_config.height)
-                )
-            elif output_config.object_fit == "fill":
-                resized_clip = resize_with_fill(
-                    context.video_clip, (output_config.width, output_config.height)
-                )
-            else:  # contain (default)
-                resized_clip = resize_with_padding(
-                    context.video_clip, (output_config.width, output_config.height)
-                )
-
-            # 字幕を出力サイズ全体に対して適用
-            if subtitle_step and output_config.subtitle_mode == "burn":
-                from .layer.processors.subtitle import SubtitleBurnProcessor
-
-                subtitle_processor = SubtitleBurnProcessor()
-                # 出力サイズで字幕を焼き込む
-                resized_clip = subtitle_processor.execute(
-                    (resized_clip, context.project.timeline.subtitle_layers),
-                    output_size=(output_config.width, output_config.height),
-                )
-
-            # 一時音声ファイルを出力ファイルと同じディレクトリに作成
-            output_dir = Path(output_config.path).parent
-            temp_audio_file = str(
-                output_dir / f"temp_audio_{Path(output_config.path).stem}.mp4"
-            )
-
-            resized_clip.write_videofile(
-                output_config.path,
-                fps=output_config.fps,
-                codec=output_config.codec,
-                audio_codec=output_config.audio_codec,
-                bitrate=output_config.bitrate,
-                preset=output_config.preset,
-                temp_audiofile=temp_audio_file,
-            )
+            # パイプラインを実行
+            context = self._pipeline.execute(context)
 
             output_paths.append(output_config.path)
 
@@ -290,15 +214,14 @@ class VideoGenerator:
             for hook in self._post_hooks:
                 hook(output_config.path, self.project)
 
-        # パイプラインを元に戻す
-        for excluded in excluded_steps:
-            excluded["parent"]._next = excluded["step"]
+            # クリーンアップ
+            if context.video_clip:
+                context.video_clip.close()
+            if context.audio_clip:
+                context.audio_clip.close()
 
-        # クリーンアップ
-        if context.video_clip:
-            context.video_clip.close()
-        if context.audio_clip:
-            context.audio_clip.close()
+        # 元の output 設定を復元
+        self.project.output = original_output
 
         return output_paths
 

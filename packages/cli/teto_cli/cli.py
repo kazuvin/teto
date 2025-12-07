@@ -392,6 +392,7 @@ def _generate_from_script(
                     bitrate=output_settings.bitrate,
                     preset=output_settings.preset,
                     subtitle_mode=output_settings.subtitle_mode,
+                    object_fit=output_settings.object_fit,
                 )
                 output_configs.append(config)
 

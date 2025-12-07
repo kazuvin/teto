@@ -32,13 +32,16 @@ class VideoLayerProcessingStep(ProcessingStep):
         context.report_progress("動画・画像レイヤーを処理中...")
 
         timeline = context.project.timeline
+        output_config = context.project.output
         context.output_size = (
-            context.project.output.width,
-            context.project.output.height,
+            output_config.width,
+            output_config.height,
         )
 
         context.video_clip = self.video_processor.execute(
-            timeline.video_layers, output_size=context.output_size
+            timeline.video_layers,
+            output_size=context.output_size,
+            object_fit=output_config.object_fit,
         )
 
         return context
