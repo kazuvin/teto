@@ -160,7 +160,7 @@ def create_text_image_with_pil(
     stroke_color: str = "black",
     outer_stroke_width: int = 0,
     outer_stroke_color: str = "white",
-    video_height: int = 1080,
+    video_width: int = 1920,
     load_font_func=None,
 ) -> tuple[np.ndarray, tuple[int, int]]:
     """PILを使ってテキスト画像を作成し、正確なサイズを取得
@@ -176,7 +176,7 @@ def create_text_image_with_pil(
         stroke_color: 縁取りの色
         outer_stroke_width: 外側縁取りの幅（ピクセル値）
         outer_stroke_color: 外側縁取りの色
-        video_height: 動画の高さ（レスポンシブ定数計算用）
+        video_width: 動画の幅（レスポンシブ定数計算用）
         load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
 
     Returns:
@@ -185,7 +185,7 @@ def create_text_image_with_pil(
     # レスポンシブな定数を取得
     from .size_utils import get_responsive_constants
 
-    constants = get_responsive_constants(video_height)
+    constants = get_responsive_constants(video_width)
 
     # フォントを読み込み
     if load_font_func:
@@ -296,7 +296,7 @@ def create_styled_text_image_with_pil(
     stroke_color: str = "black",
     outer_stroke_width: int = 0,
     outer_stroke_color: str = "white",
-    video_height: int = 1080,
+    video_width: int = 1920,
     load_font_func=None,
 ) -> tuple[np.ndarray, tuple[int, int]]:
     """スパンごとにスタイルを適用してテキスト画像を生成
@@ -316,7 +316,7 @@ def create_styled_text_image_with_pil(
         stroke_color: 縁取りの色
         outer_stroke_width: 外側縁取りの幅（ピクセル値）
         outer_stroke_color: 外側縁取りの色
-        video_height: 動画の高さ（レスポンシブ定数計算用）
+        video_width: 動画の幅（レスポンシブ定数計算用）
         load_font_func: フォント読み込み関数（指定しない場合はデフォルト）
 
     Returns:
@@ -325,7 +325,7 @@ def create_styled_text_image_with_pil(
     from .size_utils import get_responsive_constants
     from .color_utils import parse_color
 
-    constants = get_responsive_constants(video_height)
+    constants = get_responsive_constants(video_width)
 
     # フォントを読み込み（normal と bold 両方）
     if load_font_func:

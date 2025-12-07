@@ -1,6 +1,7 @@
 """Compatibility layer for constants imports"""
 
 from .core.constants import (
+    BASE_WIDTH,
     BASE_HEIGHT,
     BASE_FONT_SIZE,
     BASE_BORDER_WIDTH,
@@ -12,6 +13,7 @@ from .core.constants import (
 )
 
 __all__ = [
+    "BASE_WIDTH",
     "BASE_HEIGHT",
     "BASE_FONT_SIZE",
     "BASE_BORDER_WIDTH",
