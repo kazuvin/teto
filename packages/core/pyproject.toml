@@ -16,8 +16,15 @@ dependencies = [
     "pydub>=0.25.0",
     "python-dotenv>=1.0.0",
     "google-cloud-texttospeech>=2.14.0",
-    "elevenlabs>=1.0.0",
     "google-genai>=1.0.0",
+]
+
+[project.optional-dependencies]
+elevenlabs = [
+    "elevenlabs>=1.0.0",
+]
+all = [
+    "elevenlabs>=1.0.0",
 ]
 
 [build-system]

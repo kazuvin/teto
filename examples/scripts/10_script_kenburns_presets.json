@@ -2,19 +2,22 @@
   "title": "Ken Burns プリセットのサンプル",
   "description": "ゆっくりとした動きのKen Burnsプリセットを使用したデモ",
   "default_preset": "default",
-  "output_dir": "output/multi_platform",
+  "output_dir": "output/10_kenburns_presets",
   "output": [
     {
       "name": "youtube",
-      "aspect_ratio": "16:9"
+      "aspect_ratio": "16:9",
+      "object_fit": "cover"
     },
     {
       "name": "tiktok",
-      "aspect_ratio": "9:16"
+      "aspect_ratio": "9:16",
+      "object_fit": "contain"
     },
     {
       "name": "instagram",
-      "aspect_ratio": "1:1"
+      "aspect_ratio": "1:1",
+      "object_fit": "cover"
     }
   ],
   "subtitle_style": {

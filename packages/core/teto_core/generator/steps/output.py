@@ -29,6 +29,9 @@ class VideoOutputStep(ProcessingStep):
         # 一時音声ファイルを出力ファイルと同じディレクトリに作成
         temp_audio_file = str(output_dir / f"temp_audio_{Path(output_path).stem}.mp4")
 
+        # verbose=False の場合は MoviePy のログを抑制
+        logger = "bar" if context.verbose else None
+
         context.video_clip.write_videofile(
             output_path,
             fps=output_config.fps,
@@ -37,6 +40,7 @@ class VideoOutputStep(ProcessingStep):
             bitrate=output_config.bitrate,
             preset=output_config.preset,
             temp_audiofile=temp_audio_file,
+            logger=logger,
         )
 
         return context

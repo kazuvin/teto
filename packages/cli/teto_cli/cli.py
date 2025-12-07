@@ -370,11 +370,12 @@ def _generate_from_script(
             output_dir_path = base_dir
 
             console.print(
-                f"[cyan]複数フォーマットで出力します: {len(script_data.output)}個[/cyan]"
+                f"[cyan]複数フォーマットで並列出力します: {len(script_data.output)}個[/cyan]"
             )
 
             # 出力設定を作成
             output_configs = []
+            config_names = []
             for output_settings in script_data.output:
                 name = output_settings.name or "output"
 
@@ -395,15 +396,56 @@ def _generate_from_script(
                     object_fit=output_settings.object_fit,
                 )
                 output_configs.append(config)
+                config_names.append(name)
 
                 console.print(
                     f"  • {name}: {config.width}x{config.height} ({output_settings.aspect_ratio or 'custom'})"
                 )
 
-            # 複数フォーマットで生成
-            output_paths = generator.generate_multi(
-                output_configs, progress_callback=progress_callback
+            console.print()
+
+            # 並列生成用の進捗表示
+            from rich.progress import (
+                Progress,
+                BarColumn,
+                TaskProgressColumn,
+                TimeElapsedColumn,
             )
+
+            completed_names = []
+
+            def parallel_progress_callback(message: str):
+                # "完了 (n/m): path" 形式のメッセージから完了したファイル名を抽出
+                if message.startswith("完了"):
+                    for name in config_names:
+                        if name in message and name not in completed_names:
+                            completed_names.append(name)
+                            console.print(f"  [green]✓[/green] {name} 完了")
+
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold blue]{task.description}"),
+                BarColumn(),
+                TaskProgressColumn(),
+                TimeElapsedColumn(),
+                console=console,
+            ) as progress:
+                task = progress.add_task(
+                    "動画生成中...",
+                    total=len(output_configs),
+                )
+
+                # 並列生成（verbose=False で MoviePy のログを抑制）
+                output_paths = generator.generate_multi_parallel(
+                    output_configs,
+                    progress_callback=lambda msg: (
+                        parallel_progress_callback(msg),
+                        progress.update(task, completed=len(completed_names)),
+                    ),
+                    verbose=False,
+                )
+
+                progress.update(task, completed=len(output_configs))
 
             console.print("\n[bold green]✓ 全ての動画生成が完了しました！[/bold green]")
             console.print(f"[green]出力ディレクトリ: {output_dir_path}[/green]")

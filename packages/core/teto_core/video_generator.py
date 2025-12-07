@@ -120,11 +120,12 @@ class VideoGenerator:
         """
         self._pipeline = pipeline
 
-    def generate(self, progress_callback=None) -> str:
+    def generate(self, progress_callback=None, verbose: bool = True) -> str:
         """プロジェクトから動画を生成
 
         Args:
             progress_callback: 進捗コールバック関数（オプション）
+            verbose: MoviePy のログを出力するかどうか（デフォルト: True）
 
         Returns:
             出力ファイルパス
@@ -137,6 +138,7 @@ class VideoGenerator:
         context = ProcessingContext(
             project=self.project,
             progress_callback=progress_callback,
+            verbose=verbose,
         )
 
         # パイプラインを実行
@@ -222,6 +224,108 @@ class VideoGenerator:
 
         # 元の output 設定を復元
         self.project.output = original_output
+
+        return output_paths
+
+    def generate_multi_parallel(
+        self,
+        output_configs: list,
+        max_workers: int | None = None,
+        progress_callback: Callable[[str], None] | None = None,
+        verbose: bool = False,
+        _executor_class=None,
+    ) -> list[str]:
+        """複数のアスペクト比で動画を並列生成
+
+        ProcessPoolExecutor を使用して各フォーマットを別プロセスで並列実行します。
+        CPUコアを活用して処理時間を短縮できます。
+
+        Args:
+            output_configs: 出力設定のリスト（OutputConfigまたはdict）
+            max_workers: 最大並列数（デフォルト: CPUコア数）
+            progress_callback: 進捗コールバック関数（オプション）
+            verbose: MoviePy のログを出力するかどうか（デフォルト: False）
+            _executor_class: 内部用。テスト時に executor を差し替え可能
+
+        Returns:
+            出力ファイルパスのリスト（入力順序を維持）
+
+        Example:
+            >>> from teto_core.output_config import OutputConfig
+            >>> configs = [
+            ...     OutputConfig(path="youtube.mp4", aspect_ratio="16:9"),
+            ...     OutputConfig(path="tiktok.mp4", aspect_ratio="9:16"),
+            ...     OutputConfig(path="instagram.mp4", aspect_ratio="1:1"),
+            ... ]
+            >>> # 3つのフォーマットを並列で生成
+            >>> generator.generate_multi_parallel(configs, max_workers=3)
+            ['youtube.mp4', 'tiktok.mp4', 'instagram.mp4']
+        """
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        from .output_config.models import OutputConfig
+        from .generator.parallel import generate_single_output
+        from pathlib import Path
+
+        # デフォルトは ProcessPoolExecutor
+        if _executor_class is None:
+            _executor_class = ProcessPoolExecutor
+
+        # 前処理フックを実行
+        for hook in self._pre_hooks:
+            hook(self.project)
+
+        # 出力設定を正規化
+        normalized_configs = []
+        for config in output_configs:
+            if isinstance(config, dict):
+                config = OutputConfig(**config)
+            Path(config.path).parent.mkdir(parents=True, exist_ok=True)
+            normalized_configs.append(config)
+
+        if progress_callback:
+            progress_callback(f"並列生成開始: {len(normalized_configs)}フォーマット")
+
+        # プロジェクトをシリアライズ
+        project_dict = self.project.model_dump()
+
+        # 結果を格納するリスト（順序を維持）
+        output_paths = [None] * len(normalized_configs)
+        completed_count = 0
+
+        with _executor_class(max_workers=max_workers) as executor:
+            # タスクを投入
+            future_to_index = {
+                executor.submit(
+                    generate_single_output,
+                    project_dict,
+                    config.model_dump(),
+                    verbose,
+                ): i
+                for i, config in enumerate(normalized_configs)
+            }
+
+            # 結果を収集
+            for future in as_completed(future_to_index):
+                index = future_to_index[future]
+                config = normalized_configs[index]
+
+                try:
+                    output_path = future.result()
+                    output_paths[index] = output_path
+                    completed_count += 1
+
+                    if progress_callback:
+                        progress_callback(
+                            f"完了 ({completed_count}/{len(normalized_configs)}): "
+                            f"{config.path}"
+                        )
+
+                    # 後処理フックを実行
+                    for hook in self._post_hooks:
+                        hook(output_path, self.project)
+
+                except Exception as e:
+                    raise RuntimeError(f"Failed to generate {config.path}: {e}") from e
 
         return output_paths
 
