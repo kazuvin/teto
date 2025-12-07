@@ -2,11 +2,21 @@
   "title": "Ken Burns プリセットのサンプル",
   "description": "ゆっくりとした動きのKen Burnsプリセットを使用したデモ",
   "default_preset": "default",
-  "output": {
-    "width": 1920,
-    "height": 1080,
-    "fps": 30
-  },
+  "output_dir": "output/multi_platform",
+  "output": [
+    {
+      "name": "youtube",
+      "aspect_ratio": "16:9"
+    },
+    {
+      "name": "tiktok",
+      "aspect_ratio": "9:16"
+    },
+    {
+      "name": "instagram",
+      "aspect_ratio": "1:1"
+    }
+  ],
   "subtitle_style": {
     "font_size": "lg",
     "font_color": "white",
@@ -17,9 +27,7 @@
   },
   "scenes": [
     {
-      "narrations": [
-        { "text": "Ken Burns プリセットのデモを始めます。" }
-      ],
+      "narrations": [{ "text": "Ken Burns プリセットのデモを始めます。" }],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
@@ -27,9 +35,7 @@
       "note": "左から右へゆっくりパン"
     },
     {
-      "narrations": [
-        { "text": "右から左へのパンも可能です。" }
-      ],
+      "narrations": [{ "text": "右から左へのパンも可能です。" }],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
@@ -47,9 +53,7 @@
       "note": "上から下へゆっくりパン"
     },
     {
-      "narrations": [
-        { "text": "下から上への動きも自然です。" }
-      ],
+      "narrations": [{ "text": "下から上への動きも自然です。" }],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
@@ -57,9 +61,7 @@
       "note": "下から上へゆっくりパン"
     },
     {
-      "narrations": [
-        { "text": "ズームインで被写体に近づきます。" }
-      ],
+      "narrations": [{ "text": "ズームインで被写体に近づきます。" }],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
@@ -67,9 +69,7 @@
       "note": "中央に向かってゆっくりズームイン"
     },
     {
-      "narrations": [
-        { "text": "ズームアウトで全体を見せることもできます。" }
-      ],
+      "narrations": [{ "text": "ズームアウトで全体を見せることもできます。" }],
       "visual": {
         "path": "examples/assets/images/sample3.jpg"
       },
@@ -77,9 +77,7 @@
       "note": "中央からゆっくりズームアウト"
     },
     {
-      "narrations": [
-        { "text": "対角線の動きで視線を誘導します。" }
-      ],
+      "narrations": [{ "text": "対角線の動きで視線を誘導します。" }],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
@@ -87,9 +85,7 @@
       "note": "左上から右下へ対角線パン"
     },
     {
-      "narrations": [
-        { "text": "ご視聴ありがとうございました！" }
-      ],
+      "narrations": [{ "text": "ご視聴ありがとうございました！" }],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },

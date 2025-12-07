@@ -237,12 +237,25 @@ class VideoGenerator:
             # 出力ディレクトリを作成
             Path(output_config.path).parent.mkdir(parents=True, exist_ok=True)
 
-            # アスペクト比に応じてリサイズして出力 (object-fit: contain)
-            from .layer.processors.video import resize_with_padding
-
-            resized_clip = resize_with_padding(
-                context.video_clip, (output_config.width, output_config.height)
+            # object_fit設定に応じてリサイズ
+            from .layer.processors.video import (
+                resize_with_padding,
+                resize_with_cover,
+                resize_with_fill,
             )
+
+            if output_config.object_fit == "cover":
+                resized_clip = resize_with_cover(
+                    context.video_clip, (output_config.width, output_config.height)
+                )
+            elif output_config.object_fit == "fill":
+                resized_clip = resize_with_fill(
+                    context.video_clip, (output_config.width, output_config.height)
+                )
+            else:  # contain (default)
+                resized_clip = resize_with_padding(
+                    context.video_clip, (output_config.width, output_config.height)
+                )
 
             # 字幕を出力サイズ全体に対して適用
             if subtitle_step and output_config.subtitle_mode == "burn":

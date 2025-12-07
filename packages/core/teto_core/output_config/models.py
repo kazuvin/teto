@@ -49,6 +49,10 @@ class OutputSettings(BaseModel):
     subtitle_mode: Literal["burn", "srt", "vtt", "none"] = Field(
         "burn", description="字幕モード"
     )
+    object_fit: Literal["contain", "cover", "fill"] = Field(
+        "cover",
+        description="リサイズモード（contain: 余白あり, cover: トリミング, fill: 引き伸ばし）",
+    )
 
     @model_validator(mode="after")
     def apply_aspect_ratio(self) -> "OutputSettings":
@@ -81,6 +85,10 @@ class OutputConfig(BaseModel):
     subtitle_mode: Literal["burn", "srt", "vtt", "none"] = Field(
         "burn", description="字幕モード"
     )
+    object_fit: Literal["contain", "cover", "fill"] = Field(
+        "cover",
+        description="リサイズモード（contain: 余白あり, cover: トリミング, fill: 引き伸ばし）",
+    )
 
     @model_validator(mode="after")
     def apply_aspect_ratio(self) -> "OutputConfig":
@@ -105,4 +113,5 @@ class OutputConfig(BaseModel):
             bitrate=settings.bitrate,
             preset=settings.preset,
             subtitle_mode=settings.subtitle_mode,
+            object_fit=settings.object_fit,
         )
