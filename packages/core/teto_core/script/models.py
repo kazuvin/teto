@@ -143,6 +143,23 @@ class NarrationSegment(BaseModel):
     text: str = Field(..., description="字幕テキスト（1画面分）")
     pause_after: float = Field(0.0, description="このセグメント後の間隔（秒）", ge=0)
 
+    # 音声設定（セグメント固有）
+    voice: "VoiceConfig | None" = Field(
+        None,
+        description="このセグメント専用のナレーション音声設定（指定時はグローバル設定を上書き）",
+    )
+    voice_profile: str | None = Field(
+        None,
+        description="使用するボイスプロファイル名（Script.voice_profiles から参照）",
+    )
+
+    @model_validator(mode="after")
+    def validate_voice_config(self) -> "NarrationSegment":
+        # voice と voice_profile の両方が指定されている場合はエラー
+        if self.voice is not None and self.voice_profile is not None:
+            raise ValueError("voice と voice_profile は同時に指定できません")
+        return self
+
 
 class Scene(BaseModel):
     """シーン（台本の基本単位）

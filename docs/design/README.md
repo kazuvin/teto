@@ -9,6 +9,7 @@
 ### 1. [プロジェクト全体概要](00_overview.md)
 
 **内容**:
+
 - プロジェクト概要と主な特徴
 - プロジェクト構造
 - アーキテクチャの階層（Script、Project、Generator）
@@ -25,6 +26,7 @@
 ### 2. [データモデル詳細](01_data_models.md)
 
 **内容**:
+
 - Script モデル（高レベル API）
   - Script、Scene、NarrationSegment、Visual、VoiceConfig など
 - Project モデル（実行モデル）
@@ -43,6 +45,7 @@
 ### 3. [Script → Project コンパイルパイプライン](02_compilation_pipeline.md)
 
 **内容**:
+
 - コンパイルの概要と目的
 - ScriptCompiler アーキテクチャ
 - コンパイルステップ詳細
@@ -65,6 +68,7 @@
 ### 4. [Project → Video 生成パイプライン](03_generation_pipeline.md)
 
 **内容**:
+
 - 生成の概要と目的
 - VideoGenerator アーキテクチャ
 - 処理パイプライン
@@ -91,6 +95,7 @@
 ### 5. [TTS システムとキャッシング戦略](04_tts_and_caching.md)
 
 **内容**:
+
 - TTS システム概要
 - TTS プロバイダー
   - Google Cloud TTS
@@ -111,46 +116,24 @@
 
 ---
 
-### 6. [シーン毎の音声変更機能](05_per_scene_voice_feature.md)
-
-**内容**:
-- 機能概要と目的
-- ユースケース
-  - 対談形式
-  - 教育コンテンツ（先生と生徒）
-  - ラジオ番組形式
-- 実装詳細
-  - データモデル（Scene、Script の拡張）
-  - 音声設定の解決ロジック
-  - TTS 生成への統合
-- 使用方法
-  - 方法 1: 直接 voice 指定
-  - 方法 2: 名前付きプロファイル（推奨）
-  - 方法 3: グローバル設定のみ
-- キャッシュとの統合
-- ベストプラクティス
-- トラブルシューティング
-
-**対象読者**: 複数話者の動画を作成したい方、シーン毎の音声変更機能を活用したい方
-
----
-
 ## 推奨読書順序
 
 ### 初めての方
+
 1. [プロジェクト全体概要](00_overview.md) - 全体像を把握
 2. [データモデル詳細](01_data_models.md) - Script と Project の構造を理解
 3. [シーン毎の音声変更機能](05_per_scene_voice_feature.md) - 実践的な機能を学ぶ
 
 ### 開発者向け
+
 1. [プロジェクト全体概要](00_overview.md) - アーキテクチャを理解
 2. [データモデル詳細](01_data_models.md) - データ構造を把握
 3. [Script → Project コンパイルパイプライン](02_compilation_pipeline.md) - コンパイルプロセスを学ぶ
 4. [Project → Video 生成パイプライン](03_generation_pipeline.md) - 生成プロセスを学ぶ
 5. [TTS システムとキャッシング戦略](04_tts_and_caching.md) - TTS とキャッシュを理解
-6. [シーン毎の音声変更機能](05_per_scene_voice_feature.md) - 新機能の実装を学ぶ
 
 ### 拡張を検討している方
+
 1. [プロジェクト全体概要](00_overview.md) - 拡張ポイントを確認
 2. [Project → Video 生成パイプライン](03_generation_pipeline.md) - カスタムパイプライン、エフェクト
 3. [TTS システムとキャッシング戦略](04_tts_and_caching.md) - カスタム TTS プロバイダー
@@ -195,11 +178,13 @@ examples/scripts/        # サンプルスクリプト
 新機能を追加した場合や既存の機能を変更した場合は、関連するドキュメントを更新してください：
 
 1. **新機能の場合**:
+
    - 該当するドキュメントに新しいセクションを追加
    - 必要に応じて新しいドキュメントを作成
    - この README を更新
 
 2. **既存機能の変更の場合**:
+
    - 影響を受けるドキュメントを更新
    - サンプルコードも更新
 
