@@ -10,6 +10,142 @@ from ..effect.models import TransitionConfig
 from .presets.base import SubtitleStyleConfig
 
 
+# =============================================================================
+# キャラクター関連モデル
+# =============================================================================
+
+
+class CharacterPosition(str, Enum):
+    """キャラクター配置位置プリセット"""
+
+    BOTTOM_LEFT = "bottom-left"
+    BOTTOM_RIGHT = "bottom-right"
+    BOTTOM_CENTER = "bottom-center"
+    LEFT = "left"
+    RIGHT = "right"
+    CENTER = "center"
+
+
+class CharacterAnimationType(str, Enum):
+    """キャラクターアニメーションタイプ"""
+
+    NONE = "none"  # アニメーションなし
+    BOUNCE = "bounce"  # バウンド（上下に弾む）
+    SHAKE = "shake"  # 揺れ（左右に小刻みに揺れる）
+    NOD = "nod"  # 頷き（上下に小さく動く）
+    SWAY = "sway"  # 揺らぎ（ゆっくり左右に揺れる）
+    BREATHE = "breathe"  # 呼吸（拡大縮小）
+    FLOAT = "float"  # 浮遊（上下にゆっくり動く）
+    PULSE = "pulse"  # 脈動（リズミカルに拡大縮小）
+
+
+class CharacterExpression(BaseModel):
+    """キャラクターの表情定義"""
+
+    name: str = Field(..., description="表情名（例: 'normal', 'smile', 'angry'）")
+    path: str = Field(..., description="表情画像ファイルパス")
+
+
+class CharacterAnimation(BaseModel):
+    """キャラクターアニメーション設定"""
+
+    type: CharacterAnimationType = Field(
+        CharacterAnimationType.NONE, description="アニメーションタイプ"
+    )
+    intensity: float = Field(
+        1.0, description="アニメーション強度（0.5〜2.0）", ge=0.5, le=2.0
+    )
+    speed: float = Field(
+        1.0, description="アニメーション速度（0.5〜2.0）", ge=0.5, le=2.0
+    )
+
+
+class CharacterDefinition(BaseModel):
+    """キャラクター定義（Script レベル）"""
+
+    id: str = Field(..., description="キャラクター識別子（参照用）")
+    name: str = Field(..., description="キャラクター名（表示・メタデータ用）")
+
+    # 表情定義
+    expressions: list[CharacterExpression] = Field(
+        ..., description="表情リスト（最低1つの表情が必要）", min_length=1
+    )
+    default_expression: str = Field("normal", description="デフォルト表情名")
+
+    # 配置設定
+    position: CharacterPosition = Field(
+        CharacterPosition.BOTTOM_RIGHT, description="デフォルト配置位置"
+    )
+    custom_position: tuple[int, int] | None = Field(
+        None, description="カスタム位置（x, y）※position より優先"
+    )
+
+    # サイズ設定
+    scale: float = Field(1.0, description="キャラクターサイズ倍率", gt=0, le=3.0)
+
+    # デフォルトアニメーション
+    default_animation: CharacterAnimation = Field(
+        default_factory=CharacterAnimation, description="デフォルトアニメーション設定"
+    )
+
+    # 音声連携（オプショナル）
+    voice_profile: str | None = Field(
+        None,
+        description="このキャラクターに紐づくボイスプロファイル名（Script.voice_profiles から参照）",
+    )
+
+    # 字幕スタイル（オプショナル）
+    subtitle_style: SubtitleStyleConfig | None = Field(
+        None,
+        description="このキャラクター発話時の字幕スタイル（未指定時はグローバル設定を使用）",
+    )
+
+    @model_validator(mode="after")
+    def validate_default_expression(self) -> "CharacterDefinition":
+        """デフォルト表情が expressions に存在することを確認"""
+        expression_names = {e.name for e in self.expressions}
+        if self.default_expression not in expression_names:
+            raise ValueError(
+                f"default_expression '{self.default_expression}' が expressions に存在しません。"
+                f"利用可能な表情: {expression_names}"
+            )
+        return self
+
+
+class CharacterState(BaseModel):
+    """セグメント内でのキャラクター状態"""
+
+    character_id: str = Field(..., description="キャラクター ID")
+    expression: str | None = Field(
+        None, description="表情名（未指定時はデフォルト表情）"
+    )
+    animation: CharacterAnimation | None = Field(
+        None, description="アニメーション設定（未指定時はデフォルトアニメーション）"
+    )
+    visible: bool = Field(True, description="表示/非表示")
+
+
+class SceneCharacterConfig(BaseModel):
+    """シーン単位のキャラクター設定"""
+
+    character_id: str = Field(..., description="キャラクター ID")
+
+    # シーン固有の上書き設定
+    position: CharacterPosition | None = Field(
+        None, description="このシーンでの配置位置（上書き）"
+    )
+    custom_position: tuple[int, int] | None = Field(
+        None, description="このシーンでのカスタム位置（上書き）"
+    )
+    scale: float | None = Field(None, description="このシーンでのサイズ倍率（上書き）")
+    visible: bool = Field(True, description="このシーンでの表示/非表示")
+
+
+# =============================================================================
+# アセット関連モデル
+# =============================================================================
+
+
 class AssetType(str, Enum):
     """アセットの種類"""
 
@@ -153,6 +289,12 @@ class NarrationSegment(BaseModel):
         description="使用するボイスプロファイル名（Script.voice_profiles から参照）",
     )
 
+    # キャラクター状態
+    character_states: list[CharacterState] = Field(
+        default_factory=list,
+        description="このセグメント中のキャラクター状態リスト",
+    )
+
     @model_validator(mode="after")
     def validate_voice_config(self) -> "NarrationSegment":
         # voice と voice_profile の両方が指定されている場合はエラー
@@ -221,6 +363,12 @@ class Scene(BaseModel):
     voice_profile: str | None = Field(
         None,
         description="使用するボイスプロファイル名（Script.voice_profiles から参照）",
+    )
+
+    # キャラクター設定（リスト順が Z オーダー：後のキャラクターが前面）
+    characters: list[SceneCharacterConfig] = Field(
+        default_factory=list,
+        description="このシーンで表示するキャラクターの設定",
     )
 
     @model_validator(mode="after")
@@ -345,6 +493,12 @@ class Script(BaseModel):
     image_generation: ImageGenerationConfig = Field(
         default_factory=StabilityImageConfig,
         description="AI画像生成のデフォルト設定",
+    )
+
+    # キャラクター定義
+    characters: dict[str, CharacterDefinition] | None = Field(
+        None,
+        description="キャラクター定義（ID をキーとした辞書）",
     )
 
     # 出力設定（解像度、FPS など）

@@ -38,6 +38,11 @@ class SubtitleStyleConfig(BaseModel):
     appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field(
         "background", description="字幕スタイル"
     )
+    margin_horizontal: int = Field(
+        0,
+        description="横方向のマージン（ピクセル）。キャラクターと字幕が被らないように調整",
+        ge=0,
+    )
     styles: dict[str, PartialStyle] = Field(
         default_factory=dict,
         description="部分スタイル定義（マークアップタグ名とスタイルのマッピング）",

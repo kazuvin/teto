@@ -1,0 +1,360 @@
+{
+  "title": "キャラクター機能デモ",
+  "description": "キャラクターの表情切り替え、アニメーション、音声連携、字幕スタイル機能のデモンストレーション",
+  "default_preset": "main_content",
+  "voice_profiles": {
+    "teacher_voice": {
+      "provider": "google",
+      "language_code": "ja-JP",
+      "voice_id": "ja-JP-Neural2-B",
+      "speed": 1.0,
+      "pitch": 0.0
+    },
+    "student_voice": {
+      "provider": "google",
+      "language_code": "ja-JP",
+      "voice_id": "ja-JP-Neural2-B",
+      "speed": 1.1,
+      "pitch": 4.0
+    }
+  },
+  "characters": {
+    "teacher": {
+      "id": "teacher",
+      "name": "先生",
+      "expressions": [
+        {
+          "name": "smile",
+          "path": "examples/assets/characters/teacher/smile.png"
+        },
+        {
+          "name": "explaining",
+          "path": "examples/assets/characters/teacher/explaining-gesture.png"
+        },
+        {
+          "name": "thinking",
+          "path": "examples/assets/characters/teacher/thinking.png"
+        },
+        {
+          "name": "lightbulb",
+          "path": "examples/assets/characters/teacher/lightbulb-icon-above-head.png"
+        },
+        {
+          "name": "serious",
+          "path": "examples/assets/characters/teacher/serious.png"
+        },
+        {
+          "name": "surprised",
+          "path": "examples/assets/characters/teacher/suprised.png"
+        },
+        {
+          "name": "satisfied",
+          "path": "examples/assets/characters/teacher/satisfied-look.png"
+        },
+        {
+          "name": "confused",
+          "path": "examples/assets/characters/teacher/confused.png"
+        }
+      ],
+      "default_expression": "smile",
+      "position": "bottom-right",
+      "scale": 0.25,
+      "voice_profile": "teacher_voice",
+      "subtitle_style": {
+        "font_size": "base",
+        "font_color": "red",
+        "google_font": "Noto Sans JP",
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "outer_stroke_width": "lg",
+        "outer_stroke_color": "white",
+        "appearance": "drop-shadow",
+        "margin_horizontal": 200
+      }
+    },
+    "student": {
+      "id": "student",
+      "name": "生徒",
+      "expressions": [
+        {
+          "name": "default",
+          "path": "examples/assets/characters/student/default.png"
+        }
+      ],
+      "default_expression": "default",
+      "position": "bottom-left",
+      "scale": 0.25,
+      "voice_profile": "student_voice",
+      "subtitle_style": {
+        "font_size": "base",
+        "font_color": "blue",
+        "google_font": "Noto Sans JP",
+        "font_weight": "bold",
+        "stroke_width": "sm",
+        "stroke_color": "black",
+        "outer_stroke_width": "lg",
+        "outer_stroke_color": "white",
+        "appearance": "drop-shadow",
+        "margin_horizontal": 200
+      }
+    }
+  },
+  "scenes": [
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "タイトル画面（キャラクターなし）"
+    },
+    {
+      "narrations": [
+        {
+          "text": "こんにちは！今日はキャラクター機能を紹介します。",
+          "character_states": [
+            { "character_id": "teacher", "expression": "smile" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [{ "character_id": "teacher" }]
+    },
+    {
+      "narrations": [
+        {
+          "text": "先生、よろしくお願いします！",
+          "character_states": [
+            { "character_id": "student", "expression": "default" },
+            { "character_id": "teacher", "expression": "smile" }
+          ]
+        },
+        {
+          "text": "はい、よろしくね。まずは基本的な機能から説明するよ。",
+          "character_states": [
+            { "character_id": "teacher", "expression": "explaining" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "このように、テキストに合わせて",
+          "character_states": [
+            { "character_id": "teacher", "expression": "explaining" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        },
+        {
+          "text": "キャラクターの表情を変えることができます。",
+          "character_states": [
+            { "character_id": "teacher", "expression": "smile" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "例えば、考えている様子や...",
+          "character_states": [
+            { "character_id": "teacher", "expression": "thinking" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        },
+        {
+          "text": "ひらめいた表情など！",
+          "character_states": [
+            {
+              "character_id": "teacher",
+              "expression": "lightbulb",
+              "animation": { "type": "bounce", "intensity": 1.5, "speed": 1.2 }
+            },
+            { "character_id": "student", "expression": "default" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "すごい！アニメーションもあるんですね！",
+          "character_states": [
+            {
+              "character_id": "student",
+              "expression": "default",
+              "animation": { "type": "bounce", "intensity": 1.0, "speed": 1.0 }
+            },
+            { "character_id": "teacher", "expression": "satisfied" }
+          ]
+        },
+        {
+          "text": "そうだよ。いくつかのアニメーションを紹介するね。",
+          "character_states": [
+            {
+              "character_id": "teacher",
+              "expression": "explaining",
+              "animation": { "type": "nod", "intensity": 1.0, "speed": 1.0 }
+            },
+            { "character_id": "student", "expression": "default" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "驚きの表情でシェイク！",
+          "character_states": [
+            {
+              "character_id": "teacher",
+              "expression": "surprised",
+              "animation": { "type": "shake", "intensity": 1.2, "speed": 1.5 }
+            },
+            { "character_id": "student", "expression": "default" }
+          ]
+        },
+        {
+          "text": "わあ、びっくりした！",
+          "character_states": [
+            {
+              "character_id": "student",
+              "expression": "default",
+              "animation": { "type": "shake", "intensity": 0.8, "speed": 1.2 }
+            },
+            { "character_id": "teacher", "expression": "smile" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "真剣な話をする時は、表情も真剣に。",
+          "character_states": [
+            { "character_id": "teacher", "expression": "serious" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        },
+        {
+          "text": "はい、しっかり聞いています！",
+          "character_states": [
+            { "character_id": "student", "expression": "default" },
+            { "character_id": "teacher", "expression": "serious" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [
+        {
+          "text": "いかがでしたか？",
+          "character_states": [
+            { "character_id": "teacher", "expression": "smile" },
+            { "character_id": "student", "expression": "default" }
+          ]
+        },
+        {
+          "text": "とても分かりやすかったです！ありがとうございました！",
+          "character_states": [
+            {
+              "character_id": "student",
+              "expression": "default",
+              "animation": { "type": "bounce", "intensity": 0.8, "speed": 0.8 }
+            },
+            { "character_id": "teacher", "expression": "satisfied" }
+          ]
+        },
+        {
+          "text": "キャラクター機能で動画がもっと楽しくなりますね！",
+          "character_states": [
+            {
+              "character_id": "teacher",
+              "expression": "satisfied",
+              "animation": { "type": "float", "intensity": 0.8, "speed": 0.6 }
+            },
+            { "character_id": "student", "expression": "default" }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "characters": [
+        { "character_id": "student" },
+        { "character_id": "teacher" }
+      ]
+    },
+    {
+      "narrations": [],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "duration": 2.0,
+      "note": "エンドカード"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0,
+    "pitch": 0.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm1.mp3",
+    "volume": 0.15
+  }
+}

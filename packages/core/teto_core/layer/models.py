@@ -14,6 +14,44 @@ class PositionPreset(str, Enum):
     CUSTOM = "custom"  # x, y を直接指定
 
 
+class CharacterPositionPreset(str, Enum):
+    """キャラクター配置位置プリセット"""
+
+    BOTTOM_LEFT = "bottom-left"
+    BOTTOM_RIGHT = "bottom-right"
+    BOTTOM_CENTER = "bottom-center"
+    LEFT = "left"
+    RIGHT = "right"
+    CENTER = "center"
+
+
+class CharacterAnimationType(str, Enum):
+    """キャラクターアニメーションタイプ"""
+
+    NONE = "none"  # アニメーションなし
+    BOUNCE = "bounce"  # バウンド（上下に弾む）
+    SHAKE = "shake"  # 揺れ（左右に小刻みに揺れる）
+    NOD = "nod"  # 頷き（上下に小さく動く）
+    SWAY = "sway"  # 揺らぎ（ゆっくり左右に揺れる）
+    BREATHE = "breathe"  # 呼吸（拡大縮小）
+    FLOAT = "float"  # 浮遊（上下にゆっくり動く）
+    PULSE = "pulse"  # 脈動（リズミカルに拡大縮小）
+
+
+class CharacterAnimationConfig(BaseModel):
+    """キャラクターアニメーション設定（レイヤー用）"""
+
+    type: CharacterAnimationType = Field(
+        CharacterAnimationType.NONE, description="アニメーションタイプ"
+    )
+    intensity: float = Field(
+        1.0, description="アニメーション強度（0.5〜2.0）", ge=0.5, le=2.0
+    )
+    speed: float = Field(
+        1.0, description="アニメーション速度（0.5〜2.0）", ge=0.5, le=2.0
+    )
+
+
 if TYPE_CHECKING:
     from ..effect.models import AnimationEffect, TransitionConfig
 
@@ -180,6 +218,52 @@ class SubtitleLayer(BaseModel):
     appearance: Literal["plain", "background", "shadow", "drop-shadow"] = Field(
         "background",
         description="字幕スタイル（plain: 通常テキスト、background: 角丸半透明背景、shadow: シャドウ付き、drop-shadow: ぼかしシャドウ付き）",
+    )
+
+    # マージン設定
+    margin_horizontal: int = Field(
+        0,
+        description="横方向のマージン（ピクセル）。キャラクターと字幕が被らないように調整",
+        ge=0,
+    )
+
+
+class CharacterLayer(BaseModel):
+    """キャラクターレイヤー（実行用）
+
+    Script の CharacterDefinition + CharacterState から生成される。
+    各セグメントの表情・アニメーション変化毎に別レイヤーとして生成。
+    """
+
+    type: Literal["character"] = "character"
+
+    # 識別情報
+    character_id: str = Field(..., description="キャラクター ID")
+    character_name: str = Field(..., description="キャラクター名")
+    expression: str = Field(..., description="表情名")
+
+    # アセット
+    path: str = Field(..., description="表情画像ファイルパス")
+
+    # タイミング
+    start_time: float = Field(..., description="開始時刻（秒）", ge=0)
+    end_time: float = Field(..., description="終了時刻（秒）", ge=0)
+
+    # 配置
+    position: CharacterPositionPreset = Field(
+        CharacterPositionPreset.BOTTOM_RIGHT, description="配置位置"
+    )
+    custom_position: tuple[int, int] | None = Field(
+        None, description="カスタム位置（x, y）"
+    )
+
+    # スタイル
+    scale: float = Field(1.0, description="サイズ倍率", gt=0, le=3.0)
+    opacity: float = Field(1.0, description="不透明度（0.0〜1.0）", ge=0.0, le=1.0)
+
+    # アニメーション
+    animation: CharacterAnimationConfig = Field(
+        default_factory=CharacterAnimationConfig, description="アニメーション設定"
     )
 
 
