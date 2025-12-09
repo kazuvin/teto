@@ -101,7 +101,7 @@
   ],
   "bgm_sections": [
     {
-      "path": "examples/assets/sounds/bgm.mp3",
+      "path": "examples/assets/sounds/bgm1.mp3",
       "scene_range": {
         "from": 0,
         "to": 1
@@ -112,7 +112,7 @@
       "loop": true
     },
     {
-      "path": "examples/assets/sounds/bgm.mp3",
+      "path": "examples/assets/sounds/bgm2.mp3",
       "scene_range": {
         "from": 2,
         "to": 4
@@ -123,7 +123,7 @@
       "loop": true
     },
     {
-      "path": "examples/assets/sounds/bgm.mp3",
+      "path": "examples/assets/sounds/bgm3.mp3",
       "scene_range": {
         "from": 5,
         "to": 5

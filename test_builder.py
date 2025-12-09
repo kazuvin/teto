@@ -20,7 +20,7 @@ def test_simple_project():
         .with_volume(0.8)
         .fade_out(1.0)
         .build()
-        .add_audio("bgm.mp3")
+        .add_audio("bgm1.mp3")
         .with_volume(0.3)
         .build()
         .add_subtitle_layer()

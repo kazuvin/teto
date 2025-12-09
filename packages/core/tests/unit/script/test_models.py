@@ -133,8 +133,8 @@ class TestBGMConfig:
 
     def test_create(self):
         """作成できること"""
-        config = BGMConfig(path="./bgm.mp3")
-        assert config.path == "./bgm.mp3"
+        config = BGMConfig(path="./bgm1.mp3")
+        assert config.path == "./bgm1.mp3"
         assert config.volume == 0.3
         assert config.fade_in == 0.0
         assert config.fade_out == 0.0
@@ -142,7 +142,7 @@ class TestBGMConfig:
     def test_custom_values(self):
         """カスタム値を設定できること"""
         config = BGMConfig(
-            path="./bgm.mp3",
+            path="./bgm1.mp3",
             volume=0.5,
             fade_in=1.0,
             fade_out=2.0,
@@ -207,7 +207,7 @@ class TestScript:
             ],
             voice=VoiceConfig(provider="google", speed=1.2),
             timing=TimingConfig(default_scene_gap=1.0),
-            bgm=BGMConfig(path="./bgm.mp3", volume=0.2),
+            bgm=BGMConfig(path="./bgm1.mp3", volume=0.2),
         )
         assert script.description == "説明文"
         assert script.voice.speed == 1.2

@@ -1,7 +1,7 @@
 {
-  "title": "シーン毎プリセットのサンプル",
-  "description": "シーン毎に異なるプリセットを適用するデモ",
-  "default_preset": "default",
+  "title": "シーン毎エフェクトプリセットのサンプル",
+  "description": "シーン毎に異なるエフェクトプリセットを適用するデモ",
+  "default_effect": "default",
   "output": {
     "width": 1920,
     "height": 1080,
@@ -31,39 +31,39 @@
         "path": "examples/assets/images/sample_image.png"
       },
       "duration": 3.0,
-      "preset": "minimal",
-      "note": "タイトル画面（エフェクトなし、トランジションなし）"
+      "effect": "default",
+      "note": "タイトル画面（defaultエフェクトプリセット）"
     },
     {
       "narrations": [
         { "text": "こんにちは！" },
-        { "text": "今日はシーン毎プリセットの使い方を紹介します。" }
+        { "text": "今日はシーン毎エフェクトプリセットの使い方を紹介します。" }
       ],
       "visual": {
         "path": "examples/assets/images/sample_image.png"
       },
-      "note": "イントロ（default プリセット - Ken Burns + crossfade）"
+      "note": "イントロ（default エフェクトプリセット - Ken Burns + crossfade）"
     },
     {
       "narrations": [
-        { "text": "<emphasis>重要:</emphasis> シーン毎にプリセットを指定できます。" },
-        { "text": "preset フィールドを使用します。" }
+        { "text": "<emphasis>重要:</emphasis> シーン毎にエフェクトを指定できます。" },
+        { "text": "effect フィールドを使用します。" }
       ],
       "visual": {
         "path": "examples/assets/images/sample_image.png"
       },
-      "preset": "bold_subtitle",
-      "note": "強調シーン（bold_subtitle プリセット - zoom + crossfade）"
+      "effect": "dramatic",
+      "note": "強調シーン（dramatic エフェクトプリセット - zoom + crossfade）"
     },
     {
       "narrations": [
         { "text": "プリセット未指定の場合は" },
-        { "text": "<highlight>default_preset</highlight> が使用されます。" }
+        { "text": "<highlight>default_effect</highlight> が使用されます。" }
       ],
       "visual": {
         "path": "examples/assets/images/sample_image.png"
       },
-      "note": "説明シーン（default_preset を使用）"
+      "note": "説明シーン（default_effect を使用）"
     },
     {
       "narrations": [
@@ -72,7 +72,7 @@
       "visual": {
         "path": "examples/assets/images/sample_image.png"
       },
-      "preset": "minimal",
+      "effect": "slideshow",
       "pause_after": 1.0,
       "note": "エンディング（minimal プリセット - エフェクトなし）"
     }

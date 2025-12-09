@@ -46,15 +46,17 @@ class Script(BaseModel):
     subtitle_style: SubtitleStyleConfig                     # 字幕スタイル
     subtitle_styles: dict[str, PartialStyle]                # 部分スタイル定義
 
-    # シーンプリセット
-    default_preset: str                                     # デフォルトプリセット名
+    # プリセット設定
+    default_preset: str | None                              # デフォルト複合プリセット名
+    default_effect: str                                     # デフォルトエフェクト名
     description: str | None                                 # 動画の説明
 ```
 
 **主な機能**:
 - マルチ出力対応: `output` に配列を指定することで、複数のアスペクト比の動画を同時生成
 - 名前付き音声プロファイル: 複数キャラクターの対話に対応
-- デフォルトプリセット: 全シーンに適用されるエフェクト設定
+- 複合プリセット: フック・概要・本編・CTAといった粒度の粗いプリセットで複数の設定を一括管理
+- エフェクトプリセット: 全シーンに適用されるアニメーションエフェクト設定
 
 ### Scene
 
@@ -77,7 +79,8 @@ class Scene(BaseModel):
 
     # オプション
     note: str | None                                        # 演出メモ
-    preset: str | None                                      # シーンプリセット名
+    preset: str | None                                      # 複合プリセット名
+    effect: str | None                                      # エフェクト名
     mute_video: bool                                        # 動画の音声ミュート
 
     # 音声設定（シーン固有）
@@ -249,6 +252,73 @@ class SoundEffect(BaseModel):
     path: str                                               # 効果音ファイルパス
     offset: float = 0.0                                     # シーン開始からのオフセット（秒）
     volume: float = 1.0                                     # 音量（0.0〜1.0）
+```
+
+### PresetConfig
+
+複合プリセット設定。フック・概要・本編・CTAといった粒度の粗いプリセットを定義。
+
+```python
+class PresetConfig(BaseModel):
+    """複合プリセット設定"""
+
+    # エフェクト参照
+    effect: str | None                                      # エフェクト名
+
+    # または直接エフェクトを指定
+    effects: list[AnimationEffect]                          # アニメーションエフェクト
+    transition: TransitionConfig | None                     # トランジション設定
+
+    # 字幕スタイル
+    subtitle_style: SubtitleStyleConfig | None              # 字幕スタイル設定
+
+    # BGM設定
+    bgm: BGMConfig | None                                   # BGM設定
+
+    # タイミング
+    timing_override: TimingConfig | None                    # タイミング設定の上書き
+
+    # 音声設定
+    voice: VoiceConfig | None                               # 音声設定
+```
+
+**デフォルトプリセット**:
+
+| プリセット名 | 用途 | 特徴 |
+|------------|------|------|
+| `hook` | 動画の冒頭 | dramaticエフェクト、大きめの字幕、速いテンポ |
+| `overview` | 概要説明 | Ken Burnsエフェクト、標準的な字幕 |
+| `main_content` | メインコンテンツ | シンプル、読みやすい字幕 |
+| `cta` | 行動喚起 | dramaticエフェクト、目立つ黄色の字幕 |
+
+**使用例**:
+
+```json
+{
+  "title": "商品紹介動画",
+  "default_preset": "main_content",
+  "scenes": [
+    {
+      "preset": "hook",
+      "narrations": [{"text": "今日は特別なお知らせがあります！"}],
+      "visual": {"path": "hook.jpg"}
+    },
+    {
+      "preset": "overview",
+      "narrations": [{"text": "この商品の3つの特徴をご紹介します"}],
+      "visual": {"path": "overview.jpg"}
+    },
+    {
+      "narrations": [{"text": "特徴1: 高品質"}],
+      "visual": {"path": "feature1.jpg"}
+    },
+    {
+      "preset": "cta",
+      "narrations": [{"text": "今すぐチャンネル登録！"}],
+      "visual": {"path": "cta.jpg"}
+    }
+  ]
+}
 ```
 
 ---

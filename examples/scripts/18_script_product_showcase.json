@@ -1,0 +1,96 @@
+{
+  "title": "商品紹介動画サンプル",
+  "description": "複合プリセットを活用した商品紹介動画の構成例",
+  "default_preset": "main_content",
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "preset": "hook",
+      "narrations": [
+        { "text": "待ってました！" },
+        { "text": "革新的な新商品が遂に登場！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "フック - 視聴者の興味を引く冒頭"
+    },
+    {
+      "preset": "overview",
+      "narrations": [{ "text": "この商品の3つの特徴をご紹介します。" }],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "概要 - 全体像を提示"
+    },
+    {
+      "narrations": [
+        { "text": "特徴1: 高品質" },
+        { "text": "厳選された素材を使用し、" },
+        { "text": "最高の品質を実現しました。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "特徴1 - メインコンテンツ"
+    },
+    {
+      "narrations": [
+        { "text": "特徴2: 使いやすさ" },
+        { "text": "直感的なデザインで、" },
+        { "text": "誰でも簡単に使いこなせます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "特徴2 - メインコンテンツ"
+    },
+    {
+      "narrations": [
+        { "text": "特徴3: コストパフォーマンス" },
+        { "text": "この価格でこの品質は、" },
+        { "text": "他では手に入りません。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "特徴3 - メインコンテンツ"
+    },
+    {
+      "preset": "cta",
+      "narrations": [
+        { "text": "今なら特別価格で販売中！" },
+        { "text": "詳細は概要欄をチェック！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.5,
+      "note": "CTA - 行動喚起"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.05
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm1.mp3",
+    "volume": 0.2,
+    "fade_in": 1.0,
+    "fade_out": 2.0
+  },
+  "subtitle_styles": {
+    "price": {
+      "font_color": "#FFD700",
+      "font_weight": "bold"
+    },
+    "highlight": {
+      "font_color": "#00FF00"
+    }
+  }
+}

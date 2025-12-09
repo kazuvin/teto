@@ -131,7 +131,7 @@ class TestScriptCompiler:
         """タイミング計算が正しいこと"""
         script = Script(
             title="テスト",
-            default_preset="default",
+            default_effect="default",
             scenes=[
                 Scene(
                     narrations=[
@@ -171,7 +171,7 @@ class TestScriptCompiler:
             assert scene2.start_time > scene1.start_time
 
     def test_preset_applied_to_layers(self, simple_script: Script):
-        """プリセットがレイヤーに適用されること（default_preset="default"がデフォルト）"""
+        """プリセットがレイヤーに適用されること（default_effect="default"がデフォルト）"""
         with tempfile.TemporaryDirectory() as tmpdir:
             compiler = ScriptCompiler(
                 tts_provider=MockTTSProvider(),
@@ -245,37 +245,37 @@ class TestScriptCompiler:
 
             result = compiler.compile(simple_script, output_path="custom_output.mp4")
 
-            # DefaultLayerPreset (default_preset="default") の設定
+            # DefaultLayerPreset (default_effect="default") の設定
             assert result.project.output.path == "custom_output.mp4"
             assert result.project.output.width == 1920
             assert result.project.output.height == 1080
             assert result.project.output.fps == 30
 
     def test_scene_level_preset_with_transition(self):
-        """シーン毎に異なるプリセットとトランジションを適用できること"""
+        """シーン毎に異なるエフェクトプリセットとトランジションを適用できること"""
         from teto_core.effect.models import TransitionConfig
 
         script = Script(
-            title="シーン毎プリセットテスト",
-            default_preset="default",
+            title="シーン毎エフェクトプリセットテスト",
+            default_effect="default",
             scenes=[
                 Scene(
                     narrations=[NarrationSegment(text="デフォルト")],
                     visual=Visual(path="./image1.png"),
                     transition=TransitionConfig(type="crossfade", duration=0.5),
-                    # preset未指定 → default_preset ("default") を使用
+                    # effect未指定 → default_effect ("default") を使用
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="ドラマティック")],
                     visual=Visual(path="./image2.png"),
-                    preset="dramatic",  # dramatic プリセットを使用
+                    effect="dramatic",  # dramatic エフェクトプリセットを使用
                     transition=TransitionConfig(type="crossfade", duration=0.15),
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="またデフォルト")],
                     visual=Visual(path="./image3.png"),
                     transition=TransitionConfig(type="crossfade", duration=0.5),
-                    # preset未指定 → default_preset を使用
+                    # effect未指定 → default_effect を使用
                 ),
             ],
         )
@@ -311,20 +311,20 @@ class TestScriptCompiler:
             assert layer3.transition.duration == 0.5
 
     def test_scene_level_preset_with_different_effects(self):
-        """シーン毎のプリセットでエフェクトが正しく適用されること"""
+        """シーン毎のエフェクトプリセットでエフェクトが正しく適用されること"""
         script = Script(
             title="エフェクトテスト",
-            default_preset="default",  # デフォルトはdefault（エフェクトなし）
+            default_effect="default",  # デフォルトはdefault（エフェクトなし）
             scenes=[
                 Scene(
                     narrations=[NarrationSegment(text="シーン1")],
                     visual=Visual(path="./image1.png"),
-                    preset="dramatic",  # dramatic プリセット（glitch + colorGrade）
+                    effect="dramatic",  # dramatic エフェクトプリセット（glitch + colorGrade）
                 ),
                 Scene(
                     narrations=[NarrationSegment(text="シーン2")],
                     visual=Visual(path="./image2.png"),
-                    # preset未指定 → default（エフェクトなし）
+                    # effect未指定 → default（エフェクトなし）
                 ),
             ],
         )
@@ -354,7 +354,7 @@ class TestScriptCompiler:
 
         script = Script(
             title="字幕スタイルテスト",
-            default_preset="default",
+            default_effect="default",
             subtitle_style=SubtitleStyleConfig(
                 font_size="xl",
                 appearance="shadow",
@@ -395,7 +395,7 @@ class TestScriptCompiler:
 
         script = Script(
             title="出力設定テスト",
-            default_preset="default",
+            default_effect="default",
             output=OutputSettings(
                 width=1080,
                 height=1920,
@@ -427,7 +427,7 @@ class TestScriptCompiler:
         """mute_video オプションで動画の音声をミュートできること"""
         script = Script(
             title="ミュートテスト",
-            default_preset="default",
+            default_effect="default",
             scenes=[
                 Scene(
                     narrations=[NarrationSegment(text="シーン1")],

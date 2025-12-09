@@ -19,6 +19,7 @@ from .providers.tts import TTSProvider, TTSResult
 from .providers.assets import AssetResolver
 from .presets.base import ScenePreset
 from .presets.registry import ScenePresetRegistry
+from .presets.composite import PresetRegistry
 from .cache import TTSCacheManager, get_cache_manager
 
 
@@ -90,18 +91,87 @@ class ScriptCompiler:
         self._cache = cache_manager or get_cache_manager()
         self._use_cache = use_cache
 
-    def _get_preset_for_scene(self, script: Script, scene: Scene) -> ScenePreset:
-        """シーンに適用するプリセットを取得
+        # デフォルト複合プリセットを登録
+        self._register_default_presets()
+
+    def _register_default_presets(self) -> None:
+        """デフォルト複合プリセットを登録"""
+        from .presets.library import register_default_composite_presets
+
+        register_default_composite_presets()
+
+    def _get_effect_preset_for_scene(self, script: Script, scene: Scene) -> ScenePreset:
+        """シーンに適用するエフェクトプリセットを取得
 
         Args:
-            script: 台本（デフォルトプリセット情報を含む）
+            script: 台本（デフォルトエフェクト情報を含む）
             scene: シーン
 
         Returns:
-            ScenePreset: 適用するプリセット
+            ScenePreset: 適用するエフェクトプリセット
         """
-        preset_name = scene.preset or script.default_preset
+        preset_name = scene.effect or script.default_effect
         return ScenePresetRegistry.get(preset_name)
+
+    def _apply_composite_presets(self, script: Script) -> Script:
+        """複合プリセットを全シーンとスクリプトに適用
+
+        各シーンの複合プリセット設定を展開し、シーン固有設定とスクリプト設定を上書きする。
+        優先順位:
+        - effect: scene.effect > preset.effect > script.default_effect
+        - transition: scene.transition > preset.transition
+        - subtitle_style: preset.subtitle_style > script.subtitle_style (シーン毎に適用)
+        - timing: preset.timing_override > script.timing (シーン毎に適用)
+
+        Args:
+            script: 台本
+
+        Returns:
+            Script: 複合プリセットが適用された新しい台本
+        """
+        script_dict = script.model_dump()
+        updated_scenes = []
+
+        for scene in script.scenes:
+            # 複合プリセット名を取得（優先順位: scene.preset > script.default_preset）
+            preset_name = scene.preset or script.default_preset
+
+            if preset_name is None:
+                # 複合プリセット指定なし - そのまま追加
+                updated_scenes.append(scene)
+                continue
+
+            # 複合プリセットを取得
+            preset = PresetRegistry.get(preset_name)
+            if preset is None:
+                # プリセットが見つからない - そのまま追加
+                updated_scenes.append(scene)
+                continue
+
+            # シーンのコピーを作成
+            scene_dict = scene.model_dump()
+
+            # 1. エフェクトを適用（シーンに指定がない場合のみ）
+            if scene.effect is None and preset.effect is not None:
+                scene_dict["effect"] = preset.effect
+
+            # 2. トランジション設定を適用（シーンに指定がない場合のみ）
+            if scene.transition is None and preset.transition is not None:
+                scene_dict["transition"] = preset.transition
+
+            updated_scenes.append(Scene.model_validate(scene_dict))
+
+            # 3. グローバル設定の上書き（プリセットで指定されている場合）
+            # 字幕スタイル
+            if preset.subtitle_style is not None:
+                script_dict["subtitle_style"] = preset.subtitle_style.model_dump()
+
+            # タイミング
+            if preset.timing_override is not None:
+                script_dict["timing"] = preset.timing_override.model_dump()
+
+        script_dict["scenes"] = updated_scenes
+        return Script.model_validate(script_dict)
 
     def _resolve_segment_voice(self, script: Script, segment):
         """ナレーションセグメントに適用する音声設定を解決
@@ -151,6 +221,9 @@ class ScriptCompiler:
         Returns:
             CompileResult: 変換結果（Projectとメタデータ）
         """
+        # 0. 複合プリセットを適用
+        script = self._apply_composite_presets(script)
+
         # 1. 準備
         self._prepare(script)
 
@@ -329,8 +402,8 @@ class ScriptCompiler:
         layers: list[Union[VideoLayer, ImageLayer]] = []
 
         for i, (scene, timing) in enumerate(zip(script.scenes, scene_timings)):
-            # シーン毎にプリセットを取得
-            preset = self._get_preset_for_scene(script, scene)
+            # シーン毎にエフェクトプリセットを取得
+            preset = self._get_effect_preset_for_scene(script, scene)
 
             asset_path = self._assets.resolve(scene.visual)
             # トランジションはシーンから直接取得

@@ -192,11 +192,11 @@ class TestScriptBuilder:
             .add_scene_builder(
                 SceneBuilder().add_narration("テスト").visual_path("./image.png")
             )
-            .bgm(path="./bgm.mp3", volume=0.5, fade_in=1.0, fade_out=2.0)
+            .bgm(path="./bgm1.mp3", volume=0.5, fade_in=1.0, fade_out=2.0)
             .build()
         )
         assert script.bgm is not None
-        assert script.bgm.path == "./bgm.mp3"
+        assert script.bgm.path == "./bgm1.mp3"
         assert script.bgm.volume == 0.5
         assert script.bgm.fade_in == 1.0
         assert script.bgm.fade_out == 2.0
@@ -285,7 +285,7 @@ class TestScriptBuilder:
             )
             .voice(provider="google", language_code="ja-JP", speed=1.0)
             .timing(segment_gap=0.3, scene_gap=0.5)
-            .bgm(path="./assets/bgm.mp3", volume=0.2, fade_in=1.0, fade_out=2.0)
+            .bgm(path="./assets/bgm1.mp3", volume=0.2, fade_in=1.0, fade_out=2.0)
             .build()
         )
 
