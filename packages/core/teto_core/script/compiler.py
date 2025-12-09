@@ -113,15 +113,33 @@ class ScriptCompiler:
         preset_name = scene.effect or script.default_effect
         return ScenePresetRegistry.get(preset_name)
 
+    def _get_composite_preset_for_scene(self, script: Script, scene: Scene):
+        """シーンに適用する複合プリセットを取得
+
+        Args:
+            script: 台本（デフォルト複合プリセット情報を含む）
+            scene: シーン
+
+        Returns:
+            PresetConfig | None: 適用する複合プリセット（なければNone）
+        """
+        preset_name = scene.preset or script.default_preset
+        if preset_name is None:
+            return None
+        return PresetRegistry.get(preset_name)
+
     def _apply_composite_presets(self, script: Script) -> Script:
         """複合プリセットを全シーンとスクリプトに適用
 
-        各シーンの複合プリセット設定を展開し、シーン固有設定とスクリプト設定を上書きする。
+        各シーンの複合プリセット設定を展開し、シーン固有設定を上書きする。
         優先順位:
         - effect: scene.effect > preset.effect > script.default_effect
         - transition: scene.transition > preset.transition
-        - subtitle_style: preset.subtitle_style > script.subtitle_style (シーン毎に適用)
-        - timing: preset.timing_override > script.timing (シーン毎に適用)
+
+        Note:
+            subtitle_style と timing_override はシーン毎に異なる可能性があるため、
+            グローバル設定には適用しない。これらはシーン毎のプリセットから
+            _build_subtitle_layers と _calculate_timings で個別に適用される。
 
         Args:
             script: 台本
@@ -160,15 +178,6 @@ class ScriptCompiler:
                 scene_dict["transition"] = preset.transition
 
             updated_scenes.append(Scene.model_validate(scene_dict))
-
-            # 3. グローバル設定の上書き（プリセットで指定されている場合）
-            # 字幕スタイル
-            if preset.subtitle_style is not None:
-                script_dict["subtitle_style"] = preset.subtitle_style.model_dump()
-
-            # タイミング
-            if preset.timing_override is not None:
-                script_dict["timing"] = preset.timing_override.model_dump()
 
         script_dict["scenes"] = updated_scenes
         return Script.model_validate(script_dict)
@@ -328,16 +337,28 @@ class ScriptCompiler:
         script: Script,
         all_narrations: list[list[TTSResult]],
     ) -> list[SceneTiming]:
-        """タイミングを計算（間隔を考慮）"""
+        """タイミングを計算（間隔を考慮）
+
+        シーン毎の複合プリセットで timing_override が指定されている場合、
+        そのシーンではオーバーライドされたタイミング設定を使用する。
+        """
         scene_timings: list[SceneTiming] = []
         current_time = 0.0
-        timing_config = script.timing
-        padding = timing_config.subtitle_padding
+        default_timing = script.timing
 
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations = all_narrations[scene_idx]
             scene_start = current_time
             segment_timings: list[SegmentTiming] = []
+
+            # シーン毎のプリセットからタイミング設定を取得
+            composite_preset = self._get_composite_preset_for_scene(script, scene)
+            if composite_preset and composite_preset.timing_override:
+                timing_config = composite_preset.timing_override
+            else:
+                timing_config = default_timing
+
+            padding = timing_config.subtitle_padding
 
             if len(scene.narrations) == 0:
                 # ナレーションなしのシーン（タイトル、見出し等）
@@ -528,13 +549,65 @@ class ScriptCompiler:
         script: Script,
         scene_timings: list[SceneTiming],
     ) -> list[SubtitleLayer]:
-        """字幕レイヤーを構築"""
-        items: list[SubtitleItem] = []
+        """字幕レイヤーを構築
 
-        # padding は _calculate_timings で考慮済み
-        for scene_timing in scene_timings:
+        シーン毎の複合プリセットで subtitle_style が指定されている場合、
+        そのシーンの字幕には専用の SubtitleLayer を作成する。
+        同じスタイルを持つ連続したシーンは1つの SubtitleLayer にまとめる。
+        """
+        default_style = script.subtitle_style
+        # styles の優先順位: Script.subtitle_styles > Script.subtitle_style.styles
+        default_styles = (
+            script.subtitle_styles if script.subtitle_styles else default_style.styles
+        )
+
+        # シーン毎にスタイルを決定し、グループ化
+        layers: list[SubtitleLayer] = []
+        current_style_key = None
+        current_style = None
+        current_items: list[SubtitleItem] = []
+
+        for scene_idx, (scene, scene_timing) in enumerate(
+            zip(script.scenes, scene_timings)
+        ):
+            # シーン毎のプリセットから字幕スタイルを取得
+            composite_preset = self._get_composite_preset_for_scene(script, scene)
+            if composite_preset and composite_preset.subtitle_style:
+                style = composite_preset.subtitle_style
+            else:
+                style = default_style
+
+            # スタイルの識別キーを作成（スタイルが同じかどうかを判定するため）
+            style_key = (
+                style.font_size,
+                style.font_color,
+                style.google_font,
+                style.font_weight,
+                style.stroke_width,
+                style.stroke_color,
+                style.outer_stroke_width,
+                style.outer_stroke_color,
+                style.bg_color,
+                style.position,
+                style.appearance,
+            )
+
+            # スタイルが変わった場合、現在のグループを保存して新しいグループを開始
+            if current_style_key is not None and style_key != current_style_key:
+                if current_items:
+                    layers.append(
+                        self._create_subtitle_layer(
+                            current_items, current_style, default_styles
+                        )
+                    )
+                current_items = []
+
+            current_style_key = style_key
+            current_style = style
+
+            # このシーンの字幕アイテムを追加
             for segment in scene_timing.segments:
-                items.append(
+                current_items.append(
                     SubtitleItem(
                         text=segment.text,
                         start_time=segment.start_time,
@@ -542,33 +615,35 @@ class ScriptCompiler:
                     )
                 )
 
-        # 字幕がない場合は空リストを返す
-        if not items:
-            return []
-
-        # 字幕スタイルは Script から直接取得
-        style = script.subtitle_style
-
-        # styles の優先順位: Script.subtitle_styles > Script.subtitle_style.styles
-        styles = script.subtitle_styles if script.subtitle_styles else style.styles
-
-        return [
-            SubtitleLayer(
-                items=items,
-                styles=styles,
-                font_size=style.font_size,
-                font_color=style.font_color,
-                google_font=style.google_font,
-                font_weight=style.font_weight,
-                stroke_width=style.stroke_width,
-                stroke_color=style.stroke_color,
-                outer_stroke_width=style.outer_stroke_width,
-                outer_stroke_color=style.outer_stroke_color,
-                bg_color=style.bg_color,
-                position=style.position,
-                appearance=style.appearance,
+        # 最後のグループを保存
+        if current_items and current_style is not None:
+            layers.append(
+                self._create_subtitle_layer(
+                    current_items, current_style, default_styles
+                )
             )
-        ]
+
+        return layers
+
+    def _create_subtitle_layer(
+        self, items: list[SubtitleItem], style, styles: dict
+    ) -> SubtitleLayer:
+        """字幕スタイルから SubtitleLayer を作成（ヘルパーメソッド）"""
+        return SubtitleLayer(
+            items=items,
+            styles=styles,
+            font_size=style.font_size,
+            font_color=style.font_color,
+            google_font=style.google_font,
+            font_weight=style.font_weight,
+            stroke_width=style.stroke_width,
+            stroke_color=style.stroke_color,
+            outer_stroke_width=style.outer_stroke_width,
+            outer_stroke_color=style.outer_stroke_color,
+            bg_color=style.bg_color,
+            position=style.position,
+            appearance=style.appearance,
+        )
 
     def _assemble_project(
         self,
