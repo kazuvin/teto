@@ -81,7 +81,7 @@
     "subtitle_padding": 0.1
   },
   "bgm": {
-    "path": "examples/assets/sounds/bgm.mp3",
+    "path": "examples/assets/sounds/bgm1.mp3",
     "volume": 0.2,
     "fade_in": 1.0,
     "fade_out": 2.0

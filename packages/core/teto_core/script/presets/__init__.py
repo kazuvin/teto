@@ -15,9 +15,12 @@ from .kenburns import (
     KenBurnsDiagonalLeftTopPreset,
     KenBurnsDiagonalRightTopPreset,
 )
+from .composite import PresetConfig, PresetRegistry
+
+# library は遅延インポートする（循環インポート回避）
 
 __all__ = [
-    # 新しい名前
+    # 新しい名前（エフェクトプリセット）
     "ScenePreset",
     "ScenePresetRegistry",
     "DefaultScenePreset",
@@ -32,6 +35,9 @@ __all__ = [
     "KenBurnsZoomOutPreset",
     "KenBurnsDiagonalLeftTopPreset",
     "KenBurnsDiagonalRightTopPreset",
+    # 複合プリセット
+    "PresetConfig",
+    "PresetRegistry",
     # 後方互換性のためのエイリアス
     "LayerPreset",
     "LayerPresetRegistry",

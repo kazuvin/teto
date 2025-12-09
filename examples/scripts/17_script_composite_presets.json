@@ -1,0 +1,92 @@
+{
+  "title": "複合プリセットのサンプル",
+  "description": "複合プリセット（hook, overview, main_content, cta）を使用した動画構成のデモ",
+  "default_preset": "main_content",
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "preset": "hook",
+      "narrations": [
+        { "text": "今日は特別なお知らせがあります！" },
+        { "text": "あなたの動画制作を劇的に変える方法をご紹介します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "フック（hook プリセット）- 視聴者の注意を引く冒頭部分。dramaticエフェクト、大きめの字幕、速いテンポ"
+    },
+    {
+      "preset": "overview",
+      "narrations": [
+        { "text": "この動画では3つのポイントをお伝えします。" },
+        { "text": "1. 効率的な動画制作" },
+        { "text": "2. プロフェッショナルな仕上がり" },
+        { "text": "3. 時間とコストの削減" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "概要（overview プリセット）- トピックの全体像を説明。Ken Burnsエフェクト、標準的な字幕"
+    },
+    {
+      "narrations": [
+        { "text": "まず、効率的な動画制作についてです。" },
+        { "text": "複合プリセットを使うことで、" },
+        { "text": "アニメーション、字幕、BGM、タイミングなどを一括設定できます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編1（main_content プリセット）- メインコンテンツ。シンプルなエフェクト、読みやすい字幕"
+    },
+    {
+      "narrations": [
+        { "text": "次に、プロフェッショナルな仕上がりについて。" },
+        { "text": "各シーンに適したプリセットを指定することで、" },
+        { "text": "統一感のある高品質な動画が作成できます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編2（default_preset の main_content を使用）"
+    },
+    {
+      "narrations": [
+        { "text": "最後に、時間とコストの削減です。" },
+        { "text": "プリセットを活用することで、" },
+        { "text": "毎回細かい設定をする手間が省けます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編3（default_preset の main_content を使用）"
+    },
+    {
+      "preset": "cta",
+      "narrations": [
+        { "text": "今すぐチャンネル登録して、" },
+        { "text": "最新の動画制作テクニックをチェックしましょう！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0,
+      "note": "CTA（cta プリセット）- 行動喚起。dramaticエフェクト、目立つ黄色の字幕"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "subtitle_styles": {
+    "emphasis": {
+      "font_color": "red",
+      "font_weight": "bold"
+    }
+  }
+}

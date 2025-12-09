@@ -202,7 +202,11 @@ class Scene(BaseModel):
     )
     preset: str | None = Field(
         None,
-        description="このシーンに適用するプリセット名（未指定時はデフォルトプリセットを使用）",
+        description="このシーンに適用する複合プリセット名（未指定時はデフォルトプリセットを使用）",
+    )
+    effect: str | None = Field(
+        None,
+        description="このシーンに適用するエフェクト名（未指定時はデフォルトエフェクトを使用）",
     )
     mute_video: bool = Field(
         False,
@@ -257,6 +261,8 @@ class BGMConfig(BaseModel):
 
 class BGMSceneRange(BaseModel):
     """シーン範囲"""
+
+    model_config = {"populate_by_name": True}
 
     from_: int = Field(
         ..., alias="from", description="開始シーンインデックス（0始まり）", ge=0
@@ -367,9 +373,13 @@ class Script(BaseModel):
     )
 
     # プリセット設定
-    default_preset: str = Field(
+    default_preset: str | None = Field(
+        None,
+        description="シーンに複合プリセット指定がない場合に使用するデフォルト複合プリセット名",
+    )
+    default_effect: str = Field(
         "default",
-        description="シーンにプリセット指定がない場合に使用するデフォルトプリセット名",
+        description="シーンにエフェクト指定がない場合に使用するデフォルトエフェクト名",
     )
 
     # メタデータ

@@ -1,0 +1,98 @@
+{
+  "title": "複合プリセットとエフェクトプリセットの組み合わせ",
+  "description": "複合プリセットで全体の雰囲気を設定しつつ、個別にエフェクトプリセットをカスタマイズする例",
+  "default_preset": "main_content",
+  "default_effect": "default",
+  "output": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "preset": "hook",
+      "effect": "kenburns-zoom-in",
+      "narrations": [
+        { "text": "注目！" },
+        { "text": "これまでにない体験がここに。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "フック - hook複合プリセット + kenburns-zoom-inエフェクト。複合プリセットのdramaticを上書き"
+    },
+    {
+      "preset": "overview",
+      "narrations": [
+        { "text": "今回は、プリセットの組み合わせ方を解説します。" },
+        { "text": "複合プリセットとエフェクトプリセットを自由に組み合わせられます。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "概要 - overview複合プリセットのデフォルトエフェクト（kenburns-zoom-in）を使用"
+    },
+    {
+      "narrations": [
+        { "text": "複合プリセットは、字幕スタイルやタイミングを一括設定します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編1 - main_content複合プリセット（字幕スタイルとタイミング）+ defaultエフェクト"
+    },
+    {
+      "effect": "dramatic",
+      "narrations": [
+        { "text": "一方、エフェクトプリセットは、" },
+        { "text": "個別のシーンのアニメーションを制御します。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編2 - main_content複合プリセット + dramaticエフェクト（カスタマイズ）"
+    },
+    {
+      "effect": "kenburns-left-to-right",
+      "narrations": [
+        { "text": "このように、両方を組み合わせることで、" },
+        { "text": "柔軟な動画制作が可能になります。" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "本編3 - main_content複合プリセット + kenburns-left-to-rightエフェクト"
+    },
+    {
+      "preset": "cta",
+      "effect": "slideshow",
+      "narrations": [
+        { "text": "もっと詳しく知りたい方は、" },
+        { "text": "チャンネル登録をお願いします！" }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "pause_after": 1.0,
+      "note": "CTA - cta複合プリセット + slideshowエフェクト。dramaticを上書きしてシンプルに"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "subtitle_style": {
+    "font_size": "base",
+    "font_color": "white",
+    "google_font": "Noto Sans JP",
+    "font_weight": "normal",
+    "appearance": "background",
+    "position": "bottom"
+  }
+}
