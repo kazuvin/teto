@@ -204,12 +204,26 @@ def create_text_image_with_pil(
 
     # 日本語対応の折り返し処理
     wrapped_text = wrap_text_japanese_aware(text, font, max_width)
+    lines = wrapped_text.split("\n")
 
     # テキストのbounding boxを取得（正確なサイズ計算）
     # 縁取りがある場合は追加のスペースを確保（最大の縁取り幅を使用）
     max_stroke = max(stroke_width, outer_stroke_width)
     dummy_img = Image.new("RGBA", (1, 1))
     dummy_draw = ImageDraw.Draw(dummy_img)
+
+    # 二重縁取りの場合、中央揃え計算はstroke_width=0の幅を基準にする
+    # これにより全ての層で同じ中央揃え位置になる
+    line_widths_base = []  # stroke_width=0での各行の幅（中央揃え計算用）
+    line_heights = []
+    for line in lines:
+        bbox_base = dummy_draw.textbbox((0, 0), line, font=font, stroke_width=0)
+        line_widths_base.append(bbox_base[2] - bbox_base[0])
+        # 高さはmax_strokeで計算
+        bbox_max = dummy_draw.textbbox((0, 0), line, font=font, stroke_width=max_stroke)
+        line_heights.append(bbox_max[3] - bbox_max[1])
+
+    # 全体のサイズを計算（max_stroke込み）
     bbox = dummy_draw.multiline_textbbox(
         (0, 0),
         wrapped_text,
@@ -219,6 +233,7 @@ def create_text_image_with_pil(
     )
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
+    max_line_width_base = max(line_widths_base) if line_widths_base else 0
 
     # 実際の描画用の画像を作成（余白を含む、レスポンシブ）
     img_width = text_width + constants["TEXT_PADDING"] * 2
@@ -226,59 +241,48 @@ def create_text_image_with_pil(
     img = Image.new("RGBA", (img_width, img_height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # テキスト描画位置
-    text_position = (
-        constants["TEXT_PADDING"] - bbox[0],
-        constants["TEXT_PADDING"] - bbox[1],
-    )
+    # 行ごとに描画（中央揃えを自前で計算）
+    def draw_lines(sw: int, fill_color: tuple, stroke_fill_color: tuple | None):
+        """行ごとにテキストを描画"""
+        current_y = constants["TEXT_PADDING"] - bbox[1]
+        for i, line in enumerate(lines):
+            # 中央揃え位置を計算（stroke_width=0の幅を基準に）
+            center_offset = (max_line_width_base - line_widths_base[i]) // 2
+            # max_strokeでの左端オフセットを考慮
+            line_x = constants["TEXT_PADDING"] - bbox[0] + center_offset
+            draw.text(
+                (line_x, current_y),
+                line,
+                font=font,
+                fill=fill_color,
+                stroke_width=sw,
+                stroke_fill=stroke_fill_color,
+            )
+            current_y += line_heights[i] + constants["LINE_SPACING"]
 
     # 二重縁取りの場合は3層で描画
     if outer_stroke_width > 0:
         # 第1層: 外側縁取り（最も太い）
-        draw.multiline_text(
-            text_position,
-            wrapped_text,
-            font=font,
-            fill=(*outer_stroke_color_rgb, 255),
-            align="center",
-            spacing=constants["LINE_SPACING"],
-            stroke_width=outer_stroke_width,
-            stroke_fill=(*outer_stroke_color_rgb, 255),
+        draw_lines(
+            outer_stroke_width,
+            (*outer_stroke_color_rgb, 255),
+            (*outer_stroke_color_rgb, 255),
         )
         # 第2層: 内側縁取り
         if stroke_width > 0:
-            draw.multiline_text(
-                text_position,
-                wrapped_text,
-                font=font,
-                fill=(*stroke_color_rgb, 255),
-                align="center",
-                spacing=constants["LINE_SPACING"],
-                stroke_width=stroke_width,
-                stroke_fill=(*stroke_color_rgb, 255),
+            draw_lines(
+                stroke_width,
+                (*stroke_color_rgb, 255),
+                (*stroke_color_rgb, 255),
             )
         # 第3層: テキスト本体
-        draw.multiline_text(
-            text_position,
-            wrapped_text,
-            font=font,
-            fill=(*text_color, 255),
-            align="center",
-            spacing=constants["LINE_SPACING"],
-            stroke_width=0,
-            stroke_fill=None,
-        )
+        draw_lines(0, (*text_color, 255), None)
     else:
         # 従来の単一縁取りまたは縁取りなし
-        draw.multiline_text(
-            text_position,
-            wrapped_text,
-            font=font,
-            fill=(*text_color, 255),
-            align="center",
-            spacing=constants["LINE_SPACING"],
-            stroke_width=stroke_width,
-            stroke_fill=(*stroke_color_rgb, 255),
+        draw_lines(
+            stroke_width,
+            (*text_color, 255),
+            (*stroke_color_rgb, 255) if stroke_width > 0 else None,
         )
 
     return np.array(img), (img_width, img_height)
@@ -411,12 +415,10 @@ def create_styled_text_image_with_pil(
     for line_idx, line in enumerate(lines):
         line_width = line_widths[line_idx]
         line_height = line_heights[line_idx]
-        line_bbox = line_bboxes[line_idx]
 
-        # 行を中央揃えにするためのX開始位置（bboxオフセットを考慮）
-        line_start_x = (
-            constants["TEXT_PADDING"] + (total_width - line_width) // 2 - line_bbox[0]
-        )
+        # 行を中央揃えにするためのX開始位置
+        # 各文字のbboxオフセットは個別描画時に適用するため、ここでは論理的な位置のみ計算
+        line_start_x = constants["TEXT_PADDING"] + (total_width - line_width) // 2
         current_x = line_start_x
 
         # この行の文字を処理
@@ -447,11 +449,15 @@ def create_styled_text_image_with_pil(
             )
             text_draw_width = text_bbox[2] - text_bbox[0]
 
+            # bboxのオフセットを考慮した描画位置
+            # text_bbox[0]は縁取りがある場合に負の値になることがある
+            draw_x = current_x - text_bbox[0]
+
             # 縁取りを先に描画
             if outer_stroke_width > 0:
                 # 外側縁取り
                 draw.text(
-                    (current_x, current_y),
+                    (draw_x, current_y),
                     text_to_draw,
                     font=font,
                     fill=(*outer_stroke_color_rgb, 255),
@@ -461,7 +467,7 @@ def create_styled_text_image_with_pil(
                 # 内側縁取り
                 if stroke_width > 0:
                     draw.text(
-                        (current_x, current_y),
+                        (draw_x, current_y),
                         text_to_draw,
                         font=font,
                         fill=(*stroke_color_rgb, 255),
@@ -470,7 +476,7 @@ def create_styled_text_image_with_pil(
                     )
                 # テキスト本体
                 draw.text(
-                    (current_x, current_y),
+                    (draw_x, current_y),
                     text_to_draw,
                     font=font,
                     fill=(*text_color, 255),
@@ -478,7 +484,7 @@ def create_styled_text_image_with_pil(
             else:
                 # 単一縁取りまたは縁取りなし
                 draw.text(
-                    (current_x, current_y),
+                    (draw_x, current_y),
                     text_to_draw,
                     font=font,
                     fill=(*text_color, 255),
