@@ -1,0 +1,150 @@
+{
+  "title": "BGMセクション切り替えのデモ",
+  "description": "シーン範囲毎に異なるBGMを再生する例",
+  "output_dir": "output/test",
+  "output": {
+    "aspect_ratio": "16:9"
+  },
+  "voice_profiles": {
+    "narrator": {
+      "provider": "google",
+      "language_code": "ja-JP",
+      "speed": 1.0,
+      "pitch": 0.0
+    }
+  },
+  "scenes": [
+    {
+      "narrations": [
+        {
+          "text": "ようこそ、私たちのチュートリアルへ。",
+          "voice_profile": "narrator"
+        },
+        {
+          "text": "まずはイントロダクションから始めましょう。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample1.jpg"
+      },
+      "preset": "kenburns-left-to-right"
+    },
+    {
+      "narrations": [
+        {
+          "text": "このセクションでは基本概念を説明します。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample2.jpg"
+      },
+      "preset": "kenburns-right-to-left"
+    },
+    {
+      "narrations": [
+        {
+          "text": "次に、メインコンテンツに移ります。",
+          "voice_profile": "narrator"
+        },
+        {
+          "text": "ここからが本番です。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample1.jpg"
+      },
+      "preset": "kenburns-left-to-right"
+    },
+    {
+      "narrations": [
+        {
+          "text": "重要なポイントをいくつか解説します。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample2.jpg"
+      },
+      "preset": "kenburns-right-to-left"
+    },
+    {
+      "narrations": [
+        {
+          "text": "実践的な例を見ていきましょう。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample1.jpg"
+      },
+      "preset": "kenburns-left-to-right"
+    },
+    {
+      "narrations": [
+        {
+          "text": "最後にまとめです。",
+          "voice_profile": "narrator"
+        },
+        {
+          "text": "ご視聴ありがとうございました。",
+          "voice_profile": "narrator"
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample2.jpg"
+      },
+      "preset": "kenburns-right-to-left"
+    }
+  ],
+  "bgm_sections": [
+    {
+      "path": "examples/assets/sounds/bgm.mp3",
+      "scene_range": {
+        "from": 0,
+        "to": 1
+      },
+      "volume": 0.3,
+      "fade_in": 2.0,
+      "fade_out": 1.0,
+      "loop": true
+    },
+    {
+      "path": "examples/assets/sounds/bgm.mp3",
+      "scene_range": {
+        "from": 2,
+        "to": 4
+      },
+      "volume": 0.2,
+      "fade_in": 1.0,
+      "fade_out": 1.0,
+      "loop": true
+    },
+    {
+      "path": "examples/assets/sounds/bgm.mp3",
+      "scene_range": {
+        "from": 5,
+        "to": 5
+      },
+      "volume": 0.3,
+      "fade_in": 1.0,
+      "fade_out": 3.0,
+      "loop": true
+    }
+  ],
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "subtitle_style": {
+    "enabled": true,
+    "font_size": "base",
+    "color": "white",
+    "background_color": "black",
+    "background_opacity": 0.7,
+    "position": "bottom"
+  }
+}

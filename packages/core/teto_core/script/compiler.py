@@ -405,8 +405,38 @@ class ScriptCompiler:
                     )
                 )
 
-        # BGM
-        if script.bgm:
+        # BGM（優先順位: bgm_sections > bgm）
+        if script.bgm_sections:
+            # シーン範囲BGM（複数BGMの切り替え）
+            for section in script.bgm_sections:
+                # シーン範囲の検証
+                start_scene_idx = section.scene_range.from_
+                end_scene_idx = section.scene_range.to
+
+                if start_scene_idx >= len(scene_timings):
+                    # 開始シーンが範囲外の場合はスキップ
+                    continue
+
+                # 終了シーンが範囲外の場合は最後のシーンに調整
+                if end_scene_idx >= len(scene_timings):
+                    end_scene_idx = len(scene_timings) - 1
+
+                # シーン範囲から開始・終了時刻を計算
+                start_time = scene_timings[start_scene_idx].start_time
+                end_time = scene_timings[end_scene_idx].end_time
+                duration = end_time - start_time
+
+                layers.append(
+                    AudioLayer(
+                        path=section.path,
+                        start_time=start_time,
+                        duration=duration,
+                        volume=section.volume,
+                        # NOTE: fade_in/fade_out, loop は AudioLayer 拡張後に対応
+                    )
+                )
+        elif script.bgm:
+            # グローバルBGM（後方互換性）
             total_duration = scene_timings[-1].end_time
             layers.append(
                 AudioLayer(
