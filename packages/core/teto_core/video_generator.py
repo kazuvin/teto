@@ -4,6 +4,7 @@ from typing import Callable, Any
 from .project import Project
 from .layer.processors import VideoProcessor, AudioProcessor
 from .layer.processors.video import StampLayerProcessor
+from .layer.processors.character import CharacterLayerProcessor
 from .layer.processors.subtitle import SubtitleBurnProcessor, SubtitleExportProcessor
 from .generator.pipeline import ProcessingStep
 from .generator.context import ProcessingContext
@@ -12,6 +13,7 @@ from .generator.steps import (
     AudioLayerProcessingStep,
     AudioMergingStep,
     StampLayerProcessingStep,
+    CharacterLayerProcessingStep,
     SubtitleProcessingStep,
     VideoOutputStep,
     CleanupStep,
@@ -30,6 +32,7 @@ class VideoGenerator:
         video_processor: VideoProcessor = None,
         audio_processor: AudioProcessor = None,
         stamp_processor: StampLayerProcessor = None,
+        character_processor: CharacterLayerProcessor = None,
         subtitle_burn_processor: SubtitleBurnProcessor = None,
         subtitle_export_processor: SubtitleExportProcessor = None,
     ):
@@ -42,6 +45,7 @@ class VideoGenerator:
         self.video_processor = video_processor or VideoProcessor()
         self.audio_processor = audio_processor or AudioProcessor()
         self.stamp_processor = stamp_processor or StampLayerProcessor()
+        self.character_processor = character_processor or CharacterLayerProcessor()
         self.subtitle_burn_processor = (
             subtitle_burn_processor or SubtitleBurnProcessor()
         )
@@ -91,6 +95,16 @@ class VideoGenerator:
     def _build_default_pipeline(self) -> ProcessingStep:
         """デフォルトの処理パイプラインを構築
 
+        処理順序:
+        1. 動画/画像レイヤー処理
+        2. 音声レイヤー処理
+        3. 音声合成
+        4. スタンプレイヤー処理
+        5. キャラクターレイヤー処理
+        6. 字幕処理
+        7. 動画出力
+        8. クリーンアップ
+
         Returns:
             処理パイプラインの先頭ステップ
         """
@@ -99,6 +113,8 @@ class VideoGenerator:
             AudioLayerProcessingStep(audio_processor=self.audio_processor)
         ).then(AudioMergingStep()).then(
             StampLayerProcessingStep(stamp_processor=self.stamp_processor)
+        ).then(
+            CharacterLayerProcessingStep(character_processor=self.character_processor)
         ).then(
             SubtitleProcessingStep(
                 subtitle_burn_processor=self.subtitle_burn_processor,

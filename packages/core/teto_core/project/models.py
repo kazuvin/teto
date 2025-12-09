@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import Union
-from ..layer.models import VideoLayer, ImageLayer, AudioLayer, SubtitleLayer, StampLayer
+from ..layer.models import (
+    VideoLayer,
+    ImageLayer,
+    AudioLayer,
+    SubtitleLayer,
+    StampLayer,
+    CharacterLayer,
+)
 from ..output_config.models import OutputConfig
 
 
@@ -18,6 +25,9 @@ class Timeline(BaseModel):
     )
     stamp_layers: list[StampLayer] = Field(
         default_factory=list, description="スタンプレイヤー"
+    )
+    character_layers: list[CharacterLayer] = Field(
+        default_factory=list, description="キャラクターレイヤー"
     )
 
 

@@ -57,7 +57,11 @@ class SubtitleStyleRenderer(ABC):
         """
         # レスポンシブな定数を取得（幅ベース）
         constants = get_responsive_constants(video_size[0])
-        max_width = video_size[0] - constants["MAX_TEXT_WIDTH_OFFSET"]
+        # max_width を計算（横方向マージンを考慮）
+        margin_horizontal = getattr(layer, "margin_horizontal", 0)
+        max_width = (
+            video_size[0] - constants["MAX_TEXT_WIDTH_OFFSET"] - (margin_horizontal * 2)
+        )
 
         # レスポンシブサイズを計算（幅ベース）
         font_size = calculate_font_size(layer.font_size, video_size[0])

@@ -1,4 +1,4 @@
-"""Layer processors - Video, Audio, and Subtitle processing logic"""
+"""Layer processors - Video, Audio, Subtitle, and Character processing logic"""
 
 from .video import (
     VideoProcessor,
@@ -8,6 +8,7 @@ from .video import (
 )
 from .audio import AudioProcessor, AudioLayerProcessor
 from .subtitle import SubtitleBurnProcessor, SubtitleExportProcessor
+from .character import CharacterProcessor, CharacterLayerProcessor
 
 __all__ = [
     "VideoProcessor",
@@ -18,4 +19,6 @@ __all__ = [
     "AudioLayerProcessor",
     "SubtitleBurnProcessor",
     "SubtitleExportProcessor",
+    "CharacterProcessor",
+    "CharacterLayerProcessor",
 ]
