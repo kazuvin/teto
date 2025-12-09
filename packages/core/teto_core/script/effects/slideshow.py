@@ -1,10 +1,10 @@
-"""Slideshow scene preset"""
+"""Slideshow effect preset"""
 
 from ...effect.models import AnimationEffect
-from .base import ScenePreset
+from .base import EffectPreset
 
 
-class SlideshowScenePreset(ScenePreset):
+class SlideshowEffectPreset(EffectPreset):
     """スライドショープリセット（slideIn）
 
     スライドショー形式の演出向けプリセット。
@@ -37,4 +37,5 @@ class SlideshowScenePreset(ScenePreset):
 
 
 # 後方互換性のためのエイリアス
-SlideshowPreset = SlideshowScenePreset
+SlideshowScenePreset = SlideshowEffectPreset
+SlideshowPreset = SlideshowEffectPreset

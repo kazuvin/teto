@@ -1,16 +1,17 @@
-"""Scene preset base interface"""
+"""Composite preset base - Subtitle style configuration"""
 
-from abc import ABC, abstractmethod
 from typing import Union, Literal
 from pydantic import BaseModel, Field
 
-from ...effect.models import AnimationEffect
 from ...core.types import ResponsiveSize
 from ...layer.models import PartialStyle
 
 
 class SubtitleStyleConfig(BaseModel):
-    """字幕スタイル設定"""
+    """字幕スタイル設定
+
+    複合プリセットで使用する字幕スタイルの設定。
+    """
 
     font_size: Union[int, ResponsiveSize] = Field(
         "base", description="フォントサイズ（数値またはxs/sm/base/lg/xl/2xl）"
@@ -43,40 +44,6 @@ class SubtitleStyleConfig(BaseModel):
     )
 
 
-class ScenePreset(ABC):
-    """シーンプリセット（Strategy）
-
-    シーン毎のエフェクト設定を定型化するインターフェース。
-
-    Note:
-        出力設定と字幕スタイルは Script モデルで直接指定する。
-        トランジションは Scene モデルで直接指定する。
-    """
-
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """プリセット名"""
-        ...
-
-    @abstractmethod
-    def get_image_effects(self) -> list[AnimationEffect]:
-        """画像レイヤーに適用するエフェクトを取得
-
-        Returns:
-            list[AnimationEffect]: エフェクトリスト
-        """
-        ...
-
-    @abstractmethod
-    def get_video_effects(self) -> list[AnimationEffect]:
-        """動画レイヤーに適用するエフェクトを取得
-
-        Returns:
-            list[AnimationEffect]: エフェクトリスト
-        """
-        ...
-
-
-# 後方互換性のためのエイリアス
-LayerPreset = ScenePreset
+# 後方互換性のためのエイリアス（effects/ モジュールから再エクスポート）
+# Note: ScenePreset, LayerPreset は effects/ モジュールで定義されています
+#       presets/__init__.py から再エクスポートされます

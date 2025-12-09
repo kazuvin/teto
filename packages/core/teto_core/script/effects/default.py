@@ -1,10 +1,10 @@
-"""Default scene preset"""
+"""Default effect preset"""
 
 from ...effect.models import AnimationEffect
-from .base import ScenePreset
+from .base import EffectPreset
 
 
-class DefaultScenePreset(ScenePreset):
+class DefaultEffectPreset(EffectPreset):
     """デフォルトプリセット（静止画）"""
 
     @property
@@ -19,4 +19,5 @@ class DefaultScenePreset(ScenePreset):
 
 
 # 後方互換性のためのエイリアス
-DefaultLayerPreset = DefaultScenePreset
+DefaultScenePreset = DefaultEffectPreset
+DefaultLayerPreset = DefaultEffectPreset

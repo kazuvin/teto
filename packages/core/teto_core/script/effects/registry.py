@@ -1,15 +1,15 @@
-"""Scene preset registry"""
+"""Effect preset registry"""
 
-from .base import ScenePreset
+from .base import EffectPreset
 
 
-class ScenePresetRegistry:
-    """プリセット管理"""
+class EffectPresetRegistry:
+    """エフェクトプリセット管理"""
 
-    _presets: dict[str, ScenePreset] = {}
+    _presets: dict[str, EffectPreset] = {}
 
     @classmethod
-    def register(cls, preset: ScenePreset) -> None:
+    def register(cls, preset: EffectPreset) -> None:
         """プリセットを登録する
 
         Args:
@@ -18,14 +18,14 @@ class ScenePresetRegistry:
         cls._presets[preset.name] = preset
 
     @classmethod
-    def get(cls, name: str) -> ScenePreset:
+    def get(cls, name: str) -> EffectPreset:
         """プリセットを取得する
 
         Args:
             name: プリセット名
 
         Returns:
-            ScenePreset: プリセット
+            EffectPreset: プリセット
 
         Raises:
             ValueError: 指定された名前のプリセットが存在しない場合
@@ -50,14 +50,15 @@ class ScenePresetRegistry:
 
 
 # 後方互換性のためのエイリアス
-LayerPresetRegistry = ScenePresetRegistry
+ScenePresetRegistry = EffectPresetRegistry
+LayerPresetRegistry = EffectPresetRegistry
 
 
 def _register_default_presets() -> None:
     """デフォルトプリセットを登録する"""
-    from .default import DefaultScenePreset
-    from .dramatic import DramaticScenePreset
-    from .slideshow import SlideshowScenePreset
+    from .default import DefaultEffectPreset
+    from .dramatic import DramaticEffectPreset
+    from .slideshow import SlideshowEffectPreset
     from .kenburns import (
         KenBurnsLeftToRightPreset,
         KenBurnsRightToLeftPreset,
@@ -69,18 +70,18 @@ def _register_default_presets() -> None:
         KenBurnsDiagonalRightTopPreset,
     )
 
-    ScenePresetRegistry.register(DefaultScenePreset())
-    ScenePresetRegistry.register(DramaticScenePreset())
-    ScenePresetRegistry.register(SlideshowScenePreset())
+    EffectPresetRegistry.register(DefaultEffectPreset())
+    EffectPresetRegistry.register(DramaticEffectPreset())
+    EffectPresetRegistry.register(SlideshowEffectPreset())
     # Ken Burns プリセット
-    ScenePresetRegistry.register(KenBurnsLeftToRightPreset())
-    ScenePresetRegistry.register(KenBurnsRightToLeftPreset())
-    ScenePresetRegistry.register(KenBurnsTopToBottomPreset())
-    ScenePresetRegistry.register(KenBurnsBottomToTopPreset())
-    ScenePresetRegistry.register(KenBurnsZoomInPreset())
-    ScenePresetRegistry.register(KenBurnsZoomOutPreset())
-    ScenePresetRegistry.register(KenBurnsDiagonalLeftTopPreset())
-    ScenePresetRegistry.register(KenBurnsDiagonalRightTopPreset())
+    EffectPresetRegistry.register(KenBurnsLeftToRightPreset())
+    EffectPresetRegistry.register(KenBurnsRightToLeftPreset())
+    EffectPresetRegistry.register(KenBurnsTopToBottomPreset())
+    EffectPresetRegistry.register(KenBurnsBottomToTopPreset())
+    EffectPresetRegistry.register(KenBurnsZoomInPreset())
+    EffectPresetRegistry.register(KenBurnsZoomOutPreset())
+    EffectPresetRegistry.register(KenBurnsDiagonalLeftTopPreset())
+    EffectPresetRegistry.register(KenBurnsDiagonalRightTopPreset())
 
 
 # モジュールロード時にデフォルトプリセットを登録
