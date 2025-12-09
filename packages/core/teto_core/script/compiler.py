@@ -17,8 +17,8 @@ from ..utils.markup_utils import strip_markup
 from .models import Script, Scene, AssetType
 from .providers.tts import TTSProvider, TTSResult
 from .providers.assets import AssetResolver
-from .presets.base import ScenePreset
-from .presets.registry import ScenePresetRegistry
+from .effects.base import EffectPreset
+from .effects.registry import EffectPresetRegistry
 from .presets.composite import PresetRegistry
 from .cache import TTSCacheManager, get_cache_manager
 
@@ -100,7 +100,9 @@ class ScriptCompiler:
 
         register_default_composite_presets()
 
-    def _get_effect_preset_for_scene(self, script: Script, scene: Scene) -> ScenePreset:
+    def _get_effect_preset_for_scene(
+        self, script: Script, scene: Scene
+    ) -> EffectPreset:
         """シーンに適用するエフェクトプリセットを取得
 
         Args:
@@ -108,10 +110,10 @@ class ScriptCompiler:
             scene: シーン
 
         Returns:
-            ScenePreset: 適用するエフェクトプリセット
+            EffectPreset: 適用するエフェクトプリセット
         """
         preset_name = scene.effect or script.default_effect
-        return ScenePresetRegistry.get(preset_name)
+        return EffectPresetRegistry.get(preset_name)
 
     def _get_composite_preset_for_scene(self, script: Script, scene: Scene):
         """シーンに適用する複合プリセットを取得

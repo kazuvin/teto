@@ -1,10 +1,10 @@
-"""Dramatic scene preset"""
+"""Dramatic effect preset"""
 
 from ...effect.models import AnimationEffect
-from .base import ScenePreset
+from .base import EffectPreset
 
 
-class DramaticScenePreset(ScenePreset):
+class DramaticEffectPreset(EffectPreset):
     """ドラマティックプリセット（glitch + colorGrade）
 
     インパクトのある演出向けプリセット。
@@ -41,4 +41,5 @@ class DramaticScenePreset(ScenePreset):
 
 
 # 後方互換性のためのエイリアス
-DramaticPreset = DramaticScenePreset
+DramaticScenePreset = DramaticEffectPreset
+DramaticPreset = DramaticEffectPreset

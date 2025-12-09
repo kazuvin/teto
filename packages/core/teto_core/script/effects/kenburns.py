@@ -1,10 +1,10 @@
-"""Ken Burns scene presets - Gentle pan and zoom effects"""
+"""Ken Burns effect presets - Gentle pan and zoom effects"""
 
 from ...effect.models import AnimationEffect
-from .base import ScenePreset
+from .base import EffectPreset
 
 
-class KenBurnsLeftToRightPreset(ScenePreset):
+class KenBurnsLeftToRightPreset(EffectPreset):
     """Ken Burns 左から右プリセット
 
     ゆっくりと左から右へパンする穏やかなKen Burns効果。
@@ -30,7 +30,7 @@ class KenBurnsLeftToRightPreset(ScenePreset):
         return []
 
 
-class KenBurnsRightToLeftPreset(ScenePreset):
+class KenBurnsRightToLeftPreset(EffectPreset):
     """Ken Burns 右から左プリセット
 
     ゆっくりと右から左へパンする穏やかなKen Burns効果。
@@ -56,7 +56,7 @@ class KenBurnsRightToLeftPreset(ScenePreset):
         return []
 
 
-class KenBurnsTopToBottomPreset(ScenePreset):
+class KenBurnsTopToBottomPreset(EffectPreset):
     """Ken Burns 上から下プリセット
 
     ゆっくりと上から下へパンする穏やかなKen Burns効果。
@@ -82,7 +82,7 @@ class KenBurnsTopToBottomPreset(ScenePreset):
         return []
 
 
-class KenBurnsBottomToTopPreset(ScenePreset):
+class KenBurnsBottomToTopPreset(EffectPreset):
     """Ken Burns 下から上プリセット
 
     ゆっくりと下から上へパンする穏やかなKen Burns効果。
@@ -108,7 +108,7 @@ class KenBurnsBottomToTopPreset(ScenePreset):
         return []
 
 
-class KenBurnsZoomInPreset(ScenePreset):
+class KenBurnsZoomInPreset(EffectPreset):
     """Ken Burns ズームインプリセット
 
     中央に向かってゆっくりズームインする穏やかなKen Burns効果。
@@ -135,7 +135,7 @@ class KenBurnsZoomInPreset(ScenePreset):
         return []
 
 
-class KenBurnsZoomOutPreset(ScenePreset):
+class KenBurnsZoomOutPreset(EffectPreset):
     """Ken Burns ズームアウトプリセット
 
     中央からゆっくりズームアウトする穏やかなKen Burns効果。
@@ -162,7 +162,7 @@ class KenBurnsZoomOutPreset(ScenePreset):
         return []
 
 
-class KenBurnsDiagonalLeftTopPreset(ScenePreset):
+class KenBurnsDiagonalLeftTopPreset(EffectPreset):
     """Ken Burns 左上から右下プリセット
 
     ゆっくりと左上から右下へパンする穏やかなKen Burns効果。
@@ -189,7 +189,7 @@ class KenBurnsDiagonalLeftTopPreset(ScenePreset):
         return []
 
 
-class KenBurnsDiagonalRightTopPreset(ScenePreset):
+class KenBurnsDiagonalRightTopPreset(EffectPreset):
     """Ken Burns 右上から左下プリセット
 
     ゆっくりと右上から左下へパンする穏やかなKen Burns効果。
