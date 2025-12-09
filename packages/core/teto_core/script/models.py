@@ -255,6 +255,38 @@ class BGMConfig(BaseModel):
     fade_out: float = Field(0.0, description="フェードアウト時間（秒）", ge=0)
 
 
+class BGMSceneRange(BaseModel):
+    """シーン範囲"""
+
+    from_: int = Field(
+        ..., alias="from", description="開始シーンインデックス（0始まり）", ge=0
+    )
+    to: int = Field(..., description="終了シーンインデックス（含む）", ge=0)
+
+    @model_validator(mode="after")
+    def validate_range(self) -> "BGMSceneRange":
+        if self.to < self.from_:
+            raise ValueError(
+                f"'to' ({self.to}) は 'from' ({self.from_}) 以上である必要があります"
+            )
+        return self
+
+
+class BGMSection(BaseModel):
+    """シーン範囲BGMセクション
+
+    複数のシーンにまたがってBGMを再生する設定。
+    シーンA,B,Cで同じBGMを流し続けたい場合などに使用。
+    """
+
+    path: str = Field(..., description="BGMファイルパス")
+    scene_range: BGMSceneRange = Field(..., description="適用するシーン範囲")
+    volume: float = Field(0.3, description="音量 (0.0〜1.0)", ge=0, le=1.0)
+    fade_in: float = Field(0.0, description="フェードイン時間（秒）", ge=0)
+    fade_out: float = Field(0.0, description="フェードアウト時間（秒）", ge=0)
+    loop: bool = Field(True, description="BGMをループ再生するか")
+
+
 class VoiceConfig(BaseModel):
     """ナレーション音声設定"""
 
@@ -297,7 +329,13 @@ class Script(BaseModel):
     timing: TimingConfig = Field(
         default_factory=TimingConfig, description="タイミング設定"
     )
-    bgm: BGMConfig | None = Field(None, description="BGM設定")
+    bgm: BGMConfig | None = Field(
+        None, description="グローバルBGM設定（全体で1つ、後方互換性のため維持）"
+    )
+    bgm_sections: list[BGMSection] = Field(
+        default_factory=list,
+        description="シーン範囲BGM（複数のBGMをシーン範囲で切り替え）",
+    )
     image_generation: ImageGenerationConfig = Field(
         default_factory=StabilityImageConfig,
         description="AI画像生成のデフォルト設定",
