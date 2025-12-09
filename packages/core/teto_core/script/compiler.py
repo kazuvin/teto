@@ -103,6 +103,44 @@ class ScriptCompiler:
         preset_name = scene.preset or script.default_preset
         return ScenePresetRegistry.get(preset_name)
 
+    def _resolve_scene_voice(self, script: Script, scene: Scene):
+        """シーンに適用する音声設定を解決
+
+        優先順位:
+        1. scene.voice（直接指定）
+        2. scene.voice_profile（名前付きプロファイル参照）
+        3. script.voice（グローバルデフォルト）
+
+        Args:
+            script: 台本
+            scene: シーン
+
+        Returns:
+            VoiceConfig: 適用する音声設定
+
+        Raises:
+            ValueError: voice_profile が見つからない場合
+        """
+
+        # 1. 直接指定
+        if scene.voice is not None:
+            return scene.voice
+
+        # 2. プロファイル参照
+        if scene.voice_profile is not None:
+            if (
+                script.voice_profiles is None
+                or scene.voice_profile not in script.voice_profiles
+            ):
+                raise ValueError(
+                    f"ボイスプロファイル '{scene.voice_profile}' が見つかりません。"
+                    f"Script.voice_profiles に定義してください。"
+                )
+            return script.voice_profiles[scene.voice_profile]
+
+        # 3. グローバルデフォルト
+        return script.voice
+
     def compile(self, script: Script, output_path: str = "output.mp4") -> CompileResult:
         """Script を Project に変換する（Template Method）
 
@@ -148,14 +186,18 @@ class ScriptCompiler:
         """全シーン・全セグメントのナレーションを生成"""
         all_narrations: list[list[TTSResult]] = []
 
-        # プロバイダーに応じて拡張子を決定
-        audio_ext = ".wav" if script.voice.provider == "gemini" else ".mp3"
-
         cache_hits = 0
         cache_misses = 0
 
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations: list[TTSResult] = []
+
+            # シーン固有のvoice設定を解決
+            effective_voice = self._resolve_scene_voice(script, scene)
+
+            # プロバイダーに応じて拡張子を決定
+            audio_ext = ".wav" if effective_voice.provider == "gemini" else ".mp3"
+
             for seg_idx, segment in enumerate(scene.narrations):
                 # マークアップを除去したテキストをTTSに渡す
                 plain_text = strip_markup(segment.text)
@@ -163,12 +205,14 @@ class ScriptCompiler:
                 # キャッシュをチェック
                 cached_audio = None
                 if self._use_cache:
-                    cached_audio = self._cache.get(plain_text, script.voice, audio_ext)
+                    cached_audio = self._cache.get(
+                        plain_text, effective_voice, audio_ext
+                    )
 
                 if cached_audio is not None:
                     # キャッシュヒット
                     cache_hits += 1
-                    duration = self._tts.estimate_duration(plain_text, script.voice)
+                    duration = self._tts.estimate_duration(plain_text, effective_voice)
                     result = TTSResult(
                         audio_content=cached_audio,
                         duration=duration,
@@ -179,12 +223,12 @@ class ScriptCompiler:
                     cache_misses += 1
                     result = self._tts.generate(
                         text=plain_text,
-                        config=script.voice,
+                        config=effective_voice,
                     )
                     # キャッシュに保存
                     if self._use_cache:
                         self._cache.put(
-                            plain_text, script.voice, audio_ext, result.audio_content
+                            plain_text, effective_voice, audio_ext, result.audio_content
                         )
 
                 # 音声ファイルを保存

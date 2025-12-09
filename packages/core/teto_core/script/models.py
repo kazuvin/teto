@@ -192,11 +192,28 @@ class Scene(BaseModel):
         description="動画の音声をミュートにするか（True の場合、動画ファイルの音声を無音にする）",
     )
 
+    # 音声設定（シーン固有）
+    voice: "VoiceConfig | None" = Field(
+        None,
+        description="このシーン専用のナレーション音声設定（指定時はグローバル設定を上書き）",
+    )
+    voice_profile: str | None = Field(
+        None,
+        description="使用するボイスプロファイル名（Script.voice_profiles から参照）",
+    )
+
     @model_validator(mode="after")
     def validate_duration_for_no_narration(self) -> "Scene":
         # ナレーションなしの場合、duration は必須
         if len(self.narrations) == 0 and self.duration is None:
             raise ValueError("ナレーションがないシーンには duration を指定してください")
+        return self
+
+    @model_validator(mode="after")
+    def validate_voice_config(self) -> "Scene":
+        # voice と voice_profile の両方が指定されている場合はエラー
+        if self.voice is not None and self.voice_profile is not None:
+            raise ValueError("voice と voice_profile は同時に指定できません")
         return self
 
 
@@ -256,6 +273,10 @@ class Script(BaseModel):
 
     # グローバル設定
     voice: VoiceConfig = Field(default_factory=VoiceConfig, description="音声設定")
+    voice_profiles: dict[str, VoiceConfig] | None = Field(
+        None,
+        description="名前付きボイスプロファイル（シーンから名前で参照可能）",
+    )
     timing: TimingConfig = Field(
         default_factory=TimingConfig, description="タイミング設定"
     )
