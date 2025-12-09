@@ -23,50 +23,66 @@
     {
       "narrations": [
         {
-          "text": "こんにちは！今日は数学の授業を始めます。二次方程式について学びましょう。"
+          "text": "こんにちは！今日は数学の授業を始めます。",
+          "voice_profile": "teacher"
+        },
+        {
+          "text": "二次方程式について学びましょう。",
+          "voice_profile": "teacher"
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
-      "preset": "kenburns-left-to-right",
-      "voice_profile": "teacher"
+      "preset": "kenburns-left-to-right"
     },
     {
       "narrations": [
         {
-          "text": "はい！よろしくお願いします！数学は少し苦手ですが、頑張ります。"
+          "text": "はい！よろしくお願いします！",
+          "voice_profile": "student"
+        },
+        {
+          "text": "数学は少し苦手ですが、頑張ります。",
+          "voice_profile": "student"
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
-      "preset": "kenburns-right-to-left",
-      "voice_profile": "student"
+      "preset": "kenburns-right-to-left"
     },
     {
       "narrations": [
         {
-          "text": "大丈夫ですよ。まずは基本的な公式から確認していきましょう。"
+          "text": "大丈夫ですよ。",
+          "voice_profile": "teacher"
+        },
+        {
+          "text": "まずは基本的な公式から確認していきましょう。",
+          "voice_profile": "teacher"
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
-      "preset": "kenburns-left-to-right",
-      "voice_profile": "teacher"
+      "preset": "kenburns-left-to-right"
     },
     {
       "narrations": [
         {
-          "text": "わかりました！よろしくお願いします。"
+          "text": "わかりました！",
+          "voice_profile": "student"
+        },
+        {
+          "text": "よろしくお願いします。",
+          "voice_profile": "student"
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
-      "preset": "kenburns-right-to-left",
-      "voice_profile": "student"
+      "preset": "kenburns-right-to-left"
     }
   ],
   "voice": {

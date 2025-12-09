@@ -1,6 +1,6 @@
 {
   "title": "先生と生徒の対話 - 直接voice指定",
-  "description": "シーン毎に異なる音声設定を直接指定する例",
+  "description": "ナレーション毎に異なる音声設定を直接指定する例",
   "output_dir": "output/test",
   "output": {
     "aspect_ratio": "16:9"
@@ -9,70 +9,106 @@
     {
       "narrations": [
         {
-          "text": "こんにちは！今日は数学の授業を始めます。二次方程式について学びましょう。"
+          "text": "こんにちは！今日は数学の授業を始めます。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.0,
+            "pitch": -2.0
+          }
+        },
+        {
+          "text": "二次方程式について学びましょう。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.0,
+            "pitch": -2.0
+          }
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
-      "preset": "kenburns-left-to-right",
-      "voice": {
-        "provider": "google",
-        "language_code": "ja-JP",
-        "speed": 1.0,
-        "pitch": -2.0
-      }
+      "preset": "kenburns-left-to-right"
     },
     {
       "narrations": [
         {
-          "text": "はい！よろしくお願いします！数学は少し苦手ですが、頑張ります。"
+          "text": "はい！よろしくお願いします！",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.1,
+            "pitch": 5.0
+          }
+        },
+        {
+          "text": "数学は少し苦手ですが、頑張ります。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.1,
+            "pitch": 5.0
+          }
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
-      "preset": "kenburns-right-to-left",
-      "voice": {
-        "provider": "google",
-        "language_code": "ja-JP",
-        "speed": 1.1,
-        "pitch": 5.0
-      }
+      "preset": "kenburns-right-to-left"
     },
     {
       "narrations": [
         {
-          "text": "大丈夫ですよ。まずは基本的な公式から確認していきましょう。"
+          "text": "大丈夫ですよ。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.0,
+            "pitch": -2.0
+          }
+        },
+        {
+          "text": "まずは基本的な公式から確認していきましょう。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.0,
+            "pitch": -2.0
+          }
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample1.jpg"
       },
-      "preset": "kenburns-left-to-right",
-      "voice": {
-        "provider": "google",
-        "language_code": "ja-JP",
-        "speed": 1.0,
-        "pitch": -2.0
-      }
+      "preset": "kenburns-left-to-right"
     },
     {
       "narrations": [
         {
-          "text": "わかりました！よろしくお願いします。"
+          "text": "わかりました！",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.1,
+            "pitch": 5.0
+          }
+        },
+        {
+          "text": "よろしくお願いします。",
+          "voice": {
+            "provider": "google",
+            "language_code": "ja-JP",
+            "speed": 1.1,
+            "pitch": 5.0
+          }
         }
       ],
       "visual": {
         "path": "examples/assets/images/sample2.jpg"
       },
-      "preset": "kenburns-right-to-left",
-      "voice": {
-        "provider": "google",
-        "language_code": "ja-JP",
-        "speed": 1.1,
-        "pitch": 5.0
-      }
+      "preset": "kenburns-right-to-left"
     }
   ],
   "voice": {

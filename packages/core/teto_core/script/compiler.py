@@ -103,17 +103,17 @@ class ScriptCompiler:
         preset_name = scene.preset or script.default_preset
         return ScenePresetRegistry.get(preset_name)
 
-    def _resolve_scene_voice(self, script: Script, scene: Scene):
-        """シーンに適用する音声設定を解決
+    def _resolve_segment_voice(self, script: Script, segment):
+        """ナレーションセグメントに適用する音声設定を解決
 
         優先順位:
-        1. scene.voice（直接指定）
-        2. scene.voice_profile（名前付きプロファイル参照）
+        1. segment.voice（直接指定）
+        2. segment.voice_profile（名前付きプロファイル参照）
         3. script.voice（グローバルデフォルト）
 
         Args:
             script: 台本
-            scene: シーン
+            segment: ナレーションセグメント
 
         Returns:
             VoiceConfig: 適用する音声設定
@@ -123,20 +123,20 @@ class ScriptCompiler:
         """
 
         # 1. 直接指定
-        if scene.voice is not None:
-            return scene.voice
+        if segment.voice is not None:
+            return segment.voice
 
         # 2. プロファイル参照
-        if scene.voice_profile is not None:
+        if segment.voice_profile is not None:
             if (
                 script.voice_profiles is None
-                or scene.voice_profile not in script.voice_profiles
+                or segment.voice_profile not in script.voice_profiles
             ):
                 raise ValueError(
-                    f"ボイスプロファイル '{scene.voice_profile}' が見つかりません。"
+                    f"ボイスプロファイル '{segment.voice_profile}' が見つかりません。"
                     f"Script.voice_profiles に定義してください。"
                 )
-            return script.voice_profiles[scene.voice_profile]
+            return script.voice_profiles[segment.voice_profile]
 
         # 3. グローバルデフォルト
         return script.voice
@@ -192,13 +192,13 @@ class ScriptCompiler:
         for scene_idx, scene in enumerate(script.scenes):
             scene_narrations: list[TTSResult] = []
 
-            # シーン固有のvoice設定を解決
-            effective_voice = self._resolve_scene_voice(script, scene)
-
-            # プロバイダーに応じて拡張子を決定
-            audio_ext = ".wav" if effective_voice.provider == "gemini" else ".mp3"
-
             for seg_idx, segment in enumerate(scene.narrations):
+                # セグメント固有のvoice設定を解決
+                effective_voice = self._resolve_segment_voice(script, segment)
+
+                # プロバイダーに応じて拡張子を決定
+                audio_ext = ".wav" if effective_voice.provider == "gemini" else ".mp3"
+
                 # マークアップを除去したテキストをTTSに渡す
                 plain_text = strip_markup(segment.text)
 
