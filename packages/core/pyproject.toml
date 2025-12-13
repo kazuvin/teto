@@ -17,6 +17,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "google-cloud-texttospeech>=2.14.0",
     "google-genai>=1.0.0",
+    "librosa>=0.10.0",
 ]
 
 [project.optional-dependencies]

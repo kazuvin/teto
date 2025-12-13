@@ -11,20 +11,25 @@ from ..layer.models import (
     SubtitleLayer,
     SubtitleItem,
     CharacterLayer,
+    LayeredCharacterLayer,
     CharacterPositionPreset,
     CharacterAnimationConfig,
     CharacterAnimationType,
+    CharacterPart as LayerCharacterPart,
+    CharacterPartType as LayerCharacterPartType,
 )
 from ..output_config.models import OutputConfig
 from ..utils.markup_utils import strip_markup
 
-from .models import Script, Scene, AssetType
+from .models import Script, Scene, AssetType, CharacterPartType, LipSyncMode
 from .providers.tts import TTSProvider, TTSResult
 from .providers.assets import AssetResolver
 from .effects.base import EffectPreset
 from .effects.registry import EffectPresetRegistry
 from .presets.composite import PresetRegistry
 from .cache import TTSCacheManager, get_cache_manager
+from ..animation.lip_sync import create_lip_sync_engine
+from ..animation.blink import generate_blink_keyframes
 
 
 @dataclass
@@ -276,6 +281,9 @@ class ScriptCompiler:
         audio_layers = self._build_audio_layers(script, scene_timings, narrations)
         subtitle_layers = self._build_subtitle_layers(script, scene_timings)
         character_layers = self._build_character_layers(script, scene_timings)
+        layered_character_layers = self._build_layered_character_layers(
+            script, scene_timings
+        )
 
         # 5. Project を組み立て
         project = self._assemble_project(
@@ -284,6 +292,7 @@ class ScriptCompiler:
             audio_layers,
             subtitle_layers,
             character_layers,
+            layered_character_layers,
             output_path,
         )
 
@@ -972,6 +981,329 @@ class ScriptCompiler:
 
         return layers
 
+    def _build_layered_character_layers(
+        self,
+        script: Script,
+        scene_timings: list[SceneTiming],
+    ) -> list[LayeredCharacterLayer]:
+        """レイヤードキャラクターレイヤーを構築
+
+        Script.layered_characters で定義されたレイヤードキャラクターを、
+        各シーン・セグメントの状態に応じて LayeredCharacterLayer に変換する。
+
+        Args:
+            script: 台本
+            scene_timings: シーンのタイミング情報
+
+        Returns:
+            list[LayeredCharacterLayer]: レイヤードキャラクターレイヤーのリスト
+        """
+        layers: list[LayeredCharacterLayer] = []
+
+        # レイヤードキャラクター定義がない場合は空リストを返す
+        if not script.layered_characters:
+            return layers
+
+        # Script.CharacterPosition を Layer.CharacterPositionPreset に変換するマッピング
+        from .models import CharacterPosition as ScriptCharacterPosition
+
+        position_map = {
+            ScriptCharacterPosition.BOTTOM_LEFT: CharacterPositionPreset.BOTTOM_LEFT,
+            ScriptCharacterPosition.BOTTOM_RIGHT: CharacterPositionPreset.BOTTOM_RIGHT,
+            ScriptCharacterPosition.BOTTOM_CENTER: CharacterPositionPreset.BOTTOM_CENTER,
+            ScriptCharacterPosition.LEFT: CharacterPositionPreset.LEFT,
+            ScriptCharacterPosition.RIGHT: CharacterPositionPreset.RIGHT,
+            ScriptCharacterPosition.CENTER: CharacterPositionPreset.CENTER,
+        }
+
+        # Script.CharacterPartType を Layer.CharacterPartType に変換するマッピング
+        part_type_map = {
+            CharacterPartType.BASE: LayerCharacterPartType.BASE,
+            CharacterPartType.EYES: LayerCharacterPartType.EYES,
+            CharacterPartType.MOUTH: LayerCharacterPartType.MOUTH,
+            CharacterPartType.EYEBROWS: LayerCharacterPartType.EYEBROWS,
+            CharacterPartType.HAIR: LayerCharacterPartType.HAIR,
+            CharacterPartType.ACCESSORY: LayerCharacterPartType.ACCESSORY,
+            CharacterPartType.EFFECT: LayerCharacterPartType.EFFECT,
+        }
+
+        for scene_idx, (scene, scene_timing) in enumerate(
+            zip(script.scenes, scene_timings)
+        ):
+            # 次のシーンの開始時刻を取得（シーン間ギャップを埋めるため）
+            next_scene_start = (
+                scene_timings[scene_idx + 1].start_time
+                if scene_idx < len(scene_timings) - 1
+                else None
+            )
+
+            num_segments = len(scene_timing.segments)
+
+            # セグメント毎にレイヤードキャラクターを処理
+            for seg_idx, segment_timing in enumerate(scene_timing.segments):
+                segment = scene.narrations[seg_idx]
+
+                # レイヤードキャラクター状態がない場合はスキップ
+                if not segment.layered_character_states:
+                    continue
+
+                for char_state in segment.layered_character_states:
+                    char_id = char_state.character_id
+
+                    # キャラクター定義を取得
+                    if char_id not in script.layered_characters:
+                        raise ValueError(
+                            f"レイヤードキャラクター '{char_id}' が Script.layered_characters に定義されていません"
+                        )
+                    char_def = script.layered_characters[char_id]
+
+                    # 非表示の場合はスキップ
+                    if not char_state.visible:
+                        continue
+
+                    # パーツ状態のマッピングを作成
+                    part_state_map = {
+                        ps.part_type: ps.state_name for ps in char_state.part_states
+                    }
+
+                    # レンダリングするパーツリストを構築
+                    # 動的パーツ（eyes, mouth）は全状態を追加し、
+                    # 静的パーツ（base, hairなど）は指定状態のみ追加
+                    parts = []
+                    dynamic_part_types = {
+                        CharacterPartType.EYES,
+                        CharacterPartType.MOUTH,
+                    }
+
+                    for part_type, default_state in char_def.default_parts.items():
+                        if part_type in dynamic_part_types:
+                            # 動的パーツ: すべての状態を追加
+                            for state_key in char_def.parts.keys():
+                                if state_key.startswith(f"{part_type.value}."):
+                                    for script_part in char_def.parts[state_key]:
+                                        parts.append(
+                                            LayerCharacterPart(
+                                                type=part_type_map[script_part.type],
+                                                name=script_part.name,
+                                                path=script_part.path,
+                                                offset_x=script_part.offset_x,
+                                                offset_y=script_part.offset_y,
+                                                z_index=script_part.z_index,
+                                            )
+                                        )
+                        else:
+                            # 静的パーツ: 指定された状態のみ追加
+                            state_name = part_state_map.get(part_type, default_state)
+                            full_state_name = f"{part_type.value}.{state_name}"
+
+                            if full_state_name not in char_def.parts:
+                                raise ValueError(
+                                    f"パーツ状態 '{full_state_name}' が定義されていません"
+                                )
+
+                            for script_part in char_def.parts[full_state_name]:
+                                parts.append(
+                                    LayerCharacterPart(
+                                        type=part_type_map[script_part.type],
+                                        name=script_part.name,
+                                        path=script_part.path,
+                                        offset_x=script_part.offset_x,
+                                        offset_y=script_part.offset_y,
+                                        z_index=script_part.z_index,
+                                    )
+                                )
+
+                    # Z-index順にソート
+                    parts.sort(key=lambda p: p.z_index)
+
+                    # リップシンク有効判定
+                    lip_sync_enabled = char_state.lip_sync_enabled
+                    if lip_sync_enabled is None:
+                        lip_sync_enabled = (
+                            char_def.lip_sync.mode != LipSyncMode.DISABLED
+                        )
+
+                    # リップシンクキーフレーム生成
+                    mouth_keyframes = []
+                    if lip_sync_enabled:
+                        engine = create_lip_sync_engine(char_def.lip_sync.mode)
+                        mouth_keyframes = engine.generate_mouth_keyframes(
+                            audio_path=segment_timing.narration_path,
+                            text=segment_timing.text,
+                            start_time=segment_timing.start_time,
+                            duration=segment_timing.end_time
+                            - segment_timing.start_time,
+                            config=char_def.lip_sync,
+                        )
+                    else:
+                        # リップシンクが無効でも、デフォルトの口の状態を設定するため初期キーフレームを生成
+                        from ..layer.models import MouthKeyframe
+                        from .models import MouthShape
+
+                        # part_state_map から口の状態を取得、なければデフォルト
+                        mouth_state_name = part_state_map.get(
+                            CharacterPartType.MOUTH,
+                            char_def.default_parts[CharacterPartType.MOUTH],
+                        )
+                        # 状態名を MouthShape に変換
+                        mouth_shape = MouthShape(mouth_state_name)
+
+                        # 開始時刻に1つだけキーフレームを追加
+                        mouth_keyframes = [
+                            MouthKeyframe(
+                                time=segment_timing.start_time,
+                                shape=mouth_shape,
+                                opacity=1.0,
+                            )
+                        ]
+
+                    # 瞬き有効判定
+                    blink_enabled = char_state.blink_enabled
+                    if blink_enabled is None:
+                        blink_enabled = char_def.blink.enabled
+
+                    # 瞬きキーフレーム生成
+                    eye_keyframes = []
+                    if blink_enabled:
+                        # part_state_map から目の状態を取得、なければデフォルト
+                        eye_state_name = part_state_map.get(
+                            CharacterPartType.EYES,
+                            char_def.default_parts[CharacterPartType.EYES],
+                        )
+                        # 状態名を EyeState に変換
+                        from .models import EyeState
+
+                        default_eye_state = EyeState(eye_state_name)
+
+                        eye_keyframes = generate_blink_keyframes(
+                            start_time=segment_timing.start_time,
+                            end_time=segment_timing.end_time,
+                            config=char_def.blink,
+                            is_speaking=True,  # セグメント内は常に発話中
+                            default_eye_state=default_eye_state,
+                        )
+                    else:
+                        # 瞬きが無効でも、デフォルトの目の状態を設定するため初期キーフレームを生成
+                        from ..layer.models import EyeKeyframe
+                        from .models import EyeState
+
+                        # part_state_map から目の状態を取得、なければデフォルト
+                        eye_state_name = part_state_map.get(
+                            CharacterPartType.EYES,
+                            char_def.default_parts[CharacterPartType.EYES],
+                        )
+                        # 状態名を EyeState に変換
+                        eye_state = EyeState(eye_state_name)
+
+                        # 開始時刻に1つだけキーフレームを追加
+                        eye_keyframes = [
+                            EyeKeyframe(
+                                time=segment_timing.start_time,
+                                state=eye_state,
+                                opacity=1.0,
+                            )
+                        ]
+
+                    # 表示時間を計算（padding/gap を無視して連続表示、既存のキャラクターレイヤーと同じロジック）
+                    # - 最初のセグメント: シーン開始から次のセグメント開始まで
+                    # - 中間のセグメント: 現在のセグメント開始から次のセグメント開始まで
+                    # - 最後のセグメント: 現在のセグメント開始からシーン終了（または次シーン開始）まで
+
+                    # 開始時刻
+                    if seg_idx == 0:
+                        char_start_time = scene_timing.start_time
+                    else:
+                        char_start_time = segment_timing.start_time
+
+                    # 終了時刻
+                    is_last_segment = seg_idx == num_segments - 1
+                    if is_last_segment:
+                        # 最後のセグメント: 次のシーンの最初にも同じキャラクターがいるか確認
+                        char_continues_next = False
+                        if scene_idx < len(script.scenes) - 1:
+                            next_scene = script.scenes[scene_idx + 1]
+                            if next_scene.narrations:
+                                first_segment = next_scene.narrations[0]
+                                if first_segment.layered_character_states:
+                                    for (
+                                        next_char_state
+                                    ) in first_segment.layered_character_states:
+                                        if next_char_state.character_id == char_id:
+                                            char_continues_next = True
+                                            break
+
+                        if char_continues_next and next_scene_start is not None:
+                            char_end_time = next_scene_start
+                        else:
+                            char_end_time = scene_timing.end_time
+                    else:
+                        # 最初/中間: 次のセグメント開始時刻まで（重複なし）
+                        next_segment = scene_timing.segments[seg_idx + 1]
+                        char_end_time = next_segment.start_time
+
+                    # char_state で指定された値を優先、なければ char_def のデフォルト値を使用
+                    # 位置
+                    if char_state.position is not None:
+                        layer_position = position_map[char_state.position]
+                    else:
+                        layer_position = position_map[char_def.position]
+
+                    # カスタム位置
+                    if char_state.custom_position is not None:
+                        layer_custom_position = char_state.custom_position
+                    else:
+                        layer_custom_position = char_def.custom_position
+
+                    # スケール
+                    if char_state.scale is not None:
+                        layer_scale = char_state.scale
+                    else:
+                        layer_scale = char_def.scale
+
+                    # 不透明度
+                    if char_state.opacity is not None:
+                        layer_opacity = char_state.opacity
+                    else:
+                        layer_opacity = 1.0
+
+                    # アニメーション設定
+                    animation_config = None
+                    if char_state.animation is not None:
+                        from ..layer.models import (
+                            CharacterAnimationConfig,
+                            CharacterAnimationType,
+                        )
+
+                        animation_config = CharacterAnimationConfig(
+                            type=CharacterAnimationType(
+                                char_state.animation.type.value
+                            ),
+                            intensity=char_state.animation.intensity,
+                            speed=char_state.animation.speed,
+                        )
+
+                    # レイヤー作成
+                    layer = LayeredCharacterLayer(
+                        character_id=char_id,
+                        character_name=char_def.name,
+                        start_time=char_start_time,
+                        end_time=char_end_time,
+                        parts=parts,
+                        mouth_keyframes=mouth_keyframes,
+                        eye_keyframes=eye_keyframes,
+                        position=layer_position,
+                        custom_position=layer_custom_position,
+                        scale=layer_scale,
+                        opacity=layer_opacity,
+                        animation=animation_config,
+                        fade_in_duration=char_state.fade_in,
+                        fade_out_duration=char_state.fade_out,
+                    )
+
+                    layers.append(layer)
+
+        return layers
+
     def _assemble_project(
         self,
         script: Script,
@@ -979,6 +1311,7 @@ class ScriptCompiler:
         audio_layers: list[AudioLayer],
         subtitle_layers: list[SubtitleLayer],
         character_layers: list[CharacterLayer],
+        layered_character_layers: list[LayeredCharacterLayer],
         output_path: str,
     ) -> Project:
         """Project を組み立て"""
@@ -1000,6 +1333,7 @@ class ScriptCompiler:
                 audio_layers=audio_layers,
                 subtitle_layers=subtitle_layers,
                 character_layers=character_layers,
+                layered_character_layers=layered_character_layers,
             ),
         )
 

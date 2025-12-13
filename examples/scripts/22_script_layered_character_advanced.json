@@ -1,0 +1,552 @@
+{
+  "title": "動く立ち絵 - 高度なサンプル",
+  "description": "レイヤードキャラクター機能の高度な使い方を示すデモンストレーション(表情変化、位置・スケール調整、フェードアウト)",
+  "output": {
+    "aspect_ratio": "16:9",
+    "preset": "ultrafast"
+  },
+  "subtitle_style": {
+    "font_size": "base",
+    "font_color": "white",
+    "stroke_width": "sm",
+    "stroke_color": "black",
+    "google_font": "Zen Old Mincho",
+    "font_weight": "bold",
+    "appearance": "drop-shadow",
+    "position": "bottom"
+  },
+  "layered_characters": {
+    "teto": {
+      "id": "teto",
+      "name": "テト",
+      "parts": {
+        "base.default": [
+          {
+            "type": "base",
+            "name": "body",
+            "path": "examples/assets/characters/teto/base.png",
+            "z_index": 0,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.open": [
+          {
+            "type": "eyes",
+            "name": "eyes_open",
+            "path": "examples/assets/characters/teto/eyes_open.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.closed": [
+          {
+            "type": "eyes",
+            "name": "eyes_closed",
+            "path": "examples/assets/characters/teto/eyes_closed.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.smile": [
+          {
+            "type": "eyes",
+            "name": "eyes_smile",
+            "path": "examples/assets/characters/teto/eyes_smile.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.serious": [
+          {
+            "type": "eyes",
+            "name": "eyes_serious",
+            "path": "examples/assets/characters/teto/eyes_serious.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.surprised": [
+          {
+            "type": "eyes",
+            "name": "eyes_surprised",
+            "path": "examples/assets/characters/teto/eyes_surprised.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.worried": [
+          {
+            "type": "eyes",
+            "name": "eyes_worried",
+            "path": "examples/assets/characters/teto/eyes_worried.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.angry": [
+          {
+            "type": "eyes",
+            "name": "eyes_angry",
+            "path": "examples/assets/characters/teto/eyes_angry.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.wink": [
+          {
+            "type": "eyes",
+            "name": "eyes_wink",
+            "path": "examples/assets/characters/teto/eyes_wink.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "eyes.thinking": [
+          {
+            "type": "eyes",
+            "name": "eyes_thinking",
+            "path": "examples/assets/characters/teto/eyes_thinking.png",
+            "z_index": 2,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "mouth.closed": [
+          {
+            "type": "mouth",
+            "name": "mouth_closed",
+            "path": "examples/assets/characters/teto/mouth_closed.png",
+            "z_index": 3,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "mouth.open": [
+          {
+            "type": "mouth",
+            "name": "mouth_open",
+            "path": "examples/assets/characters/teto/mouth_open.png",
+            "z_index": 3,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ],
+        "hair.default": [
+          {
+            "type": "hair",
+            "name": "hair_front",
+            "path": "examples/assets/characters/teto/hair.png",
+            "z_index": 4,
+            "offset_x": 0,
+            "offset_y": 0
+          }
+        ]
+      },
+      "default_parts": {
+        "base": "default",
+        "eyes": "open",
+        "mouth": "closed",
+        "hair": "default"
+      },
+      "lip_sync": {
+        "mode": "audio_volume",
+        "paku_interval": 0.15,
+        "paku_open_shape": "open",
+        "paku_closed_shape": "closed",
+        "volume_threshold": 0.02,
+        "volume_frame_length": 0.05,
+        "volume_smoothing": true
+      },
+      "blink": {
+        "enabled": true,
+        "blink_interval_min": 2.0,
+        "blink_interval_max": 4.5,
+        "blink_duration": 0.12,
+        "suppress_during_speech": true
+      },
+      "position": "bottom-right",
+      "scale": 0.8,
+      "opacity": 1.0
+    }
+  },
+  "scenes": [
+    {
+      "narrations": [
+        {
+          "text": "こんにちは！私はテトです。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "smile"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8,
+              "opacity": 1.0,
+              "fade_in": 0.5,
+              "animation": {
+                "type": "bounce",
+                "intensity": 1.0,
+                "speed": 1.0
+              }
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "登場シーン"
+    },
+    {
+      "narrations": [
+        {
+          "text": "今日は動く立ち絵機能についてご紹介します。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true
+            }
+          ]
+        },
+        {
+          "text": "この機能を使うと、字幕に合わせて口を動かしたり、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true
+            }
+          ]
+        },
+        {
+          "text": "自然な瞬きをすることができます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "smile"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "説明シーン"
+    },
+    {
+      "narrations": [
+        {
+          "text": "表情も簡単に変えられます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true
+            }
+          ]
+        },
+        {
+          "text": "例えば、笑顔にしたり、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "smile"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true
+            }
+          ]
+        },
+        {
+          "text": "真剣な顔にしたりできます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "serious"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": false
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "表情変化のデモ"
+    },
+    {
+      "narrations": [
+        {
+          "text": "キャラクターの位置やサイズも自由に調整できます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-center",
+              "scale": 0.7
+            }
+          ]
+        },
+        {
+          "text": "例えば、大きく表示したり、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "surprised"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "center",
+              "scale": 1.2
+            }
+          ]
+        },
+        {
+          "text": "小さく表示したり、位置を変えたりできます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-left",
+              "scale": 0.6
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "位置とスケールのデモ"
+    },
+    {
+      "narrations": [
+        {
+          "text": "さらに、解説動画に役立つ表情バリエーションも充実しています。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "open"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8
+            }
+          ]
+        },
+        {
+          "text": "困った時の表情や、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "worried"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8
+            }
+          ]
+        },
+        {
+          "text": "怒った時の表情、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "angry"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": false,
+              "position": "bottom-right",
+              "scale": 0.8,
+              "animation": {
+                "type": "shake",
+                "intensity": 1.5,
+                "speed": 1.0
+              }
+            }
+          ]
+        },
+        {
+          "text": "ウィンクや、",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "wink"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": false,
+              "position": "bottom-right",
+              "scale": 0.8
+            }
+          ]
+        },
+        {
+          "text": "考えている時の表情も使えます。",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "thinking"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "追加表情のデモ"
+    },
+    {
+      "narrations": [
+        {
+          "text": "それでは、またお会いしましょう！",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "smile"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8
+            }
+          ]
+        },
+        {
+          "text": "さようなら！",
+          "layered_character_states": [
+            {
+              "character_id": "teto",
+              "part_states": [
+                {
+                  "part_type": "eyes",
+                  "state_name": "smile"
+                }
+              ],
+              "lip_sync_enabled": true,
+              "blink_enabled": true,
+              "position": "bottom-right",
+              "scale": 0.8,
+              "fade_out": 1.0
+            }
+          ]
+        }
+      ],
+      "visual": {
+        "path": "examples/assets/images/sample_image.png"
+      },
+      "note": "退場シーン（フェードアウト）"
+    }
+  ],
+  "voice": {
+    "provider": "google",
+    "language_code": "ja-JP",
+    "speed": 1.0
+  },
+  "timing": {
+    "default_segment_gap": 0.3,
+    "default_scene_gap": 0.5,
+    "subtitle_padding": 0.1
+  },
+  "bgm": {
+    "path": "examples/assets/sounds/bgm1.mp3",
+    "volume": 0.15
+  }
+}
