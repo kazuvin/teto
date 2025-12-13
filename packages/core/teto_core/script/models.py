@@ -15,6 +15,49 @@ from .presets.base import SubtitleStyleConfig
 # =============================================================================
 
 
+class CharacterPartType(str, Enum):
+    """キャラクターパーツタイプ"""
+
+    BASE = "base"  # ベース(顔の輪郭、体など)
+    EYES = "eyes"  # 目
+    MOUTH = "mouth"  # 口
+    EYEBROWS = "eyebrows"  # 眉
+    HAIR = "hair"  # 髪
+    ACCESSORY = "accessory"  # アクセサリー
+    EFFECT = "effect"  # エフェクト(汗、頬の赤みなど)
+
+
+class MouthShape(str, Enum):
+    """口の形状タイプ"""
+
+    CLOSED = "closed"  # 閉じ口
+    OPEN = "open"  # 開き口(MVP用)
+    # 将来の拡張用
+    A = "a"  # あ
+    I_VOWEL = "i"  # い
+    U = "u"  # う
+    E = "e"  # え
+    O_VOWEL = "o"  # お
+    SMILE = "smile"  # 笑顔(歯を見せる)
+    NEUTRAL = "neutral"  # ニュートラル(リラックス)
+
+
+class EyeState(str, Enum):
+    """目の状態"""
+
+    OPEN = "open"  # 開いている
+    CLOSED = "closed"  # 閉じている
+    HALF = "half"  # 半目
+    SMILE = "smile"  # 笑顔(目を細める)
+    WIDE = "wide"  # 見開く
+    SURPRISED = "surprised"  # 驚き
+    SERIOUS = "serious"  # 真剣
+    WORRIED = "worried"  # 困った
+    ANGRY = "angry"  # 怒り
+    WINK = "wink"  # ウィンク
+    THINKING = "thinking"  # 考え中
+
+
 class CharacterPosition(str, Enum):
     """キャラクター配置位置プリセット"""
 
@@ -110,6 +153,186 @@ class CharacterDefinition(BaseModel):
                 f"利用可能な表情: {expression_names}"
             )
         return self
+
+
+class CharacterPart(BaseModel):
+    """キャラクターパーツ定義"""
+
+    type: CharacterPartType = Field(..., description="パーツタイプ")
+    name: str = Field(..., description="パーツ名(識別用)")
+    path: str = Field(..., description="パーツ画像ファイルパス")
+
+    # 位置調整(ベース画像に対する相対位置)
+    offset_x: int = Field(0, description="X方向オフセット(px)")
+    offset_y: int = Field(0, description="Y方向オフセット(px)")
+
+    # Z-index (レイヤー順序)
+    z_index: int = Field(0, description="Z順序(大きいほど前面)")
+
+
+class LipSyncMode(str, Enum):
+    """リップシンクモード"""
+
+    SIMPLE_PAKU_PAKU = "simple_paku_paku"  # シンプルなパクパク(MVP)
+    AUDIO_VOLUME = "audio_volume"  # 音量ベース
+    PHONEME_MAPPING = "phoneme_mapping"  # 音素マッピング(将来実装)
+    DISABLED = "disabled"  # リップシンク無効
+
+
+class LipSyncConfig(BaseModel):
+    """リップシンク設定"""
+
+    mode: LipSyncMode = Field(
+        LipSyncMode.SIMPLE_PAKU_PAKU, description="リップシンクモード"
+    )
+
+    # === シンプルパクパク方式の設定 (MVP) ===
+    paku_interval: float = Field(0.15, description="口の開閉間隔(秒)", ge=0.05, le=0.5)
+    paku_open_shape: MouthShape = Field(MouthShape.OPEN, description="口を開く時の形状")
+    paku_closed_shape: MouthShape = Field(
+        MouthShape.CLOSED, description="口を閉じる時の形状"
+    )
+    paku_transition_duration: float = Field(
+        0.05, description="口の開閉遷移時間(秒)", ge=0.01, le=0.1
+    )
+
+    # === 音量ベース方式の設定 ===
+    volume_threshold: float = Field(
+        0.02, description="口を開くための音量閾値(0.0-1.0)", ge=0.0, le=1.0
+    )
+    volume_frame_length: float = Field(
+        0.05, description="音量計算のフレーム長(秒)", ge=0.01, le=0.2
+    )
+    volume_smoothing: bool = Field(True, description="音量変化をスムージングするか")
+
+    # === 音素マッピング方式の設定 (将来実装) ===
+    phoneme_map: dict[str, MouthShape] | None = Field(
+        None, description="音素→口の形状マッピング(phoneme_mapping モード用)"
+    )
+    mouth_open_duration: float = Field(
+        0.1, description="口を開ける動作の時間(秒)", ge=0.05, le=0.3
+    )
+    mouth_close_duration: float = Field(
+        0.1, description="口を閉じる動作の時間(秒)", ge=0.05, le=0.3
+    )
+    default_mouth_hold: float = Field(
+        0.15, description="口の形状を保持する時間(秒)", ge=0.1, le=0.5
+    )
+
+
+class BlinkConfig(BaseModel):
+    """自動瞬き設定"""
+
+    enabled: bool = Field(True, description="自動瞬き有効化")
+
+    # 瞬き頻度(秒)
+    blink_interval_min: float = Field(2.0, description="瞬き間隔の最小値(秒)", ge=0.5)
+    blink_interval_max: float = Field(5.0, description="瞬き間隔の最大値(秒)", ge=1.0)
+
+    # 瞬き動作の速度
+    blink_duration: float = Field(
+        0.15, description="瞬き1回の時間(秒)", ge=0.05, le=0.3
+    )
+
+    # 瞬き抑制(発話中は瞬きを減らす)
+    suppress_during_speech: bool = Field(True, description="発話中の瞬きを抑制")
+
+
+class LayeredCharacterDefinition(BaseModel):
+    """レイヤードキャラクター定義"""
+
+    id: str = Field(..., description="キャラクター識別子")
+    name: str = Field(..., description="キャラクター名")
+
+    # パーツ定義
+    parts: dict[str, list[CharacterPart]] = Field(
+        ..., description="パーツグループ。キーは状態名(例: 'eyes.open', 'mouth.open')"
+    )
+
+    # デフォルト状態
+    default_parts: dict[CharacterPartType, str] = Field(
+        ..., description="各パーツタイプのデフォルト状態名"
+    )
+
+    # リップシンク設定
+    lip_sync: LipSyncConfig = Field(
+        default_factory=LipSyncConfig, description="リップシンク設定"
+    )
+
+    # 瞬き設定
+    blink: BlinkConfig = Field(default_factory=BlinkConfig, description="自動瞬き設定")
+
+    # 配置設定
+    position: CharacterPosition = Field(
+        CharacterPosition.BOTTOM_RIGHT, description="デフォルト配置位置"
+    )
+    custom_position: tuple[int, int] | None = Field(
+        None, description="カスタム位置(x, y)"
+    )
+    scale: float = Field(1.0, description="キャラクターサイズ倍率", gt=0, le=3.0)
+
+    # 音声連携(オプショナル)
+    voice_profile: str | None = Field(
+        None, description="このキャラクターに紐づくボイスプロファイル名"
+    )
+
+
+class CharacterPartState(BaseModel):
+    """パーツ状態指定"""
+
+    part_type: CharacterPartType = Field(..., description="パーツタイプ")
+    state_name: str = Field(..., description="状態名")
+
+
+class LayeredCharacterState(BaseModel):
+    """レイヤードキャラクター状態(Segment レベル)"""
+
+    character_id: str = Field(..., description="キャラクター ID")
+
+    # パーツ状態のオーバーライド
+    part_states: list[CharacterPartState] = Field(
+        default_factory=list,
+        description="パーツ状態リスト(指定がない場合はデフォルト)",
+    )
+
+    # リップシンク設定
+    lip_sync_enabled: bool | None = Field(
+        None,
+        description="このセグメントのリップシンク有効化(None=デフォルト設定を使用)",
+    )
+
+    # 瞬き設定
+    blink_enabled: bool | None = Field(
+        None, description="このセグメントの瞬き有効化(None=デフォルト設定を使用)"
+    )
+
+    # 表示設定
+    visible: bool = Field(True, description="表示/非表示")
+
+    # 配置とスケール
+    position: CharacterPosition | None = Field(
+        None, description="配置位置（None=デフォルト設定を使用）"
+    )
+    custom_position: tuple[int, int] | None = Field(
+        None, description="カスタム位置 (x, y)（None=デフォルト設定を使用）"
+    )
+    scale: float | None = Field(
+        None, description="スケール（None=デフォルト設定を使用）"
+    )
+    opacity: float | None = Field(
+        None, description="不透明度 0.0-1.0（None=デフォルト設定を使用）"
+    )
+
+    # アニメーション設定
+    animation: CharacterAnimation | None = Field(
+        None, description="キャラクターアニメーション（None=デフォルト設定を使用）"
+    )
+    fade_in: float | None = Field(
+        None, description="フェードイン時間（秒）。セグメント開始時に適用"
+    )
+    fade_out: float | None = Field(
+        None, description="フェードアウト時間（秒）。セグメント終了時に適用"
+    )
 
 
 class CharacterState(BaseModel):
@@ -293,6 +516,12 @@ class NarrationSegment(BaseModel):
     character_states: list[CharacterState] = Field(
         default_factory=list,
         description="このセグメント中のキャラクター状態リスト",
+    )
+
+    # レイヤードキャラクター状態
+    layered_character_states: list[LayeredCharacterState] = Field(
+        default_factory=list,
+        description="レイヤードキャラクター状態リスト",
     )
 
     @model_validator(mode="after")
@@ -499,6 +728,12 @@ class Script(BaseModel):
     characters: dict[str, CharacterDefinition] | None = Field(
         None,
         description="キャラクター定義（ID をキーとした辞書）",
+    )
+
+    # レイヤードキャラクター定義
+    layered_characters: dict[str, LayeredCharacterDefinition] | None = Field(
+        None,
+        description="レイヤードキャラクター定義（ID をキーとした辞書）",
     )
 
     # 出力設定（解像度、FPS など）

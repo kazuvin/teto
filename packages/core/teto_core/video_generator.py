@@ -14,6 +14,7 @@ from .generator.steps import (
     AudioMergingStep,
     StampLayerProcessingStep,
     CharacterLayerProcessingStep,
+    LayeredCharacterLayerProcessingStep,
     SubtitleProcessingStep,
     VideoOutputStep,
     CleanupStep,
@@ -115,6 +116,8 @@ class VideoGenerator:
             StampLayerProcessingStep(stamp_processor=self.stamp_processor)
         ).then(
             CharacterLayerProcessingStep(character_processor=self.character_processor)
+        ).then(
+            LayeredCharacterLayerProcessingStep()
         ).then(
             SubtitleProcessingStep(
                 subtitle_burn_processor=self.subtitle_burn_processor,

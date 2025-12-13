@@ -228,6 +228,117 @@ class SubtitleLayer(BaseModel):
     )
 
 
+class MouthShape(str, Enum):
+    """口の形状タイプ"""
+
+    CLOSED = "closed"
+    OPEN = "open"
+    A = "a"
+    I_VOWEL = "i"
+    U = "u"
+    E = "e"
+    O_VOWEL = "o"
+    SMILE = "smile"
+    NEUTRAL = "neutral"
+
+
+class EyeState(str, Enum):
+    """目の状態"""
+
+    OPEN = "open"
+    CLOSED = "closed"
+    HALF = "half"
+    SMILE = "smile"
+    WIDE = "wide"
+    SURPRISED = "surprised"
+    SERIOUS = "serious"
+    WORRIED = "worried"
+    ANGRY = "angry"
+    WINK = "wink"
+    THINKING = "thinking"
+
+
+class MouthKeyframe(BaseModel):
+    """口のキーフレーム"""
+
+    time: float = Field(..., description="時刻(秒)", ge=0)
+    shape: MouthShape = Field(..., description="口の形状")
+    opacity: float = Field(1.0, description="不透明度(遷移用)", ge=0.0, le=1.0)
+
+
+class EyeKeyframe(BaseModel):
+    """目のキーフレーム"""
+
+    time: float = Field(..., description="時刻(秒)", ge=0)
+    state: EyeState = Field(..., description="目の状態")
+    opacity: float = Field(1.0, description="不透明度(遷移用)", ge=0.0, le=1.0)
+
+
+class CharacterPartType(str, Enum):
+    """キャラクターパーツタイプ"""
+
+    BASE = "base"
+    EYES = "eyes"
+    MOUTH = "mouth"
+    EYEBROWS = "eyebrows"
+    HAIR = "hair"
+    ACCESSORY = "accessory"
+    EFFECT = "effect"
+
+
+class CharacterPart(BaseModel):
+    """キャラクターパーツ定義"""
+
+    type: CharacterPartType = Field(..., description="パーツタイプ")
+    name: str = Field(..., description="パーツ名(識別用)")
+    path: str = Field(..., description="パーツ画像ファイルパス")
+    offset_x: int = Field(0, description="X方向オフセット(px)")
+    offset_y: int = Field(0, description="Y方向オフセット(px)")
+    z_index: int = Field(0, description="Z順序(大きいほど前面)")
+
+
+class LayeredCharacterLayer(BaseModel):
+    """レイヤードキャラクターレイヤー(実行用)"""
+
+    type: Literal["layered_character"] = "layered_character"
+
+    # 識別情報
+    character_id: str = Field(..., description="キャラクター ID")
+    character_name: str = Field(..., description="キャラクター名")
+
+    # タイミング
+    start_time: float = Field(..., description="開始時刻(秒)", ge=0)
+    end_time: float = Field(..., description="終了時刻(秒)", ge=0)
+
+    # パーツ構成
+    parts: list[CharacterPart] = Field(..., description="レンダリングするパーツリスト")
+
+    # アニメーションキーフレーム
+    mouth_keyframes: list[MouthKeyframe] = Field(
+        default_factory=list, description="口のキーフレームリスト"
+    )
+    eye_keyframes: list[EyeKeyframe] = Field(
+        default_factory=list, description="目のキーフレームリスト"
+    )
+
+    # 配置・スタイル
+    position: CharacterPositionPreset = Field(
+        CharacterPositionPreset.BOTTOM_RIGHT, description="配置位置"
+    )
+    custom_position: tuple[int, int] | None = Field(None, description="カスタム位置")
+    scale: float = Field(1.0, description="サイズ倍率", gt=0, le=3.0)
+    opacity: float = Field(1.0, description="不透明度", ge=0.0, le=1.0)
+
+    # アニメーション
+    animation: CharacterAnimationConfig | None = Field(
+        None, description="全体アニメーション(揺れ、呼吸など)"
+    )
+    fade_in_duration: float | None = Field(None, description="フェードイン時間（秒）")
+    fade_out_duration: float | None = Field(
+        None, description="フェードアウト時間（秒）"
+    )
+
+
 class CharacterLayer(BaseModel):
     """キャラクターレイヤー（実行用）
 

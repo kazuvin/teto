@@ -61,9 +61,9 @@
       "scale": 0.25,
       "voice_profile": "teacher_voice",
       "subtitle_style": {
-        "font_size": "base",
+        "font_size": "lg",
         "font_color": "red",
-        "google_font": "Noto Sans JP",
+        "google_font": "Zen Old Mincho",
         "font_weight": "bold",
         "stroke_width": "sm",
         "stroke_color": "black",
@@ -87,9 +87,9 @@
       "scale": 0.25,
       "voice_profile": "student_voice",
       "subtitle_style": {
-        "font_size": "base",
+        "font_size": "lg",
         "font_color": "blue",
-        "google_font": "Noto Sans JP",
+        "google_font": "Zen Old Mincho",
         "font_weight": "bold",
         "stroke_width": "sm",
         "stroke_color": "black",

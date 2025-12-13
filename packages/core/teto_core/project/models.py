@@ -7,6 +7,7 @@ from ..layer.models import (
     SubtitleLayer,
     StampLayer,
     CharacterLayer,
+    LayeredCharacterLayer,
 )
 from ..output_config.models import OutputConfig
 
@@ -28,6 +29,9 @@ class Timeline(BaseModel):
     )
     character_layers: list[CharacterLayer] = Field(
         default_factory=list, description="キャラクターレイヤー"
+    )
+    layered_character_layers: list[LayeredCharacterLayer] = Field(
+        default_factory=list, description="レイヤードキャラクターレイヤー"
     )
 
 
